@@ -1,0 +1,13 @@
+/* filepath: d:\git\gamegen2\styling\main.css */
+/* Main stylesheet for GameGen2 that imports all component stylesheets */
+
+/* Core variables and base styles */
+@import 'variables.css';
+@import 'animations.css';
+@import 'app.css';
+
+/* Feature-specific styles */
+@import 'storytelling.css';
+@import '../login/login.css';
+
+/* Media queries and responsive adjustments can be added here */

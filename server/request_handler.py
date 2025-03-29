@@ -28,6 +28,7 @@ def create_request_handler(server_instance):
         # Specific assets that don't require authentication
         PUBLIC_ASSETS = [
             '/favicon.svg',
+            '/main.js',  # Added main.js to fix the 401 Unauthorized error
             '/styling/variables.css',
             '/styling/animations.css',
             '/styling/app.css',

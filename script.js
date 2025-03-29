@@ -20,20 +20,108 @@ class StorytellingEngine {
      * Initialize the application structure
      */
     initializeApp() {
-        // Create and populate the header
-        const header = document.getElementById('app-header');
-        if (header) {
-            header.innerHTML = `
-                <h1>GameGen2</h1>
-                <div id="user-info">
-                    <span id="user-email">Loading...</span>
-                    <button id="logout-button">Exit Story</button>
+        // Build the basic app structure
+        this.buildAppStructure();
+        
+        // Add event listeners
+        this.addEventListeners();
+        
+        // Check authentication
+        if (typeof authManager !== 'undefined') {
+            authManager.checkAuthentication().then(isAuthenticated => {
+                this.updateUserDisplay(isAuthenticated);
+            });
+        }
+    }
+
+    /**
+     * Build the basic application structure
+     * This method creates all the necessary DOM elements
+     */
+    buildAppStructure() {
+        const appMain = document.getElementById('app-main');
+        
+        // Get references to containers
+        const loginContainer = document.getElementById('login-container');
+        const gameContainer = document.getElementById('game-container');
+        
+        // Add user info to app-main instead of a separate header
+        const userInfo = document.createElement('div');
+        userInfo.id = 'user-info';
+        userInfo.innerHTML = `
+            <span id="user-email">Loading...</span>
+            <button id="logout-button">Exit Story</button>
+        `;
+        appMain.appendChild(userInfo);
+        
+        // Build login container content
+        if (loginContainer) {
+            loginContainer.innerHTML = `
+                <div class="storytelling-container">
+                    <!-- Floating quote bubbles that represent story ideas -->
+                    <div class="quote-bubble">
+                        "I emerged from the portal to find a world where technology and magic coexisted..."
+                    </div>
+                    <div class="quote-bubble">
+                        "The spaceship's AI whispered a secret that would change everything..."
+                    </div>
+                    <div class="quote-bubble">
+                        "With ancient powers awakening, I discovered my true destiny..."
+                    </div>
+                    <div class="quote-bubble">
+                        "The mystery deepened as I uncovered hidden symbols in the forgotten temple..."
+                    </div>
+                    
+                    <div class="storytelling-text">
+                        <h1>Infinite Storytelling Awaits</h1>
+                        <p>Enter a realm where imagination has no boundaries. Create and experience stories that adapt to your desires, limited only by your imagination. Every choice shapes your unique adventure.</p>
+                    </div>
+                    
+                    <section class="auth-container">
+                        <div class="auth-form-container">
+                            <div class="auth-tabs">
+                                <button id="login-tab" class="auth-tab active">Login</button>
+                                <button id="register-tab" class="auth-tab">Register</button>
+                            </div>
+                            
+                            <form id="login-form" class="auth-form active">
+                                <h2>Unlock Your Stories</h2>
+                                <div class="form-group">
+                                    <label for="login-email">Email</label>
+                                    <input type="email" id="login-email" name="email" required autocomplete="username">
+                                </div>
+                                <div class="form-group">
+                                    <label for="login-password">Password</label>
+                                    <input type="password" id="login-password" name="password" required autocomplete="current-password">
+                                </div>
+                                <div id="login-message" class="auth-message"></div>
+                                <button type="submit" class="auth-button">Begin Journey</button>
+                            </form>
+
+                            <form id="register-form" class="auth-form">
+                                <h2>Create Your Universe</h2>
+                                <div class="form-group">
+                                    <label for="register-email">Email</label>
+                                    <input type="email" id="register-email" name="email" required autocomplete="username">
+                                </div>
+                                <div class="form-group">
+                                    <label for="register-password">Password</label>
+                                    <input type="password" id="register-password" name="password" required minlength="8" autocomplete="new-password">
+                                </div>
+                                <div class="form-group">
+                                    <label for="register-confirm-password">Confirm Password</label>
+                                    <input type="password" id="register-confirm-password" name="confirm-password" required minlength="8" autocomplete="new-password">
+                                </div>
+                                <div id="register-message" class="auth-message"></div>
+                                <button type="submit" class="auth-button">Start Creating</button>
+                            </form>
+                        </div>
+                    </section>
                 </div>
             `;
         }
         
-        // Create and populate the game container
-        const gameContainer = document.getElementById('game-container');
+        // Build game container content
         if (gameContainer) {
             gameContainer.innerHTML = `
                 <div class="storytelling-interface">
@@ -80,24 +168,6 @@ class StorytellingEngine {
                     <p>Crafting your story...</p>
                 </div>
             `;
-        }
-        
-        // Create and populate the footer
-        const footer = document.getElementById('app-footer');
-        if (footer) {
-            footer.innerHTML = `
-                <p>GameGen2 - Where your imagination becomes the story</p>
-            `;
-        }
-        
-        // Add event listeners
-        this.addEventListeners();
-        
-        // Check authentication
-        if (typeof authManager !== 'undefined') {
-            authManager.checkAuthentication().then(isAuthenticated => {
-                this.updateUserDisplay(isAuthenticated);
-            });
         }
     }
     

@@ -15,11 +15,10 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <header id="app-header"></header>
     <main id="app-main">
         <canvas id="background-canvas"></canvas>
         <!-- Login container -->
-        <div id="login-container" class="hidden">
+        <div id="login-container">
             <div class="storytelling-container">
                 <!-- Floating quote bubbles that represent story ideas -->
                 <div class="quote-bubble">
@@ -84,9 +83,10 @@
         </div>
         
         <!-- Main game content container -->
-        <div id="game-container" class="hidden"></div>
+        <div id="game-container" class="hidden">
+            <!-- Game content will be rendered here by JavaScript -->
+        </div>
     </main>
-    <footer id="app-footer"></footer>
     <script src="login/webgpu-background.js" defer></script>
 </body>
 </html>

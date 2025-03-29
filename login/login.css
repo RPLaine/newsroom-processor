@@ -14,10 +14,21 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    width: 100vw;
     font-family: var(--font-family-body);
     color: var(--text-color);
     overflow-x: hidden;
     background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+    display: flex;
+    flex-direction: column;
+}
+
+#app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
 }
 
 .storytelling-container {
@@ -26,20 +37,22 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 0;
+    width: 100%;
+    padding: 2rem 0;
     position: relative;
+    box-sizing: border-box;
 }
 
 .storytelling-text {
-    max-width: 800px;
-    margin: 0 auto 3rem;
-    padding: 0 2rem;
+    max-width: min(800px, 90vw);
+    margin: 0 auto 2rem;
+    padding: 0 1rem;
     text-align: center;
     animation: fadeIn 1.5s ease-out;
 }
 
 .storytelling-text h1 {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 5vw, 3.5rem);
     margin-bottom: 1rem;
     background: linear-gradient(to right, var(--accent-color), #ff9900);
     -webkit-background-clip: text;
@@ -49,7 +62,7 @@ body {
 }
 
 .storytelling-text p {
-    font-size: 1.3rem;
+    font-size: clamp(1rem, 2vw, 1.3rem);
     line-height: 1.8;
     margin-bottom: 2rem;
     color: rgba(255, 255, 255, 0.85);
@@ -64,6 +77,8 @@ body {
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
 }
 
 .auth-form-container {
@@ -74,7 +89,6 @@ body {
     border-radius: var(--radius-md);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     width: 100%;
-    max-width: 450px;
     overflow: hidden;
     transform: translateY(0);
     transition: transform 0.5s ease, box-shadow 0.5s ease;
@@ -95,7 +109,7 @@ body {
     background: rgba(45, 45, 45, 0.6);
     border: none;
     padding: 18px 0;
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 3vw, 1.2rem);
     font-weight: 600;
     color: var(--text-color);
     cursor: pointer;
@@ -136,7 +150,7 @@ body {
 }
 
 .auth-form {
-    padding: var(--space-xl);
+    padding: clamp(1rem, 5vw, 2rem);
     display: none;
     box-sizing: border-box;
     animation: fadeIn 0.5s ease-out;
@@ -159,7 +173,7 @@ body {
 
 .auth-form h2 {
     margin-bottom: var(--space-lg);
-    font-size: 1.8rem;
+    font-size: clamp(1.5rem, 4vw, 1.8rem);
     text-align: center;
     background: linear-gradient(to right, var(--accent-color), #ff9900);
     -webkit-background-clip: text;
@@ -213,7 +227,7 @@ body {
     color: var(--button-text);
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 3vw, 1.2rem);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -341,26 +355,108 @@ body {
 
 /* Responsive design adjustments */
 @media (max-width: 768px) {
-    .storytelling-text h1 {
-        font-size: 2.5rem;
-    }
-    
-    .storytelling-text p {
-        font-size: 1.1rem;
-        padding: 0 1rem;
+    .storytelling-container {
+        padding: 1rem 0;
     }
     
     .quote-bubble {
         display: none;
     }
+    
+    .auth-form {
+        padding: 1.5rem 1rem;
+    }
 }
 
-@media (max-width: 480px) {
-    .auth-form-container {
-        max-width: 90%;
+/* Height-based media queries */
+@media (max-height: 700px) and (min-width: 601px) {
+    .storytelling-text {
+        margin-bottom: 1rem;
     }
     
     .storytelling-text h1 {
         font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .storytelling-text p {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    .auth-form {
+        padding: 1rem;
+    }
+    
+    .auth-form h2 {
+        margin-bottom: 0.75rem;
+    }
+}
+
+@media (max-height: 600px) {
+    .storytelling-text {
+        margin-bottom: 0.5rem;
+    }
+    
+    .storytelling-text h1 {
+        font-size: 1.8rem;
+    }
+    
+    .storytelling-text p {
+        display: none;
+    }
+    
+    .auth-tab {
+        padding: 10px 0;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 380px) {
+    .auth-form-container {
+        width: 100%;
+    }
+    
+    .auth-button, .form-group input {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+}
+
+/* Landscape orientation on small devices */
+@media (max-height: 500px) and (orientation: landscape) {
+    .storytelling-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+    
+    .storytelling-text {
+        flex: 1 1 100%;
+        max-width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .storytelling-text h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0;
+    }
+    
+    .auth-container {
+        flex: 0 0 80%;
+    }
+    
+    .form-group {
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-form h2 {
+        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
     }
 }

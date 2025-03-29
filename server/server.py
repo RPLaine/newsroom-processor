@@ -10,7 +10,7 @@ import socketserver
 from login.auth_routes import AuthRoutes
 from .request_handler import create_request_handler
 
-class GameGen2Server:
+class GameServer:
     """Main server class that manages the HTTP server and request handling"""
     
     def __init__(self, port=8001, data_dir="./data", debug=False):
@@ -58,5 +58,5 @@ class GameGen2Server:
     @staticmethod
     def run_server(port=8001, data_dir="./data", debug=False):
         """Run the GameGen2 server with the specified configuration"""
-        server = GameGen2Server(port, data_dir, debug)
+        server = GameServer(port, data_dir, debug)
         server.run()

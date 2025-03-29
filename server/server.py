@@ -5,6 +5,9 @@ This module contains the main server class that manages the HTTP server and requ
 """
 
 import socketserver
+import threading
+import time
+import sys
 
 # Import our authentication module
 from login.auth_routes import AuthRoutes
@@ -26,6 +29,7 @@ class GameServer:
         self.data_dir = data_dir
         self.debug = debug
         self.auth_routes = AuthRoutes(data_dir)
+        self.shutdown_flag = threading.Event()
         
         # Create request handler with access to server instance
         handler = create_request_handler(self)
@@ -40,6 +44,24 @@ class GameServer:
         self.httpd.auth_routes = self.auth_routes
         self.httpd.debug = self.debug
     
+    def keyboard_interrupt_handler(self):
+        """Handle keyboard interrupt in a separate thread"""
+        try:
+            # Wait until shutdown flag is set or Ctrl+C is pressed
+            while not self.shutdown_flag.is_set():
+                try:
+                    time.sleep(0.1)  # Short sleep to prevent CPU hogging
+                except KeyboardInterrupt:
+                    break
+            
+            # If we get here, either Ctrl+C was pressed or shutdown was called
+            if not self.shutdown_flag.is_set():
+                print("\nShutting down server...")
+                self.shutdown_flag.set()
+                self.httpd.shutdown()
+        except Exception as e:
+            print(f"Error in keyboard interrupt handler: {e}")
+    
     def run(self):
         """Run the server"""
         print(f"Server started at http://localhost:{self.port}")
@@ -47,12 +69,28 @@ class GameServer:
             print("Running in DEBUG mode")
         print("Press Ctrl+C to stop the server")
         
+        # Start a thread to handle keyboard interrupts
+        interrupt_thread = threading.Thread(target=self.keyboard_interrupt_handler)
+        interrupt_thread.daemon = True
+        interrupt_thread.start()
+        
         try:
             # Start the server
             self.httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\nShutting down server...")
-            self.httpd.server_close()
+            # This is a fallback in case the interrupt thread doesn't catch it
+            pass
+        finally:
+            # Set the shutdown flag to stop the interrupt thread
+            self.shutdown_flag.set()
+            
+            # Gracefully close the server if not already closed
+            try:
+                self.httpd.server_close()
+            except Exception as e:
+                if self.debug:
+                    print(f"Error during server shutdown: {e}")
+            
             print("Server stopped gracefully.")
 
     @staticmethod

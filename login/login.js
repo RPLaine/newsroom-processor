@@ -18,6 +18,7 @@ class AuthManager {
             "What lies beyond the veil of perception?",
             "Your story is waiting to be written..."
         ];
+        this.isAnimating = false; // Track animation state to prevent multiple clicks during transition
     }
 
     /**
@@ -40,37 +41,75 @@ class AuthManager {
         const registerForm = document.getElementById('register-form');
         
         if (loginTab && registerTab) {
-            // Tab switching event listeners with animation enhancements
+            // Tab switching event listeners with enhanced animation transitions
             loginTab.addEventListener('click', () => {
+                if (this.isAnimating || loginTab.classList.contains('active')) return;
+                this.isAnimating = true;
+                
+                // Update active tab styling
                 loginTab.classList.add('active');
                 registerTab.classList.remove('active');
                 
-                // Fade out register form
-                registerForm.style.opacity = 0;
+                // Add transform effects for smooth sliding transition
+                registerForm.style.transform = 'translateX(20px)';
+                registerForm.style.opacity = '0';
                 
-                // After animation completes, hide register and show login
+                // Wait for the exit animation to complete
                 setTimeout(() => {
+                    // Hide register form and prepare login form for entrance
+                    loginForm.style.transform = 'translateX(-20px)';
+                    loginForm.style.opacity = '0';
                     loginForm.classList.add('active');
                     registerForm.classList.remove('active');
+                    
+                    // Trigger reflow to ensure the transform takes effect
+                    void loginForm.offsetWidth;
+                    
+                    // Bring in the login form with entrance animation
                     setTimeout(() => {
-                        loginForm.style.opacity = 1;
+                        loginForm.style.transform = 'translateX(0)';
+                        loginForm.style.opacity = '1';
+                        
+                        // Animation complete
+                        setTimeout(() => {
+                            this.isAnimating = false;
+                        }, 300);
                     }, 50);
                 }, 300);
             });
             
             registerTab.addEventListener('click', () => {
+                if (this.isAnimating || registerTab.classList.contains('active')) return;
+                this.isAnimating = true;
+                
+                // Update active tab styling
                 registerTab.classList.add('active');
                 loginTab.classList.remove('active');
                 
-                // Fade out login form
-                loginForm.style.opacity = 0;
+                // Add transform effects for smooth sliding transition
+                loginForm.style.transform = 'translateX(-20px)';
+                loginForm.style.opacity = '0';
                 
-                // After animation completes, hide login and show register
+                // Wait for the exit animation to complete
                 setTimeout(() => {
+                    // Hide login form and prepare register form for entrance
+                    registerForm.style.transform = 'translateX(20px)';
+                    registerForm.style.opacity = '0';
                     registerForm.classList.add('active');
                     loginForm.classList.remove('active');
+                    
+                    // Trigger reflow to ensure the transform takes effect
+                    void registerForm.offsetWidth;
+                    
+                    // Bring in the register form with entrance animation
                     setTimeout(() => {
-                        registerForm.style.opacity = 1;
+                        registerForm.style.transform = 'translateX(0)';
+                        registerForm.style.opacity = '1';
+                        
+                        // Animation complete
+                        setTimeout(() => {
+                            this.isAnimating = false;
+                        }, 300);
                     }, 50);
                 }, 300);
             });
@@ -141,12 +180,14 @@ class AuthManager {
             });
         }
         
-        // Initially set the active form's opacity to 1
+        // Initialize forms with proper transitions
         if (loginForm && loginForm.classList.contains('active')) {
-            loginForm.style.opacity = 1;
+            loginForm.style.opacity = '1';
+            loginForm.style.transform = 'translateX(0)';
         }
-        if (registerForm && registerForm.classList.contains('active')) {
-            registerForm.style.opacity = 1;
+        if (registerForm) {
+            registerForm.style.opacity = registerForm.classList.contains('active') ? '1' : '0';
+            registerForm.style.transform = registerForm.classList.contains('active') ? 'translateX(0)' : 'translateX(20px)';
         }
         
         this.initialized = true;
@@ -161,20 +202,100 @@ class AuthManager {
     }
     
     /**
-     * Show or hide the login container
+     * Show or hide the login container with enhanced transitions
      * @param {boolean} show - Whether to show or hide
      */
     showLoginContainer(show = true) {
         const loginContainer = document.getElementById('login-container');
         const gameContainer = document.getElementById('game-container');
+        const userInfo = document.getElementById('user-info');
         
         if (show) {
+            // Transitioning to login screen
             this.initialize();
-            loginContainer.classList.remove('hidden');
-            gameContainer.classList.add('hidden');
+            
+            // Animate game container out
+            if (!gameContainer.classList.contains('hidden')) {
+                gameContainer.classList.add('fade-out-down');
+                
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    gameContainer.classList.add('hidden');
+                    gameContainer.classList.remove('fade-out-down');
+                    
+                    // Animate login container in
+                    loginContainer.classList.remove('hidden');
+                    loginContainer.style.opacity = '0';
+                    loginContainer.style.transform = 'translateY(-20px)';
+                    
+                    // Trigger reflow to ensure the transform takes effect
+                    void loginContainer.offsetWidth;
+                    
+                    // Apply animation
+                    loginContainer.classList.add('fade-in-down');
+                    
+                    // Clean up animation classes after completion
+                    setTimeout(() => {
+                        loginContainer.classList.remove('fade-in-down');
+                        loginContainer.style.opacity = '';
+                        loginContainer.style.transform = '';
+                    }, 800);
+                    
+                }, 700); // Match this with CSS animation duration
+                
+                // Hide user info with animation
+                if (userInfo && !userInfo.classList.contains('hidden')) {
+                    userInfo.classList.add('hidden');
+                }
+            } else {
+                // Direct show without transition if game container is already hidden
+                gameContainer.classList.add('hidden');
+                loginContainer.classList.remove('hidden');
+                
+                if (userInfo) {
+                    userInfo.classList.add('hidden');
+                }
+            }
         } else {
-            loginContainer.classList.add('hidden');
-            gameContainer.classList.remove('hidden');
+            // Transitioning to game screen
+            
+            // Animate login container out
+            loginContainer.classList.add('fade-out-up');
+            
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+                loginContainer.classList.add('hidden');
+                loginContainer.classList.remove('fade-out-up');
+                
+                // Animate game container in
+                gameContainer.classList.remove('hidden');
+                gameContainer.style.opacity = '0';
+                gameContainer.style.transform = 'translateY(20px)';
+                
+                // Trigger reflow to ensure the transform takes effect
+                void gameContainer.offsetWidth;
+                
+                // Apply animation
+                gameContainer.classList.add('fade-in-up');
+                
+                // Clean up animation classes after completion
+                setTimeout(() => {
+                    gameContainer.classList.remove('fade-in-up');
+                    gameContainer.style.opacity = '';
+                    gameContainer.style.transform = '';
+                }, 800);
+                
+                // Show user info with animation
+                if (userInfo) {
+                    userInfo.classList.remove('hidden');
+                    userInfo.classList.add('visible');
+                    
+                    // Remove animation class after completion
+                    setTimeout(() => {
+                        userInfo.classList.remove('visible');
+                    }, 500);
+                }
+            }, 700); // Match this with CSS animation duration
         }
     }
     

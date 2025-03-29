@@ -1,4 +1,9 @@
 /* Core application styles for GameGen2 */
+
+body, #app-main, #game-container, #user-info, #logout-button {
+    user-select: none;
+}
+
 body {
     font-family: var(--font-family-body);
     background-color: var(--background-color);

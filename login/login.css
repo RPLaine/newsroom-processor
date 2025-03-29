@@ -1,5 +1,9 @@
 /* Immersive login and creative storytelling styling for GameGen2 */
 
+body, .storytelling-container, .auth-container, .auth-form-container, .auth-tabs, .auth-tab, .auth-form, .form-group, .auth-button, .auth-message {
+    user-select: none;
+}
+
 /* Full screen background canvas */
 #background-canvas {
     position: fixed;

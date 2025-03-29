@@ -1,5 +1,9 @@
 /* Storytelling interface styling for GameGen2 */
 
+.storytelling-interface, .story-display, .story-content, .story-welcome, .story-prompt-container, .story-prompt, .custom-story-container, .story-controls {
+    user-select: none;
+}
+
 /* Main storytelling interface container */
 .storytelling-interface {
     display: flex;

@@ -45,4 +45,5 @@
     --radius-sm: 4px;
     --radius-md: 8px;
     --shadow-normal: 0 4px 10px rgba(0, 0, 0, 0.3);
+    user-select: none;
 }

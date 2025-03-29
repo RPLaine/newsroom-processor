@@ -1,5 +1,6 @@
 /**
- * Login and registration functionality for GameGen2
+ * Enhanced login and registration functionality for GameGen2
+ * Focused on immersive storytelling experience
  */
 class AuthManager {
     constructor() {
@@ -8,60 +9,29 @@ class AuthManager {
             authenticated: false,
             user_id: null
         };
+        this.storyPrompts = [
+            "What if you could reshape reality with your thoughts?",
+            "In a world where dreams become tangible...",
+            "When ancient magic meets modern technology...",
+            "Discover universes beyond imagination...",
+            "Every choice creates a new timeline...",
+            "What lies beyond the veil of perception?",
+            "Your story is waiting to be written..."
+        ];
     }
 
     /**
-     * Initialize the login UI components
+     * Initialize the login UI components with enhanced storytelling elements
      */
     initialize() {
         if (this.initialized) return;
         
-        // Create login container content
+        // Create login container content if it doesn't exist
         const loginContainer = document.getElementById('login-container');
         if (!loginContainer) return;
         
-        loginContainer.innerHTML = `
-            <section class="auth-container">
-                <div class="auth-form-container">
-                    <div class="auth-tabs">
-                        <button id="login-tab" class="auth-tab active">Login</button>
-                        <button id="register-tab" class="auth-tab">Register</button>
-                    </div>
-                    
-                    <form id="login-form" class="auth-form active">
-                        <h2>Login to Your Account</h2>
-                        <div class="form-group">
-                            <label for="login-email">Email</label>
-                            <input type="email" id="login-email" name="email" required autocomplete="username">
-                        </div>
-                        <div class="form-group">
-                            <label for="login-password">Password</label>
-                            <input type="password" id="login-password" name="password" required autocomplete="current-password">
-                        </div>
-                        <div id="login-message" class="auth-message"></div>
-                        <button type="submit" class="auth-button">Login</button>
-                    </form>
-
-                    <form id="register-form" class="auth-form">
-                        <h2>Create a New Account</h2>
-                        <div class="form-group">
-                            <label for="register-email">Email</label>
-                            <input type="email" id="register-email" name="email" required autocomplete="username">
-                        </div>
-                        <div class="form-group">
-                            <label for="register-password">Password</label>
-                            <input type="password" id="register-password" name="password" required minlength="8" autocomplete="new-password">
-                        </div>
-                        <div class="form-group">
-                            <label for="register-confirm-password">Confirm Password</label>
-                            <input type="password" id="register-confirm-password" name="confirm-password" required minlength="8" autocomplete="new-password">
-                        </div>
-                        <div id="register-message" class="auth-message"></div>
-                        <button type="submit" class="auth-button">Register</button>
-                    </form>
-                </div>
-            </section>
-        `;
+        // Initialize storytelling elements
+        this.initializeStorytellingElements();
         
         // Tab switching functionality
         const loginTab = document.getElementById('login-tab');
@@ -70,72 +40,124 @@ class AuthManager {
         const registerForm = document.getElementById('register-form');
         
         if (loginTab && registerTab) {
-            // Tab switching event listeners
+            // Tab switching event listeners with animation enhancements
             loginTab.addEventListener('click', () => {
                 loginTab.classList.add('active');
                 registerTab.classList.remove('active');
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
+                
+                // Fade out register form
+                registerForm.style.opacity = 0;
+                
+                // After animation completes, hide register and show login
+                setTimeout(() => {
+                    loginForm.classList.add('active');
+                    registerForm.classList.remove('active');
+                    setTimeout(() => {
+                        loginForm.style.opacity = 1;
+                    }, 50);
+                }, 300);
             });
             
             registerTab.addEventListener('click', () => {
                 registerTab.classList.add('active');
                 loginTab.classList.remove('active');
-                registerForm.classList.add('active');
-                loginForm.classList.remove('active');
+                
+                // Fade out login form
+                loginForm.style.opacity = 0;
+                
+                // After animation completes, hide login and show register
+                setTimeout(() => {
+                    registerForm.classList.add('active');
+                    loginForm.classList.remove('active');
+                    setTimeout(() => {
+                        registerForm.style.opacity = 1;
+                    }, 50);
+                }, 300);
             });
         }
         
-        // Login form submission
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
+        // Login form submission with enhanced feedback
+        const loginFormElement = document.getElementById('login-form');
+        if (loginFormElement) {
+            loginFormElement.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
                 const messageElement = document.getElementById('login-message');
+                const submitButton = loginFormElement.querySelector('.auth-button');
                 
                 // Basic validation
                 if (!email || !password) {
                     this.showMessage(messageElement, 'Please fill in all fields', 'error');
+                    this.shakeElement(messageElement);
                     return;
                 }
                 
+                // Update button to show loading state
+                this.setButtonLoading(submitButton, true);
+                
                 // Send login request
-                this.login(email, password, messageElement);
+                this.login(email, password, messageElement, submitButton);
             });
         }
         
-        // Registration form submission
-        if (registerForm) {
-            registerForm.addEventListener('submit', (e) => {
+        // Registration form submission with enhanced feedback
+        const registerFormElement = document.getElementById('register-form');
+        if (registerFormElement) {
+            registerFormElement.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('register-email').value;
                 const password = document.getElementById('register-password').value;
                 const confirmPassword = document.getElementById('register-confirm-password').value;
                 const messageElement = document.getElementById('register-message');
+                const submitButton = registerFormElement.querySelector('.auth-button');
                 
-                // Basic validation
+                // Basic validation with improved feedback
                 if (!email || !password || !confirmPassword) {
                     this.showMessage(messageElement, 'Please fill in all fields', 'error');
+                    this.shakeElement(messageElement);
                     return;
                 }
                 
                 if (password !== confirmPassword) {
                     this.showMessage(messageElement, 'Passwords do not match', 'error');
+                    this.shakeElement(messageElement);
+                    this.highlightInputError('register-confirm-password');
                     return;
                 }
                 
                 if (password.length < 8) {
                     this.showMessage(messageElement, 'Password must be at least 8 characters long', 'error');
+                    this.shakeElement(messageElement);
+                    this.highlightInputError('register-password');
                     return;
                 }
                 
+                // Update button to show loading state
+                this.setButtonLoading(submitButton, true);
+                
                 // Send registration request
-                this.register(email, password, messageElement);
+                this.register(email, password, messageElement, submitButton);
             });
         }
         
+        // Initially set the active form's opacity to 1
+        if (loginForm && loginForm.classList.contains('active')) {
+            loginForm.style.opacity = 1;
+        }
+        if (registerForm && registerForm.classList.contains('active')) {
+            registerForm.style.opacity = 1;
+        }
+        
         this.initialized = true;
+    }
+    
+    /**
+     * Initialize storytelling elements that enhance the login experience
+     */
+    initializeStorytellingElements() {
+        // Dynamically update the storytelling text periodically
+        this.cycleStoryPrompts();
     }
     
     /**
@@ -157,12 +179,13 @@ class AuthManager {
     }
     
     /**
-     * Login with email and password
+     * Login with email and password with enhanced feedback
      * @param {string} email - User email
      * @param {string} password - User password
      * @param {HTMLElement} messageElement - Element to show messages
+     * @param {HTMLElement} submitButton - Submit button element
      */
-    login(email, password, messageElement) {
+    login(email, password, messageElement, submitButton) {
         const formData = new URLSearchParams();
         formData.append('email', email);
         formData.append('password', password);
@@ -176,8 +199,11 @@ class AuthManager {
         })
         .then(response => response.json())
         .then(data => {
+            this.setButtonLoading(submitButton, false);
+            
             if (data.status === 'success') {
-                this.showMessage(messageElement, data.message, 'success');
+                this.showMessage(messageElement, 'Welcome back! Preparing your stories...', 'success');
+                
                 // Update auth state and UI
                 this.checkAuthentication().then(() => {
                     if (this.authState.authenticated) {
@@ -190,21 +216,25 @@ class AuthManager {
                 });
             } else {
                 this.showMessage(messageElement, data.message, 'error');
+                this.shakeElement(messageElement);
             }
         })
         .catch(error => {
-            this.showMessage(messageElement, 'An error occurred. Please try again.', 'error');
+            this.setButtonLoading(submitButton, false);
+            this.showMessage(messageElement, 'Connection error. Please try again.', 'error');
+            this.shakeElement(messageElement);
             console.error('Login error:', error);
         });
     }
     
     /**
-     * Register a new user
+     * Register a new user with enhanced feedback
      * @param {string} email - User email
      * @param {string} password - User password
      * @param {HTMLElement} messageElement - Element to show messages
+     * @param {HTMLElement} submitButton - Submit button element
      */
-    register(email, password, messageElement) {
+    register(email, password, messageElement, submitButton) {
         const formData = new URLSearchParams();
         formData.append('email', email);
         formData.append('password', password);
@@ -218,8 +248,11 @@ class AuthManager {
         })
         .then(response => response.json())
         .then(data => {
+            this.setButtonLoading(submitButton, false);
+            
             if (data.status === 'success') {
-                this.showMessage(messageElement, data.message, 'success');
+                this.showMessage(messageElement, 'Account created! Your storytelling journey begins...', 'success');
+                
                 // Update auth state and UI
                 this.checkAuthentication().then(() => {
                     if (this.authState.authenticated) {
@@ -232,10 +265,13 @@ class AuthManager {
                 });
             } else {
                 this.showMessage(messageElement, data.message, 'error');
+                this.shakeElement(messageElement);
             }
         })
         .catch(error => {
-            this.showMessage(messageElement, 'An error occurred. Please try again.', 'error');
+            this.setButtonLoading(submitButton, false);
+            this.showMessage(messageElement, 'Connection error. Please try again.', 'error');
+            this.shakeElement(messageElement);
             console.error('Registration error:', error);
         });
     }
@@ -297,7 +333,7 @@ class AuthManager {
     }
     
     /**
-     * Show message in the specified element
+     * Show a message in the specified element with enhanced styling
      * @param {HTMLElement} element - Element to show message in
      * @param {string} message - Message text
      * @param {string} type - Message type (error, success)
@@ -305,9 +341,96 @@ class AuthManager {
     showMessage(element, message, type) {
         if (!element) return;
         
+        // Hide the element first to trigger re-animation
+        element.style.display = 'none';
+        
+        // Set content and classes
         element.textContent = message;
         element.className = 'auth-message';
         element.classList.add(type);
+        
+        // Show with animation
+        setTimeout(() => {
+            element.style.display = 'block';
+        }, 10);
+    }
+    
+    /**
+     * Apply shake animation to an element for error feedback
+     * @param {HTMLElement} element - Element to animate
+     */
+    shakeElement(element) {
+        if (!element) return;
+        element.classList.remove('error-shake');
+        // Trigger reflow to restart animation
+        void element.offsetWidth;
+        element.classList.add('error-shake');
+    }
+    
+    /**
+     * Highlight input field with error state
+     * @param {string} inputId - ID of input to highlight
+     */
+    highlightInputError(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        
+        input.style.borderColor = 'var(--error-border)';
+        input.style.backgroundColor = 'rgba(58, 5, 5, 0.2)';
+        
+        // Clear error styling when input changes
+        const clearError = () => {
+            input.style.borderColor = '';
+            input.style.backgroundColor = '';
+            input.removeEventListener('input', clearError);
+        };
+        
+        input.addEventListener('input', clearError);
+    }
+    
+    /**
+     * Set loading state on a button
+     * @param {HTMLElement} button - Button element
+     * @param {boolean} isLoading - Whether button is in loading state
+     */
+    setButtonLoading(button, isLoading) {
+        if (!button) return;
+        
+        if (isLoading) {
+            button.originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = "Loading...";
+            button.style.opacity = "0.8";
+        } else {
+            button.disabled = false;
+            button.textContent = button.originalText || button.textContent;
+            button.style.opacity = "";
+        }
+    }
+    
+    /**
+     * Cycle through story prompts in the storytelling text
+     */
+    cycleStoryPrompts() {
+        const storyPromptElement = document.querySelector('.storytelling-text p');
+        if (!storyPromptElement) return;
+        
+        let currentIndex = 0;
+        
+        // Cycle prompts every 8 seconds
+        setInterval(() => {
+            // Fade out
+            storyPromptElement.style.opacity = 0;
+            
+            // Change text after fade out
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % this.storyPrompts.length;
+                storyPromptElement.textContent = this.storyPrompts[currentIndex];
+                
+                // Fade in
+                storyPromptElement.style.opacity = 1;
+            }, 500);
+        }, 8000);
     }
 }
 

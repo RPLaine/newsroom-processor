@@ -1,10 +1,11 @@
 /**
- * Main application script for GameGen2
+ * Main application script for GameGen2's immersive storytelling experience
  */
-class AppManager {
+class StorytellingEngine {
     constructor() {
-        this.currentView = null;
         this.userData = null;
+        this.currentStoryState = null;
+        this.storyHistory = [];
         
         // Initialize app structure
         this.initializeApp();
@@ -24,16 +25,9 @@ class AppManager {
         if (header) {
             header.innerHTML = `
                 <h1>GameGen2</h1>
-                <nav>
-                    <ul>
-                        <li><a href="#" data-view="home">Home</a></li>
-                        <li><a href="#" data-view="games">Games</a></li>
-                        <li><a href="#" data-view="about">About</a></li>
-                    </ul>
-                </nav>
                 <div id="user-info">
                     <span id="user-email">Loading...</span>
-                    <button id="logout-button">Logout</button>
+                    <button id="logout-button">Exit Story</button>
                 </div>
             `;
         }
@@ -42,12 +36,49 @@ class AppManager {
         const gameContainer = document.getElementById('game-container');
         if (gameContainer) {
             gameContainer.innerHTML = `
-                <section id="welcome-section" class="section">
-                    <h2>Welcome to GameGen2</h2>
-                    <p>This is a platform for generating and playing games.</p>
-                    <button id="test-button" class="button-hover">Test JavaScript</button>
-                    <p id="result">Click the button to test JavaScript.</p>
-                </section>
+                <div class="storytelling-interface">
+                    <div id="story-display" class="story-display">
+                        <div class="story-welcome fade-in">
+                            <h2>Your Story Begins...</h2>
+                            <p>Welcome to a world where your imagination becomes reality. What kind of story would you like to experience today?</p>
+                            <div class="story-prompt-container">
+                                <div class="story-prompt button-hover" data-genre="fantasy">
+                                    <h3>Fantasy</h3>
+                                    <p>Explore magical realms, encounter mythical creatures, and discover ancient powers.</p>
+                                </div>
+                                <div class="story-prompt button-hover" data-genre="scifi">
+                                    <h3>Science Fiction</h3>
+                                    <p>Travel through space, encounter advanced technology, and explore the unknown.</p>
+                                </div>
+                                <div class="story-prompt button-hover" data-genre="mystery">
+                                    <h3>Mystery</h3>
+                                    <p>Unravel secrets, solve puzzles, and discover the truth behind strange events.</p>
+                                </div>
+                                <div class="story-prompt button-hover" data-genre="adventure">
+                                    <h3>Adventure</h3>
+                                    <p>Embark on epic journeys, face challenges, and discover hidden treasures.</p>
+                                </div>
+                            </div>
+                            <div class="custom-story-container">
+                                <h3>Or describe your own story:</h3>
+                                <textarea id="custom-story-input" placeholder="Enter your story idea here..."></textarea>
+                                <button id="start-custom-story" class="auth-button button-hover">Begin This Story</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="story-controls" class="story-controls hidden">
+                        <textarea id="user-input" placeholder="What would you like to do?"></textarea>
+                        <button id="submit-action" class="auth-button button-hover">Continue Story</button>
+                        <div class="story-options">
+                            <button id="reset-story" class="secondary-button">New Story</button>
+                            <button id="undo-action" class="secondary-button">Undo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="loading-container hidden">
+                    <div class="loading-spinner"></div>
+                    <p>Crafting your story...</p>
+                </div>
             `;
         }
         
@@ -55,7 +86,7 @@ class AppManager {
         const footer = document.getElementById('app-footer');
         if (footer) {
             footer.innerHTML = `
-                <p>&copy; 2025 GameGen2. All rights reserved.</p>
+                <p>GameGen2 - Where your imagination becomes the story</p>
             `;
         }
         
@@ -74,26 +105,7 @@ class AppManager {
      * Add event listeners for interactive elements
      */
     addEventListeners() {
-        // Get the button element
-        const testButton = document.getElementById('test-button');
         const logoutButton = document.getElementById('logout-button');
-        
-        // Add click event listener to the test button
-        if (testButton) {
-            testButton.addEventListener('click', () => {
-                const result = document.getElementById('result');
-                if (result) {
-                    // Change the result text
-                    result.textContent = 'JavaScript is working correctly!';
-                    
-                    // Add a simple animation effect
-                    result.style.color = 'var(--accent-color)';
-                    setTimeout(() => {
-                        result.style.color = 'var(--text-color)';
-                    }, 1500);
-                }
-            });
-        }
         
         // Add logout functionality
         if (logoutButton) {
@@ -104,15 +116,60 @@ class AppManager {
             });
         }
         
-        // Add view navigation
-        const navLinks = document.querySelectorAll('nav a[data-view]');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const view = link.getAttribute('data-view');
-                this.switchView(view);
+        // Add story prompt listeners
+        const storyPrompts = document.querySelectorAll('.story-prompt');
+        storyPrompts.forEach(prompt => {
+            prompt.addEventListener('click', () => {
+                const genre = prompt.getAttribute('data-genre');
+                this.startGenreStory(genre);
             });
         });
+        
+        // Add custom story listener
+        const customStoryButton = document.getElementById('start-custom-story');
+        if (customStoryButton) {
+            customStoryButton.addEventListener('click', () => {
+                const customInput = document.getElementById('custom-story-input');
+                if (customInput && customInput.value.trim()) {
+                    this.startCustomStory(customInput.value);
+                }
+            });
+        }
+        
+        // Add story control listeners
+        const submitAction = document.getElementById('submit-action');
+        if (submitAction) {
+            submitAction.addEventListener('click', () => {
+                this.submitUserAction();
+            });
+        }
+        
+        // Add keypress event for user input
+        const userInput = document.getElementById('user-input');
+        if (userInput) {
+            userInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.submitUserAction();
+                }
+            });
+        }
+        
+        // Add reset story button
+        const resetStory = document.getElementById('reset-story');
+        if (resetStory) {
+            resetStory.addEventListener('click', () => {
+                this.resetStory();
+            });
+        }
+        
+        // Add undo action button
+        const undoAction = document.getElementById('undo-action');
+        if (undoAction) {
+            undoAction.addEventListener('click', () => {
+                this.undoAction();
+            });
+        }
     }
     
     /**
@@ -125,7 +182,6 @@ class AppManager {
         // Load user data if authenticated
         if (authDetail.authenticated) {
             this.loadUserData();
-            this.switchView('home');
         }
     }
     
@@ -161,7 +217,12 @@ class AppManager {
             })
             .then(data => {
                 this.userData = data;
-                this.updateGameInterface();
+                
+                // Show game container if it was hidden
+                const gameContainer = document.getElementById('game-container');
+                if (gameContainer) {
+                    gameContainer.classList.remove('hidden');
+                }
             })
             .catch(error => {
                 console.error('Error loading user data:', error);
@@ -169,57 +230,321 @@ class AppManager {
     }
     
     /**
-     * Update game interface based on user data
+     * Start a story based on a selected genre
+     * @param {string} genre - Genre of story to start
      */
-    updateGameInterface() {
-        // This will be implemented based on the game requirements
-        // For now, just display a welcome message with the current time
+    startGenreStory(genre) {
+        const genrePrompts = {
+            fantasy: "You find yourself in a mystical forest where the trees whisper secrets of ancient magic. A glowing path leads deeper into the woods...",
+            scifi: "The spaceship's emergency sirens blare as you wake from cryosleep. Through the viewport, you see an uncharted planet with three moons...",
+            mystery: "The old mansion creaks as you enter, the invitation in your hand. The letter mentioned an inheritance, but the sender's name is unfamiliar...",
+            adventure: "The map in your hands points to a treasure hidden in these mountains. As you reach the peak, you notice a hidden cave entrance..."
+        };
         
-        const gameContainer = document.getElementById('game-container');
-        if (!gameContainer) return;
+        const prompt = genrePrompts[genre] || "You begin your journey into a new adventure...";
+        this.startStory(prompt);
+    }
+    
+    /**
+     * Start a story based on custom user input
+     * @param {string} customInput - User's custom story start
+     */
+    startCustomStory(customInput) {
+        this.startStory(customInput);
+    }
+    
+    /**
+     * Start a new story with the provided prompt
+     * @param {string} storyPrompt - Initial story prompt
+     */
+    startStory(storyPrompt) {
+        // Show loading indicator
+        this.setLoading(true);
         
-        // Display the current date and time
-        const now = new Date();
-        const dateTimeString = now.toLocaleString();
+        // Show story controls
+        const storyControls = document.getElementById('story-controls');
+        if (storyControls) {
+            storyControls.classList.remove('hidden');
+        }
         
-        // Append the current time to the container if not already present
-        const timeElement = document.getElementById('time-element');
-        if (!timeElement) {
-            const newTimeElement = document.createElement('p');
-            newTimeElement.id = 'time-element';
-            newTimeElement.textContent = `Page loaded at: ${dateTimeString}`;
-            gameContainer.appendChild(newTimeElement);
+        // Initialize story state
+        this.currentStoryState = {
+            prompt: storyPrompt,
+            history: []
+        };
+        
+        // Add initial prompt to history
+        this.storyHistory = [{
+            type: 'system',
+            content: storyPrompt
+        }];
+        
+        // Generate initial story response
+        this.generateStoryResponse(storyPrompt)
+            .then(response => {
+                // Update story display
+                this.updateStoryDisplay(response);
+                
+                // Add to history
+                this.storyHistory.push({
+                    type: 'response',
+                    content: response
+                });
+                
+                // Hide loading indicator
+                this.setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error generating story:', error);
+                this.updateStoryDisplay("Something went wrong with your story. Let's try again.");
+                this.setLoading(false);
+            });
+    }
+    
+    /**
+     * Submit a user action to continue the story
+     */
+    submitUserAction() {
+        const userInput = document.getElementById('user-input');
+        if (!userInput || !userInput.value.trim()) return;
+        
+        const action = userInput.value.trim();
+        
+        // Clear input
+        userInput.value = '';
+        
+        // Show loading indicator
+        this.setLoading(true);
+        
+        // Add action to display
+        this.appendToStoryDisplay(`<div class="user-action"><strong>You:</strong> ${action}</div>`);
+        
+        // Add to history
+        this.storyHistory.push({
+            type: 'user',
+            content: action
+        });
+        
+        // Generate response
+        this.generateStoryResponse(action)
+            .then(response => {
+                // Update story display
+                this.updateStoryDisplay(response, false);
+                
+                // Add to history
+                this.storyHistory.push({
+                    type: 'response',
+                    content: response
+                });
+                
+                // Hide loading indicator
+                this.setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error generating response:', error);
+                this.appendToStoryDisplay('<div class="story-error">Something went wrong with your story. Please try again.</div>');
+                this.setLoading(false);
+            });
+    }
+    
+    /**
+     * Generate a response for the story using the AI
+     * @param {string} input - User input or initial prompt
+     * @returns {Promise<string>} - Promise that resolves to the story response
+     */
+    async generateStoryResponse(input) {
+        // In a real implementation, this would call the Dolphin 3 LLM API
+        // For now, we'll simulate a response based on the input
+        
+        // Simulate network request
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Generate simplified response based on the input
+        const responses = [
+            "The path ahead diverges into shadows and light. Your instinct tells you there's more to this journey than meets the eye.",
+            "A mystical figure emerges from the darkness, their eyes gleaming with ancient knowledge. 'I've been expecting you,' they whisper.",
+            "The air around you shifts, carrying whispers of forgotten tales. Something significant is about to unfold in your story.",
+            "Your decision resonates through the environment, causing subtle changes that might not be immediately apparent.",
+            "A sense of accomplishment washes over you as you overcome this challenge, but greater tests lie ahead in your journey."
+        ];
+        
+        // Return a "random" but consistent response based on the input
+        const seed = input.length % responses.length;
+        return responses[seed] + " What will you do next?";
+        
+        // In production, this would be:
+        /*
+        return fetch('https://www.northbeach.fi/dolphin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: this.buildPrompt(input)
+            })
+        })
+        .then(response => response.json())
+        .then(data => data.response);
+        */
+    }
+    
+    /**
+     * Build a prompt for the AI model including history for context
+     * @param {string} input - Current user input
+     * @returns {string} - Formatted prompt for the AI
+     */
+    buildPrompt(input) {
+        // Build a proper prompt with context from history
+        let prompt = "<|im_start|>system\nYou are an immersive storytelling system that creates rich, detailed narratives based on user input. Respond to user actions with vivid descriptions and meaningful plot developments. Be creative and engaging while maintaining consistency with the established story world.<|im_end|>\n";
+        
+        // Add history context
+        this.storyHistory.forEach(item => {
+            if (item.type === 'system') {
+                prompt += `<|im_start|>system\n${item.content}<|im_end|>\n`;
+            } else if (item.type === 'user') {
+                prompt += `<|im_start|>user\n${item.content}<|im_end|>\n`;
+            } else if (item.type === 'response') {
+                prompt += `<|im_start|>assistant\n${item.content}<|im_end|>\n`;
+            }
+        });
+        
+        // Add current input
+        prompt += `<|im_start|>user\n${input}<|im_end|>\n<|im_start|>assistant\n`;
+        
+        return prompt;
+    }
+    
+    /**
+     * Update the story display with new content
+     * @param {string} content - Content to display
+     * @param {boolean} replace - Whether to replace existing content
+     */
+    updateStoryDisplay(content, replace = true) {
+        const storyDisplay = document.getElementById('story-display');
+        if (!storyDisplay) return;
+        
+        if (replace) {
+            storyDisplay.innerHTML = `<div class="story-content fade-in">${content}</div>`;
+        } else {
+            this.appendToStoryDisplay(`<div class="story-response">${content}</div>`);
+        }
+        
+        // Scroll to bottom
+        storyDisplay.scrollTop = storyDisplay.scrollHeight;
+    }
+    
+    /**
+     * Append content to the story display
+     * @param {string} content - HTML content to append
+     */
+    appendToStoryDisplay(content) {
+        const storyDisplay = document.getElementById('story-display');
+        if (!storyDisplay) return;
+        
+        // Create a container for the new content
+        const container = document.createElement('div');
+        container.classList.add('fade-in');
+        container.innerHTML = content;
+        
+        // Append the new container
+        storyDisplay.appendChild(container);
+        
+        // Scroll to bottom
+        storyDisplay.scrollTop = storyDisplay.scrollHeight;
+    }
+    
+    /**
+     * Set the loading state
+     * @param {boolean} isLoading - Whether loading is active
+     */
+    setLoading(isLoading) {
+        const loadingContainer = document.querySelector('.loading-container');
+        if (!loadingContainer) return;
+        
+        if (isLoading) {
+            loadingContainer.classList.remove('hidden');
+        } else {
+            loadingContainer.classList.add('hidden');
         }
     }
     
     /**
-     * Switch to a different view
-     * @param {string} viewName - Name of the view to show
+     * Reset the story to the beginning
      */
-    switchView(viewName) {
-        this.currentView = viewName;
+    resetStory() {
+        const storyDisplay = document.getElementById('story-display');
+        if (storyDisplay) {
+            storyDisplay.innerHTML = `
+                <div class="story-welcome fade-in">
+                    <h2>Your Story Begins...</h2>
+                    <p>Welcome to a world where your imagination becomes reality. What kind of story would you like to experience today?</p>
+                    <div class="story-prompt-container">
+                        <div class="story-prompt button-hover" data-genre="fantasy">
+                            <h3>Fantasy</h3>
+                            <p>Explore magical realms, encounter mythical creatures, and discover ancient powers.</p>
+                        </div>
+                        <div class="story-prompt button-hover" data-genre="scifi">
+                            <h3>Science Fiction</h3>
+                            <p>Travel through space, encounter advanced technology, and explore the unknown.</p>
+                        </div>
+                        <div class="story-prompt button-hover" data-genre="mystery">
+                            <h3>Mystery</h3>
+                            <p>Unravel secrets, solve puzzles, and discover the truth behind strange events.</p>
+                        </div>
+                        <div class="story-prompt button-hover" data-genre="adventure">
+                            <h3>Adventure</h3>
+                            <p>Embark on epic journeys, face challenges, and discover hidden treasures.</p>
+                        </div>
+                    </div>
+                    <div class="custom-story-container">
+                        <h3>Or describe your own story:</h3>
+                        <textarea id="custom-story-input" placeholder="Enter your story idea here..."></textarea>
+                        <button id="start-custom-story" class="auth-button button-hover">Begin This Story</button>
+                    </div>
+                </div>
+            `;
+        }
         
-        // In a full implementation, this would load different views/components
-        console.log(`Switched to ${viewName} view`);
+        // Reset history
+        this.storyHistory = [];
         
-        // For now, just update active state in navigation
-        const navLinks = document.querySelectorAll('nav a[data-view]');
-        navLinks.forEach(link => {
-            const linkView = link.getAttribute('data-view');
-            if (linkView === viewName) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
+        // Hide controls
+        const storyControls = document.getElementById('story-controls');
+        if (storyControls) {
+            storyControls.classList.add('hidden');
+        }
+        
+        // Re-add event listeners for the new elements
+        this.addEventListeners();
+    }
+    
+    /**
+     * Undo the last action
+     */
+    undoAction() {
+        // We need at least 2 user entries to undo (initial + at least 1 action)
+        if (this.storyHistory.length < 4) {
+            return;
+        }
+        
+        // Remove the last two entries (user action and AI response)
+        this.storyHistory.pop(); // Remove AI response
+        this.storyHistory.pop(); // Remove user action
+        
+        // Get the last AI response
+        const lastResponse = this.storyHistory.find(item => item.type === 'response');
+        const content = lastResponse ? lastResponse.content : "Let's continue your story...";
+        
+        // Update the display
+        this.updateStoryDisplay(content);
     }
 }
 
 // Initialize app on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Create app manager instance
-    const app = new AppManager();
+    // Create storytelling engine instance
+    const storyEngine = new StorytellingEngine();
     
     // Make globally accessible for debugging
-    window.app = app;
+    window.storyEngine = storyEngine;
 });

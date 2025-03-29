@@ -46,6 +46,7 @@
 .auth-form {
     padding: var(--space-xl);
     display: none;
+    box-sizing: border-box; /* Ensure consistent box model */
 }
 
 .auth-form.active {
@@ -61,17 +62,19 @@
 
 .form-group {
     margin-bottom: var(--space-lg);
+    display: flex;
+    flex-direction: column; /* Ensure label and input align vertically */
+    gap: var(--space-sm); /* Add consistent spacing between label and input */
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: var(--space-sm);
     font-weight: 600;
     color: var(--text-color);
 }
 
 .form-group input {
-    width: 100%;
+    width: calc(100% - 20px); /* Add padding to prevent touching container edges */
+    margin: 0 auto; /* Center the input fields */
     padding: 10px 15px;
     border: 1px solid var(--input-border);
     border-radius: var(--radius-sm);
@@ -79,13 +82,13 @@
     background-color: var(--input-bg);
     color: var(--input-text);
     transition: border-color 0.3s;
+    box-sizing: border-box;
 }
 
 .form-group input:focus {
     outline: none;
     border-color: var(--input-focus-border);
 }
-
 .auth-button {
     width: 100%;
     padding: 12px;

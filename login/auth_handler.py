@@ -6,6 +6,7 @@ registration, and session management.
 """
 
 import os
+import json
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler
 from typing import Dict, Optional, Any, List
@@ -23,6 +24,7 @@ class AuthHandler:
         Args:
             data_dir: Directory containing user data files
         """
+        self.data_dir = data_dir
         self.user_manager = UserManager(
             os.path.join(data_dir, "users.json"),
             os.path.join(data_dir, "sessions.json")
@@ -30,7 +32,16 @@ class AuthHandler:
         self.cookie_name = "uid"
         self.cookie_path = "/"
         self.cookie_max_age = 30 * 24 * 60 * 60  # 30 days in seconds
-    
+        
+        # Initialize user_data.json if it doesn't exist
+        self.user_data_path = os.path.join(data_dir, "user_data.json")
+        if not os.path.exists(self.user_data_path):
+            try:
+                with open(self.user_data_path, 'w') as f:
+                    json.dump({}, f)
+            except IOError as e:
+                print(f"Error writing to user data file: {e}")
+
     def get_cookie_from_headers(self, headers: Dict[str, str]) -> Dict[str, str]:
         """
         Extract cookies from HTTP headers
@@ -68,7 +79,7 @@ class AuthHandler:
         """
         cookie = SimpleCookie()
         cookie[name] = value
-        if max_age:
+        if max_age is not None:
             cookie[name]["max-age"] = max_age
         if path:
             cookie[name]["path"] = path
@@ -113,6 +124,16 @@ class AuthHandler:
             self.cookie_path
         )
         request_handler.send_header("Set-Cookie", cookie_header)
+        
+        # Initialize user data if it doesn't exist
+        user_data = self._load_user_data()
+        if user_id not in user_data:
+            user_data[user_id] = {
+                "preferences": {},
+                "game_progress": {},
+                "last_activity": None
+            }
+            self._save_user_data(user_data)
         
         return {
             "status": "success",
@@ -163,6 +184,15 @@ class AuthHandler:
         )
         request_handler.send_header("Set-Cookie", cookie_header)
         
+        # Initialize user data
+        user_data = self._load_user_data()
+        user_data[user_id] = {
+            "preferences": {},
+            "game_progress": {},
+            "last_activity": None
+        }
+        self._save_user_data(user_data)
+        
         return {
             "status": "success",
             "message": "Registration successful",
@@ -203,7 +233,7 @@ class AuthHandler:
         return {
             "status": "success",
             "message": "Logout successful",
-            "redirect": "/login/login.html"
+            "redirect": "/"
         }
     
     def check_auth(self, cookies: Dict[str, str]) -> Optional[str]:
@@ -226,3 +256,45 @@ class AuthHandler:
         # Validate session
         user_id = self.user_manager.validate_session(session_id)
         return user_id
+        
+    def get_user_data(self, user_id: str) -> Dict[str, Any]:
+        """
+        Get user data for the specified user
+        
+        Args:
+            user_id: The user's ID (email)
+            
+        Returns:
+            User data dictionary
+        """
+        user_data = self._load_user_data()
+        
+        # If user data doesn't exist, initialize it
+        if user_id not in user_data:
+            user_data[user_id] = {
+                "preferences": {},
+                "game_progress": {},
+                "last_activity": None
+            }
+            self._save_user_data(user_data)
+            
+        return user_data.get(user_id, {})
+        
+    def _load_user_data(self) -> Dict:
+        """Load the user data from disk"""
+        try:
+            with open(self.user_data_path, 'r') as f:
+                return json.load(f)
+        except FileNotFoundError as e:
+            print(f"User data file not found: {e}")
+        except IOError as e:
+            print(f"Error reading user data file: {e}")
+        return {}
+    
+    def _save_user_data(self, user_data: Dict) -> None:
+        """Save the user data to disk"""
+        try:
+            with open(self.user_data_path, 'w') as f:
+                json.dump(user_data, f, indent=2)
+        except IOError as e:
+            print(f"Error writing to user data file: {e}")

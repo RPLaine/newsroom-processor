@@ -28,6 +28,7 @@ class AuthRoutes:
             "/api/register": self._handle_register,
             "/api/logout": self._handle_logout,
             "/api/check-auth": self._handle_check_auth,
+            "/api/user-data": self._handle_user_data,
         }
 
     def get_handler(self, path: str) -> Optional[Callable]:
@@ -119,6 +120,31 @@ class AuthRoutes:
             return {"status": "success", "authenticated": True, "user_id": user_id}
         else:
             return {"status": "success", "authenticated": False}
+    
+    def _handle_user_data(self, request_handler: BaseHTTPRequestHandler) -> Dict:
+        """
+        Handle user data request
+        
+        Args:
+            request_handler: The HTTP request handler
+            
+        Returns:
+            Response data dictionary with user data
+        """
+        cookies = self.auth_handler.get_cookie_from_headers(request_handler.headers)
+        user_id = self.auth_handler.check_auth(cookies)
+        
+        if not user_id:
+            return {"status": "error", "message": "Not authenticated"}
+        
+        # Get user data
+        user_data = self.auth_handler.get_user_data(user_id)
+        
+        return {
+            "status": "success",
+            "user_id": user_id,
+            "data": user_data
+        }
             
     def check_authentication(self, request_handler: BaseHTTPRequestHandler) -> Optional[str]:
         """

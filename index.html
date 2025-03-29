@@ -5,32 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameGen2</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styling/variables.css">
+    <link rel="stylesheet" href="styling/animations.css">
+    <link rel="stylesheet" href="styling/app.css">
+    <link rel="stylesheet" href="login/login.css">
+    <script src="styling/styling.js" defer></script>
+    <script src="login/login.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>Welcome to GameGen2</h1>
-        <div class="user-controls">
-            <span id="user-email"></span>
-            <button id="logout-button" class="logout-button">Log Out</button>
-        </div>
-    </header>
-    <main>
-        <section>
-            <h2>Simple HTTP Server</h2>
-            <p>This is a simple HTTP server that serves HTML, JavaScript, and CSS files.</p>
-            <p>You are viewing this page from the server running at <span id="server-address">localhost:8001</span>.</p>
-        </section>
-        <section>
-            <h2>Getting Started</h2>
-            <p>You can modify this page or add more HTML, JavaScript, or CSS files to build your application.</p>
-            <button id="test-button">Click me!</button>
-            <p id="result"></p>
-        </section>
+    <header id="app-header"></header>
+    <main id="app-main">
+        <!-- Content will be dynamically loaded here -->
+        <div id="login-container" class="hidden"></div>
+        <div id="game-container" class="hidden"></div>
     </main>
-    <footer>
-        <p>&copy; 2025 GameGen2</p>
-    </footer>
-    <script src="script.js"></script>
+    <footer id="app-footer"></footer>
 </body>
 </html>

@@ -1,0 +1,129 @@
+/* Core application styles for GameGen2 */
+body {
+    font-family: var(--font-family-body);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: var(--ui-primary);
+    padding: var(--space-md) var(--space-xl);
+    box-shadow: var(--shadow-normal);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    color: var(--accent-color);
+}
+
+header nav ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+header nav li {
+    margin-right: var(--space-lg);
+}
+
+header nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: var(--space-sm);
+    transition: color 0.3s;
+}
+
+header nav a:hover {
+    color: var(--accent-color);
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+}
+
+#user-email {
+    margin-right: var(--space-md);
+}
+
+main {
+    flex: 1;
+    padding: var(--space-xl);
+}
+
+footer {
+    background-color: var(--ui-primary);
+    padding: var(--space-md);
+    text-align: center;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* Content containers */
+.hidden {
+    display: none;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Button styling */
+button {
+    background-color: var(--button-primary);
+    color: var(--button-text);
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--button-primary-hover);
+}
+
+/* Add app-specific animations */
+.fade-in-section {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Section styling */
+.section {
+    margin-bottom: var(--space-xl);
+}
+
+.section h2 {
+    color: var(--accent-color);
+    margin-bottom: var(--space-md);
+}
+
+/* State transitions */
+.view-transition {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.view-transition.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Loading indicator */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}

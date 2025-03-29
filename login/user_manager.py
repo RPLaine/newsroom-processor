@@ -33,39 +33,57 @@ class UserManager:
         
         # Initialize user database if it doesn't exist
         if not os.path.exists(user_db_path):
-            with open(user_db_path, 'w') as f:
-                json.dump({}, f)
-        
+            try:
+                with open(user_db_path, 'w') as f:
+                    json.dump({}, f)
+            except IOError as e:
+                print(f"Error writing to user database: {e}")
+
         # Initialize session database if it doesn't exist
         if not os.path.exists(session_db_path):
-            with open(session_db_path, 'w') as f:
-                json.dump({}, f)
-    
+            try:
+                with open(session_db_path, 'w') as f:
+                    json.dump({}, f)
+            except IOError as e:
+                print(f"Error writing to session database: {e}")
+
     def _load_user_db(self) -> Dict:
         """Load the user database from disk"""
         try:
             with open(self.user_db_path, 'r') as f:
                 return json.load(f)
-        except (json.JSONDecodeError, FileNotFoundError):
-            return {}
+        except FileNotFoundError as e:
+            print(f"User database file not found: {e}")
+        except IOError as e:
+            print(f"Error reading user database: {e}")
+        return {}
     
     def _save_user_db(self, user_db: Dict) -> None:
         """Save the user database to disk"""
-        with open(self.user_db_path, 'w') as f:
-            json.dump(user_db, f, indent=2)
-    
+        try:
+            with open(self.user_db_path, 'w') as f:
+                json.dump(user_db, f, indent=2)
+        except IOError as e:
+            print(f"Error writing to user database: {e}")
+
     def _load_session_db(self) -> Dict:
         """Load the session database from disk"""
         try:
             with open(self.session_db_path, 'r') as f:
                 return json.load(f)
-        except (json.JSONDecodeError, FileNotFoundError):
-            return {}
+        except FileNotFoundError as e:
+            print(f"Session database file not found: {e}")
+        except IOError as e:
+            print(f"Error reading session database: {e}")
+        return {}
     
     def _save_session_db(self, session_db: Dict) -> None:
         """Save the session database to disk"""
-        with open(self.session_db_path, 'w') as f:
-            json.dump(session_db, f, indent=2)
+        try:
+            with open(self.session_db_path, 'w') as f:
+                json.dump(session_db, f, indent=2)
+        except IOError as e:
+            print(f"Error writing to session database: {e}")
     
     def _hash_password(self, password: str, salt: Optional[str] = None) -> Tuple[str, str]:
         """

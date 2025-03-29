@@ -29,3 +29,10 @@ This directory contains the authentication system for GameGen2.
 - `/api/register`: Creates new user accounts
 - `/api/logout`: Terminates user sessions
 - `/api/check-auth`: Verifies authentication status
+
+## Integration with Dolphin 3 LLM
+
+The authentication module ensures secure access to the Dolphin 3 LLM API. Once authenticated, users can send prompts to the API to generate story content. Refer to the root `README.md` for details on API usage.
+
+## HTTPS Note
+The authentication module does not handle HTTPS directly. It is assumed that the main server or reverse proxy managing access to this project is responsible for HTTPS enforcement.

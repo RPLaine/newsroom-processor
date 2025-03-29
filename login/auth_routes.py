@@ -5,9 +5,6 @@ This module integrates the authentication handler with the HTTP server
 by providing route handlers for login, registration, and logout endpoints.
 """
 
-import os
-import json
-import urllib.parse
 from http.server import BaseHTTPRequestHandler
 from typing import Dict, Optional, Callable, Any
 from urllib.parse import parse_qs, urlparse

@@ -6,12 +6,9 @@ registration, and session management.
 """
 
 import os
-import json
-import urllib.parse
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler
-from typing import Dict, Optional, Tuple, Any, List
-from urllib.parse import parse_qs, urlparse
+from typing import Dict, Optional, Any, List
 
 from .user_manager import UserManager
 

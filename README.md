@@ -44,3 +44,18 @@ python main.py
 
 This application includes authentication mechanisms but is primarily intended for personal use. Exercise caution when deploying in shared environments.
 
+### Dolphin 3 LLM API Usage
+
+The Dolphin 3 LLM API is used to generate dynamic story content. To interact with the API, send a POST request to the endpoint `https://www.northbeach.fi/dolphin` with a JSON payload containing the `prompt` key. Below is an example:
+
+```json
+{
+  "prompt": "Once upon a time in a distant galaxy..."
+}
+```
+
+The API will respond with a JSON object containing the generated story content. Ensure you have an active internet connection to access the API.
+
+### HTTPS Note
+This project does not handle HTTPS directly. It is assumed that the main server or reverse proxy managing access to this project is responsible for HTTPS enforcement. All requests to this project are expected to be redirected from the main server.
+

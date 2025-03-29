@@ -35,6 +35,10 @@ class GameGen2Server:
         
         # Create the HTTP server
         self.httpd = socketserver.TCPServer(self.server_address, handler)
+        
+        # Transfer key attributes to the TCPServer instance so they're accessible to the handler
+        self.httpd.auth_routes = self.auth_routes
+        self.httpd.debug = self.debug
     
     def run(self):
         """Run the server"""

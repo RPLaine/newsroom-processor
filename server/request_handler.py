@@ -8,6 +8,7 @@ import http.server
 import json
 import os
 import sys
+import traceback
 from typing import Dict, Any
 from urllib.parse import urlparse
 
@@ -64,8 +65,20 @@ def create_request_handler(server_instance):
             if path.startswith('/api/'):
                 auth_handler = self.server.auth_routes.get_handler(path)
                 if auth_handler:
-                    self._handle_json_response(auth_handler(self))
-                    return
+                    try:
+                        self._handle_json_response(auth_handler(self))
+                        return
+                    except Exception as e:
+                        # Log the exception for debugging
+                        if hasattr(self.server, 'debug') and self.server.debug:
+                            print(f"Error processing API request {path}: {str(e)}")
+                            traceback.print_exc()
+                        # Return a proper error response instead of empty response
+                        self._handle_json_response({
+                            "status": "error",
+                            "message": "Server error processing request"
+                        }, status_code=500)
+                        return
                 else:
                     # If API endpoint not found, return 404
                     self._handle_json_response({
@@ -95,29 +108,41 @@ def create_request_handler(server_instance):
                 return super().do_GET()
 
             # At this point, we have an asset that might need authentication
-            user_id = self.server.auth_routes.check_authentication(self)
-            if not user_id:
-                # For AJAX requests, return 401
-                if 'X-Requested-With' in self.headers and self.headers['X-Requested-With'] == 'XMLHttpRequest':
-                    self._handle_json_response({
-                        "status": "error", 
-                        "message": "Authentication required"
-                    }, status_code=401)
-                    if hasattr(self.server, 'debug') and self.server.debug:
-                        print(f"Rejected AJAX request: {path}")
-                    return
-                else:
-                    # For direct requests, return 401 Unauthorized
-                    self.send_response(401)
-                    self.end_headers()
-                    if hasattr(self.server, 'debug') and self.server.debug:
-                        print(f"Rejected direct request due to missing auth: {path}")
-                    return
-            
-            # Authenticated, serve the file
-            if hasattr(self.server, 'debug') and self.server.debug:
-                print(f"Auth OK, serving: {path}")
-            return super().do_GET()
+            try:
+                user_id = self.server.auth_routes.check_authentication(self)
+                if not user_id:
+                    # For AJAX requests, return 401
+                    if 'X-Requested-With' in self.headers and self.headers['X-Requested-With'] == 'XMLHttpRequest':
+                        self._handle_json_response({
+                            "status": "error", 
+                            "message": "Authentication required"
+                        }, status_code=401)
+                        if hasattr(self.server, 'debug') and self.server.debug:
+                            print(f"Rejected AJAX request: {path}")
+                        return
+                    else:
+                        # For direct requests, return 401 Unauthorized
+                        self.send_response(401)
+                        self.end_headers()
+                        if hasattr(self.server, 'debug') and self.server.debug:
+                            print(f"Rejected direct request due to missing auth: {path}")
+                        return
+                
+                # Authenticated, serve the file
+                if hasattr(self.server, 'debug') and self.server.debug:
+                    print(f"Auth OK, serving: {path}")
+                return super().do_GET()
+            except Exception as e:
+                # Log the exception for debugging
+                if hasattr(self.server, 'debug') and self.server.debug:
+                    print(f"Error checking authentication: {str(e)}")
+                    traceback.print_exc()
+                # Return a proper error response
+                self._handle_json_response({
+                    "status": "error",
+                    "message": "Server error checking authentication"
+                }, status_code=500)
+                return
         
         def do_POST(self):
             """Handle POST requests"""
@@ -129,7 +154,18 @@ def create_request_handler(server_instance):
             if path.startswith('/api/'):
                 auth_handler = self.server.auth_routes.get_handler(path)
                 if auth_handler:
-                    self._handle_json_response(auth_handler(self))
+                    try:
+                        self._handle_json_response(auth_handler(self))
+                    except Exception as e:
+                        # Log the exception for debugging
+                        if hasattr(self.server, 'debug') and self.server.debug:
+                            print(f"Error processing API request {path}: {str(e)}")
+                            traceback.print_exc()
+                        # Return a proper error response
+                        self._handle_json_response({
+                            "status": "error",
+                            "message": "Server error processing request"
+                        }, status_code=500)
                     return
             
             # If not an API endpoint, return 404
@@ -148,7 +184,10 @@ def create_request_handler(server_instance):
             except (TypeError, ValueError) as e:
                 # Handle JSON encoding errors
                 self.send_response(500)
+                self.send_header('Content-type', 'application/json')
                 self.end_headers()
+                error_response = json.dumps({"status": "error", "message": "Error encoding response"}).encode()
+                self.wfile.write(error_response)
                 if hasattr(self.server, 'debug') and self.server.debug:
                     print(f"Error encoding JSON response: {e}")
     

@@ -97,6 +97,9 @@ body {
     overflow: hidden;
     transform: translateY(0);
     transition: transform 0.5s ease, box-shadow 0.5s ease;
+    /* Add fixed minimum height to prevent container jumps */
+    min-height: 420px;
+    position: relative;
 }
 
 .auth-form-container:hover {
@@ -161,6 +164,12 @@ body {
     opacity: 0;
     transform: translateX(0);
     transition: opacity 0.3s ease, transform 0.3s ease;
+    /* Position forms absolutely to prevent layout shifts */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
 @keyframes fadeIn {
@@ -442,95 +451,29 @@ body {
     }
 }
 
-/* Height-based media queries */
+/* Responsive height adjustments */
+@media (max-width: 768px) {
+    .auth-form-container {
+        min-height: 400px;
+    }
+}
+
 @media (max-height: 700px) and (min-width: 601px) {
-    .storytelling-text {
-        margin-bottom: 1rem;
-    }
-    
-    .storytelling-text h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .storytelling-text p {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-    }
-    
-    .form-group {
-        margin-bottom: 0.75rem;
-    }
-    
-    .auth-form {
-        padding: 1rem;
-    }
-    
-    .auth-form h2 {
-        margin-bottom: 0.75rem;
+    .auth-form-container {
+        min-height: 380px;
     }
 }
 
 @media (max-height: 600px) {
-    .storytelling-text {
-        margin-bottom: 0.5rem;
-    }
-    
-    .storytelling-text h1 {
-        font-size: 1.8rem;
-    }
-    
-    .storytelling-text p {
-        display: none;
-    }
-    
-    .auth-tab {
-        padding: 10px 0;
+    .auth-form-container {
+        min-height: 350px;
     }
 }
 
 /* Small mobile devices */
 @media (max-width: 380px) {
     .auth-form-container {
+        min-height: 320px;
         width: 100%;
-    }
-    
-    .auth-button, .form-group input {
-        font-size: 0.9rem;
-        padding: 10px;
-    }
-}
-
-/* Landscape orientation on small devices */
-@media (max-height: 500px) and (orientation: landscape) {
-    .storytelling-container {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding: 0.5rem;
-    }
-    
-    .storytelling-text {
-        flex: 1 1 100%;
-        max-width: 100%;
-        margin-bottom: 0.5rem;
-    }
-    
-    .storytelling-text h1 {
-        font-size: 1.5rem;
-        margin-bottom: 0;
-    }
-    
-    .auth-container {
-        flex: 0 0 80%;
-    }
-    
-    .form-group {
-        margin-bottom: 0.5rem;
-    }
-    
-    .auth-form h2 {
-        margin-bottom: 0.5rem;
-        font-size: 1.2rem;
     }
 }

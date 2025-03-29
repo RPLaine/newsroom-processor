@@ -19,6 +19,7 @@ class AuthManager {
             "Your story is waiting to be written..."
         ];
         this.isAnimating = false; // Track animation state to prevent multiple clicks during transition
+        this.animationDuration = 300; // Duration for animations in ms
     }
 
     /**
@@ -44,74 +45,12 @@ class AuthManager {
             // Tab switching event listeners with enhanced animation transitions
             loginTab.addEventListener('click', () => {
                 if (this.isAnimating || loginTab.classList.contains('active')) return;
-                this.isAnimating = true;
-                
-                // Update active tab styling
-                loginTab.classList.add('active');
-                registerTab.classList.remove('active');
-                
-                // Add transform effects for smooth sliding transition
-                registerForm.style.transform = 'translateX(20px)';
-                registerForm.style.opacity = '0';
-                
-                // Wait for the exit animation to complete
-                setTimeout(() => {
-                    // Hide register form and prepare login form for entrance
-                    loginForm.style.transform = 'translateX(-20px)';
-                    loginForm.style.opacity = '0';
-                    loginForm.classList.add('active');
-                    registerForm.classList.remove('active');
-                    
-                    // Trigger reflow to ensure the transform takes effect
-                    void loginForm.offsetWidth;
-                    
-                    // Bring in the login form with entrance animation
-                    setTimeout(() => {
-                        loginForm.style.transform = 'translateX(0)';
-                        loginForm.style.opacity = '1';
-                        
-                        // Animation complete
-                        setTimeout(() => {
-                            this.isAnimating = false;
-                        }, 300);
-                    }, 50);
-                }, 300);
+                this.switchToForm('login', loginTab, registerTab, loginForm, registerForm);
             });
             
             registerTab.addEventListener('click', () => {
                 if (this.isAnimating || registerTab.classList.contains('active')) return;
-                this.isAnimating = true;
-                
-                // Update active tab styling
-                registerTab.classList.add('active');
-                loginTab.classList.remove('active');
-                
-                // Add transform effects for smooth sliding transition
-                loginForm.style.transform = 'translateX(-20px)';
-                loginForm.style.opacity = '0';
-                
-                // Wait for the exit animation to complete
-                setTimeout(() => {
-                    // Hide login form and prepare register form for entrance
-                    registerForm.style.transform = 'translateX(20px)';
-                    registerForm.style.opacity = '0';
-                    registerForm.classList.add('active');
-                    loginForm.classList.remove('active');
-                    
-                    // Trigger reflow to ensure the transform takes effect
-                    void registerForm.offsetWidth;
-                    
-                    // Bring in the register form with entrance animation
-                    setTimeout(() => {
-                        registerForm.style.transform = 'translateX(0)';
-                        registerForm.style.opacity = '1';
-                        
-                        // Animation complete
-                        setTimeout(() => {
-                            this.isAnimating = false;
-                        }, 300);
-                    }, 50);
-                }, 300);
+                this.switchToForm('register', registerTab, loginTab, registerForm, loginForm);
             });
         }
         
@@ -184,13 +123,66 @@ class AuthManager {
         if (loginForm && loginForm.classList.contains('active')) {
             loginForm.style.opacity = '1';
             loginForm.style.transform = 'translateX(0)';
+            loginForm.style.position = 'relative'; // Reset position for initial form
         }
         if (registerForm) {
             registerForm.style.opacity = registerForm.classList.contains('active') ? '1' : '0';
             registerForm.style.transform = registerForm.classList.contains('active') ? 'translateX(0)' : 'translateX(20px)';
+            if (registerForm.classList.contains('active')) {
+                registerForm.style.position = 'relative'; // Reset position for initial form
+            }
         }
         
         this.initialized = true;
+    }
+
+    /**
+     * Handle form switching with smooth animations
+     * @param {string} formType - 'login' or 'register'
+     * @param {HTMLElement} activeTab - Tab to activate
+     * @param {HTMLElement} inactiveTab - Tab to deactivate
+     * @param {HTMLElement} showForm - Form to show
+     * @param {HTMLElement} hideForm - Form to hide
+     */
+    switchToForm(formType, activeTab, inactiveTab, showForm, hideForm) {
+        this.isAnimating = true;
+        
+        // Calculate optimal height for the container during transition
+        const formContainer = showForm.closest('.auth-form-container');
+        const currentHeight = formContainer.offsetHeight;
+        
+        // Update active tab styling
+        activeTab.classList.add('active');
+        inactiveTab.classList.remove('active');
+        
+        // Direction based on form type
+        const direction = formType === 'login' ? 'Left' : 'Right';
+        const inverseDirection = formType === 'login' ? 'Right' : 'Left';
+        
+        // Animate out current form
+        hideForm.style.animation = `slideOut${inverseDirection} ${this.animationDuration}ms forwards ease`;
+        
+        // Wait for exit animation to complete
+        setTimeout(() => {
+            // Hide the old form and reset its animation
+            hideForm.classList.remove('active');
+            hideForm.style.animation = '';
+            hideForm.style.opacity = '0';
+            hideForm.style.position = 'absolute';
+            
+            // Show new form and prepare it for entrance
+            showForm.classList.add('active');
+            showForm.style.opacity = '0';
+            showForm.style.position = 'relative';
+            showForm.style.animation = `slideIn${direction} ${this.animationDuration}ms forwards ease`;
+            
+            // Animation complete
+            setTimeout(() => {
+                this.isAnimating = false;
+                showForm.style.opacity = '1';
+                showForm.style.transform = 'translateX(0)';
+            }, this.animationDuration);
+        }, this.animationDuration);
     }
     
     /**

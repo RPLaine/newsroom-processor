@@ -1,14 +1,25 @@
-# gamegen2
+# GameGen2
 
-## Simple HTTP File Server
+## Interactive Text-Based Story Game Engine
 
-This project includes a simple HTTP server that serves only HTML, JavaScript, and CSS files on localhost:8001.
+GameGen2 is an interactive text-based storytelling platform that leverages the Dolphin 3 LLM to create dynamic, personalized narrative experiences for users.
 
 ### Features
-- Serves only files with .html, .js, and .css extensions
-- Automatically serves index.html when accessing the root URL
-- Returns 403 Forbidden for any other file types
-- Uses only built-in Python libraries
+
+- **Dynamic Storytelling**: Interactive text-based adventures powered by Dolphin 3 LLM acting as storyteller and game master
+- **User-Specific Storylines**: Personalized gaming experiences tailored to each user
+- **Cookie-Based Authentication**: Secure user sessions and saved progress
+- **JSON Database**: Lightweight data storage for user profiles and story progress
+- **Simple Web Interface**: Clean, responsive UI for interacting with the story
+- **Server-Side Architecture**: Uses only built-in Python modules for maximum compatibility
+
+### Technical Details
+
+- Connects to Dolphin 3 LLM via https://www.northbeach.fi/dolphin API
+- Utilizes im-format (`<|im_start|>`) for structured communication with the LLM
+- Sends JSON requests with "prompt" key for story generation
+- Built on a lightweight HTTP server (localhost:8001)
+- Serves HTML, JavaScript, CSS, and SVG files
 
 ### Usage
 
@@ -17,12 +28,19 @@ This project includes a simple HTTP server that serves only HTML, JavaScript, an
 python main.py
 ```
 
-2. Access the server at [http://localhost:8001](http://localhost:8001)
+2. Access the game at [http://localhost:8001](http://localhost:8001)
 
-3. Place your HTML, JavaScript, and CSS files in the same directory as the main.py file
+3. Create an account or log in to continue your adventure
 
 4. Press Ctrl+C in the terminal to stop the server
 
+### Requirements
+
+- Python 3.6+
+- Internet connection (for API access to Dolphin 3 LLM)
+- Modern web browser
+
 ### Security Note
-This server is intended for development purposes only and should not be used in production environments.
+
+This application includes authentication mechanisms but is primarily intended for personal use. Exercise caution when deploying in shared environments.
 

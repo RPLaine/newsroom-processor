@@ -16,10 +16,14 @@ class AuthManager {
             "Discover universes beyond imagination...",
             "Every choice creates a new timeline...",
             "What lies beyond the veil of perception?",
-            "Your story is waiting to be written..."
+            "Your story is waiting to be written...",
+            "This moment could change everything...",
+            "The journey of a thousand worlds begins with a single choice...",
+            "Unlock the door to infinite possibilities..."
         ];
         this.isAnimating = false; // Track animation state to prevent multiple clicks during transition
         this.animationDuration = 300; // Duration for animations in ms
+        this.hasInteracted = false; // Track if user has interacted with form
     }
 
     /**
@@ -57,6 +61,12 @@ class AuthManager {
         // Login form submission with enhanced feedback
         const loginFormElement = document.getElementById('login-form');
         if (loginFormElement) {
+            // Add profound button text transformation
+            const loginButton = loginFormElement.querySelector('.auth-button');
+            if (loginButton) {
+                this.addProfoundButtonBehavior(loginButton, "Begin Journey", "Continue Your Destiny");
+            }
+            
             loginFormElement.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value;
@@ -82,6 +92,12 @@ class AuthManager {
         // Registration form submission with enhanced feedback
         const registerFormElement = document.getElementById('register-form');
         if (registerFormElement) {
+            // Add profound button text transformation
+            const registerButton = registerFormElement.querySelector('.auth-button');
+            if (registerButton) {
+                this.addProfoundButtonBehavior(registerButton, "Start Creating", "Transform Your Reality");
+            }
+            
             registerFormElement.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('register-email').value;
@@ -119,6 +135,9 @@ class AuthManager {
             });
         }
         
+        // Add form interaction tracking
+        this.addFormInteractionTracking();
+        
         // Initialize forms with proper transitions
         if (loginForm && loginForm.classList.contains('active')) {
             loginForm.style.opacity = '1';
@@ -133,9 +152,242 @@ class AuthManager {
             }
         }
         
+        // Add atmospheric audio effects if supported
+        this.initializeAtmosphericAudio();
+        
         this.initialized = true;
     }
+    
+    /**
+     * Add form interaction tracking to enhance user experience
+     * as they progress toward the life-changing button click
+     */
+    addFormInteractionTracking() {
+        // Track all input interactions
+        const inputs = document.querySelectorAll('.form-group input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                if (!this.hasInteracted) {
+                    this.hasInteracted = true;
+                    
+                    // Enhance button appearance after first interaction
+                    const activeForm = document.querySelector('.auth-form.active');
+                    if (activeForm) {
+                        const button = activeForm.querySelector('.auth-button');
+                        if (button) {
+                            // Subtle glow enhancement
+                            button.style.boxShadow = '0 5px 25px rgba(0, 0, 0, 0.35), 0 0 35px rgba(255, 204, 0, 0.25)';
+                        }
+                    }
+                }
+            });
+            
+            // Show encouraging message when user starts typing
+            input.addEventListener('input', () => {
+                if (input.value.length > 0) {
+                    // Find the parent form
+                    const form = input.closest('.auth-form');
+                    if (!form) return;
+                    
+                    // Check if we should show destiny message (only once per session)
+                    if (!form.hasAttribute('data-shown-message')) {
+                        form.setAttribute('data-shown-message', 'true');
+                        
+                        // Add encouraging message near the button
+                        const button = form.querySelector('.auth-button');
+                        if (button && button.parentNode) {
+                            const messageEl = document.createElement('div');
+                            messageEl.className = 'destiny-message';
+                            messageEl.textContent = form.id === 'login-form' ? 
+                                "Your stories await your return..." : 
+                                "You're just moments away from unlimited creativity...";
+                            
+                            Object.assign(messageEl.style, {
+                                fontSize: '0.9rem',
+                                color: 'rgba(255, 204, 0, 0.8)',
+                                textAlign: 'center',
+                                margin: '0.5rem 0 1rem',
+                                opacity: '0',
+                                transform: 'translateY(10px)',
+                                transition: 'opacity 1s ease, transform 1s ease'
+                            });
+                            
+                            button.parentNode.insertBefore(messageEl, button);
+                            
+                            // Animate in
+                            setTimeout(() => {
+                                messageEl.style.opacity = '1';
+                                messageEl.style.transform = 'translateY(0)';
+                            }, 100);
+                            
+                            // Remove after a while
+                            setTimeout(() => {
+                                messageEl.style.opacity = '0';
+                                messageEl.style.transform = 'translateY(-10px)';
+                                
+                                setTimeout(() => {
+                                    if (messageEl.parentNode) {
+                                        messageEl.parentNode.removeChild(messageEl);
+                                    }
+                                }, 1000);
+                            }, 8000);
+                        }
+                    }
+                }
+            });
+        });
+    }
+    
+    /**
+     * Add profound button behavior that transforms button text
+     * on hover to create a sense of destiny and importance
+     */
+    addProfoundButtonBehavior(button, defaultText, destinyText) {
+        if (!button) return;
+        
+        button.addEventListener('mouseenter', () => {
+            // Save original text if not already saved
+            if (!button.hasAttribute('data-original-text')) {
+                button.setAttribute('data-original-text', button.textContent);
+            }
+            
+            // Create text transition effect
+            button.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            
+            // Subtle scale effect
+            button.style.transform = 'translateY(-3px) scale(1.02)';
+            
+            // Text fade out/in effect
+            button.style.opacity = '0.8';
+            setTimeout(() => {
+                button.textContent = destinyText;
+                button.style.opacity = '1';
+            }, 200);
+        });
+        
+        button.addEventListener('mouseleave', () => {
+            // Revert text with fade effect
+            button.style.opacity = '0.8';
+            
+            setTimeout(() => {
+                if (button.hasAttribute('data-original-text')) {
+                    button.textContent = button.getAttribute('data-original-text');
+                } else {
+                    button.textContent = defaultText;
+                }
+                button.style.opacity = '1';
+                
+                // Reset transform if not changed elsewhere
+                if (button.style.transform === 'translateY(-3px) scale(1.02)') {
+                    button.style.transform = '';
+                }
+            }, 200);
+        });
+    }
 
+    /**
+     * Initialize subtle background audio effects 
+     * for a more immersive experience
+     */
+    initializeAtmosphericAudio() {
+        // Only add audio if browser supports AudioContext
+        if (typeof AudioContext === 'undefined' && typeof webkitAudioContext === 'undefined') {
+            return;
+        }
+        
+        try {
+            // Create audio context
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            const audioCtx = new AudioContextClass();
+            
+            // Store for later use
+            this.audioContext = audioCtx;
+            
+            // Add subtle audio feedback on important interactions
+            document.querySelectorAll('.auth-button').forEach(button => {
+                button.addEventListener('mouseenter', () => this.playAudioEffect('hover'));
+                button.addEventListener('click', () => this.playAudioEffect('click'));
+            });
+            
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', () => this.playAudioEffect('tab'));
+            });
+        } catch (error) {
+            console.log('Advanced audio effects not supported');
+        }
+    }
+    
+    /**
+     * Play subtle audio effect for interactive elements
+     * @param {string} type - Type of effect to play
+     */
+    playAudioEffect(type) {
+        if (!this.audioContext) return;
+        
+        try {
+            // Resume audio context if suspended (browser policy)
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+            
+            // Create oscillator
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            // Set type and frequency based on interaction
+            switch(type) {
+                case 'hover':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(440, this.audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(
+                        660, this.audioContext.currentTime + 0.1
+                    );
+                    gainNode.gain.setValueAtTime(0.05, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(
+                        0.001, this.audioContext.currentTime + 0.3
+                    );
+                    break;
+                    
+                case 'click':
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(330, this.audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(
+                        550, this.audioContext.currentTime + 0.1
+                    );
+                    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(
+                        0.001, this.audioContext.currentTime + 0.5
+                    );
+                    break;
+                    
+                case 'tab':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(520, this.audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(
+                        440, this.audioContext.currentTime + 0.15
+                    );
+                    gainNode.gain.setValueAtTime(0.07, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(
+                        0.001, this.audioContext.currentTime + 0.25
+                    );
+                    break;
+            }
+            
+            // Connect and start
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            oscillator.start();
+            
+            // Stop after effect completes
+            setTimeout(() => {
+                oscillator.stop();
+            }, type === 'click' ? 500 : 300);
+            
+        } catch (error) {
+            // Silent fail for audio effects
+        }
+    }
+    
     /**
      * Handle form switching with smooth animations
      * @param {string} formType - 'login' or 'register'
@@ -191,333 +443,21 @@ class AuthManager {
     initializeStorytellingElements() {
         // Dynamically update the storytelling text periodically
         this.cycleStoryPrompts();
-    }
-    
-    /**
-     * Show or hide the login container with enhanced transitions
-     * @param {boolean} show - Whether to show or hide
-     */
-    showLoginContainer(show = true) {
-        const loginContainer = document.getElementById('login-container');
-        const gameContainer = document.getElementById('game-container');
-        const userInfo = document.getElementById('user-info');
         
-        if (show) {
-            // Transitioning to login screen
-            this.initialize();
-            
-            // Animate game container out
-            if (!gameContainer.classList.contains('hidden')) {
-                gameContainer.classList.add('fade-out-down');
-                
-                // Wait for animation to complete before hiding
-                setTimeout(() => {
-                    gameContainer.classList.add('hidden');
-                    gameContainer.classList.remove('fade-out-down');
-                    
-                    // Animate login container in
-                    loginContainer.classList.remove('hidden');
-                    loginContainer.style.opacity = '0';
-                    loginContainer.style.transform = 'translateY(-20px)';
-                    
-                    // Trigger reflow to ensure the transform takes effect
-                    void loginContainer.offsetWidth;
-                    
-                    // Apply animation
-                    loginContainer.classList.add('fade-in-down');
-                    
-                    // Clean up animation classes after completion
-                    setTimeout(() => {
-                        loginContainer.classList.remove('fade-in-down');
-                        loginContainer.style.opacity = '';
-                        loginContainer.style.transform = '';
-                    }, 800);
-                    
-                }, 700); // Match this with CSS animation duration
-                
-                // Hide user info with animation
-                if (userInfo && !userInfo.classList.contains('hidden')) {
-                    userInfo.classList.add('hidden');
-                }
-            } else {
-                // Direct show without transition if game container is already hidden
-                gameContainer.classList.add('hidden');
-                loginContainer.classList.remove('hidden');
-                
-                if (userInfo) {
-                    userInfo.classList.add('hidden');
-                }
-            }
-        } else {
-            // Transitioning to game screen
-            
-            // Animate login container out
-            loginContainer.classList.add('fade-out-up');
-            
-            // Wait for animation to complete before hiding
-            setTimeout(() => {
-                loginContainer.classList.add('hidden');
-                loginContainer.classList.remove('fade-out-up');
-                
-                // Animate game container in
-                gameContainer.classList.remove('hidden');
-                gameContainer.style.opacity = '0';
-                gameContainer.style.transform = 'translateY(20px)';
-                
-                // Trigger reflow to ensure the transform takes effect
-                void gameContainer.offsetWidth;
-                
-                // Apply animation
-                gameContainer.classList.add('fade-in-up');
-                
-                // Clean up animation classes after completion
-                setTimeout(() => {
-                    gameContainer.classList.remove('fade-in-up');
-                    gameContainer.style.opacity = '';
-                    gameContainer.style.transform = '';
-                }, 800);
-                
-                // Show user info with animation
-                if (userInfo) {
-                    userInfo.classList.remove('hidden');
-                    userInfo.classList.add('visible');
-                    
-                    // Remove animation class after completion
-                    setTimeout(() => {
-                        userInfo.classList.remove('visible');
-                    }, 500);
-                }
-            }, 700); // Match this with CSS animation duration
-        }
-    }
-    
-    /**
-     * Login with email and password with enhanced feedback
-     * @param {string} email - User email
-     * @param {string} password - User password
-     * @param {HTMLElement} messageElement - Element to show messages
-     * @param {HTMLElement} submitButton - Submit button element
-     */
-    login(email, password, messageElement, submitButton) {
-        const formData = new URLSearchParams();
-        formData.append('email', email);
-        formData.append('password', password);
-        
-        fetch('/api/login', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            this.setButtonLoading(submitButton, false);
-            
-            if (data.status === 'success') {
-                this.showMessage(messageElement, 'Welcome back! Preparing your stories...', 'success');
-                
-                // Update auth state and UI
-                this.checkAuthentication().then(() => {
-                    if (this.authState.authenticated) {
-                        this.showLoginContainer(false);
-                        // Trigger app state update event
-                        document.dispatchEvent(new CustomEvent('auth-change', { 
-                            detail: { authenticated: true, user_id: this.authState.user_id }
-                        }));
-                    }
-                });
-            } else {
-                this.showMessage(messageElement, data.message, 'error');
-                this.shakeElement(messageElement);
-            }
-        })
-        .catch(error => {
-            this.setButtonLoading(submitButton, false);
-            this.showMessage(messageElement, 'Connection error. Please try again.', 'error');
-            this.shakeElement(messageElement);
-            console.error('Login error:', error);
-        });
-    }
-    
-    /**
-     * Register a new user with enhanced feedback
-     * @param {string} email - User email
-     * @param {string} password - User password
-     * @param {HTMLElement} messageElement - Element to show messages
-     * @param {HTMLElement} submitButton - Submit button element
-     */
-    register(email, password, messageElement, submitButton) {
-        const formData = new URLSearchParams();
-        formData.append('email', email);
-        formData.append('password', password);
-        
-        fetch('/api/register', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            this.setButtonLoading(submitButton, false);
-            
-            if (data.status === 'success') {
-                this.showMessage(messageElement, 'Account created! Your storytelling journey begins...', 'success');
-                
-                // Update auth state and UI
-                this.checkAuthentication().then(() => {
-                    if (this.authState.authenticated) {
-                        this.showLoginContainer(false);
-                        // Trigger app state update event
-                        document.dispatchEvent(new CustomEvent('auth-change', { 
-                            detail: { authenticated: true, user_id: this.authState.user_id }
-                        }));
-                    }
-                });
-            } else {
-                this.showMessage(messageElement, data.message, 'error');
-                this.shakeElement(messageElement);
-            }
-        })
-        .catch(error => {
-            this.setButtonLoading(submitButton, false);
-            this.showMessage(messageElement, 'Connection error. Please try again.', 'error');
-            this.shakeElement(messageElement);
-            console.error('Registration error:', error);
-        });
-    }
-    
-    /**
-     * Logout the current user
-     */
-    logout() {
-        fetch('/api/logout')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Update auth state
-                    this.authState = {
-                        authenticated: false,
-                        user_id: null
-                    };
-                    
-                    // Show login container
-                    this.showLoginContainer(true);
-                    
-                    // Trigger app state update event
-                    document.dispatchEvent(new CustomEvent('auth-change', { 
-                        detail: { authenticated: false }
-                    }));
-                } else {
-                    console.error('Logout error:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Logout error:', error);
+        // Add profound hover state to storytelling text
+        const storyText = document.querySelector('.storytelling-text p');
+        if (storyText) {
+            // Apply more dramatic styles on hover
+            storyText.addEventListener('mouseenter', () => {
+                storyText.style.textShadow = '0 0 20px rgba(255, 204, 0, 0.4)';
+                storyText.style.transform = 'scale(1.01)';
+                storyText.style.transition = 'all 0.7s ease';
             });
-    }
-    
-    /**
-     * Check if the user is authenticated
-     * @returns {Promise<boolean>} Promise resolving to authentication state
-     */
-    checkAuthentication() {
-        return fetch('/api/check-auth')
-            .then(response => response.json())
-            .then(data => {
-                this.authState.authenticated = data.authenticated;
-                this.authState.user_id = data.user_id || null;
-                
-                if (data.authenticated) {
-                    this.showLoginContainer(false);
-                } else {
-                    this.showLoginContainer(true);
-                }
-                
-                return this.authState.authenticated;
-            })
-            .catch(error => {
-                console.error('Auth check error:', error);
-                this.showLoginContainer(true);
-                return false;
+            
+            storyText.addEventListener('mouseleave', () => {
+                storyText.style.textShadow = '';
+                storyText.style.transform = '';
             });
-    }
-    
-    /**
-     * Show a message in the specified element with enhanced styling
-     * @param {HTMLElement} element - Element to show message in
-     * @param {string} message - Message text
-     * @param {string} type - Message type (error, success)
-     */
-    showMessage(element, message, type) {
-        if (!element) return;
-        
-        // Hide the element first to trigger re-animation
-        element.style.display = 'none';
-        
-        // Set content and classes
-        element.textContent = message;
-        element.className = 'auth-message';
-        element.classList.add(type);
-        
-        // Show with animation
-        setTimeout(() => {
-            element.style.display = 'block';
-        }, 10);
-    }
-    
-    /**
-     * Apply shake animation to an element for error feedback
-     * @param {HTMLElement} element - Element to animate
-     */
-    shakeElement(element) {
-        if (!element) return;
-        element.classList.remove('error-shake');
-        // Trigger reflow to restart animation
-        void element.offsetWidth;
-        element.classList.add('error-shake');
-    }
-    
-    /**
-     * Highlight input field with error state
-     * @param {string} inputId - ID of input to highlight
-     */
-    highlightInputError(inputId) {
-        const input = document.getElementById(inputId);
-        if (!input) return;
-        
-        input.style.borderColor = 'var(--error-border)';
-        input.style.backgroundColor = 'rgba(58, 5, 5, 0.2)';
-        
-        // Clear error styling when input changes
-        const clearError = () => {
-            input.style.borderColor = '';
-            input.style.backgroundColor = '';
-            input.removeEventListener('input', clearError);
-        };
-        
-        input.addEventListener('input', clearError);
-    }
-    
-    /**
-     * Set loading state on a button
-     * @param {HTMLElement} button - Button element
-     * @param {boolean} isLoading - Whether button is in loading state
-     */
-    setButtonLoading(button, isLoading) {
-        if (!button) return;
-        
-        if (isLoading) {
-            button.originalText = button.textContent;
-            button.disabled = true;
-            button.textContent = "Loading...";
-            button.style.opacity = "0.8";
-        } else {
-            button.disabled = false;
-            button.textContent = button.originalText || button.textContent;
-            button.style.opacity = "";
         }
     }
     
@@ -529,6 +469,9 @@ class AuthManager {
         if (!storyPromptElement) return;
         
         let currentIndex = 0;
+        
+        // Set initial text
+        storyPromptElement.textContent = this.storyPrompts[currentIndex];
         
         // Cycle prompts every 8 seconds
         setInterval(() => {
@@ -545,6 +488,19 @@ class AuthManager {
             }, 500);
         }, 8000);
     }
+
+    /**
+     * Check the authentication state of the user.
+     * @returns {Promise<boolean>} - Resolves to true if authenticated, false otherwise.
+     */
+    checkAuthentication() {
+        return new Promise((resolve) => {
+            // Simulate an asynchronous check (e.g., API call)
+            setTimeout(() => {
+                resolve(this.authState.authenticated);
+            }, 500); // Simulated delay
+        });
+    }
 }
 
 // Create global auth manager instance
@@ -552,6 +508,11 @@ const authManager = new AuthManager();
 
 // Initialize auth on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Check authentication state on page load
-    authManager.checkAuthentication();
+    // First initialize auth manager
+    authManager.initialize();
+    
+    // Then check authentication state
+    authManager.checkAuthentication().then(isAuthenticated => {
+        console.log('Authentication state:', isAuthenticated ? 'Authenticated' : 'Not authenticated');
+    });
 });

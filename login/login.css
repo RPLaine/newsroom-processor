@@ -229,7 +229,17 @@ body {
 }
 
 .auth-form.active {
-    display: block;
+    display: block !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 10;
+}
+
+/* Additional fix for form positioning */
+.auth-form-container {
+    min-height: 420px;
+    position: relative;
+    z-index: 5; /* Ensure it appears above other elements */
 }
 
 .auth-form h2 {
@@ -296,20 +306,31 @@ body {
 
 .auth-button {
     width: 100%;
-    padding: 14px;
+    padding: 16px;
     background: linear-gradient(135deg, var(--button-primary) 0%, var(--button-primary-hover) 100%);
     background-size: 200% 100%;
     background-position: 0 0;
     color: var(--button-text);
     border: none;
     border-radius: var(--radius-sm);
-    font-size: clamp(1rem, 3vw, 1.2rem);
-    font-weight: 600;
+    font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+    font-weight: 700;
+    letter-spacing: 1px;
     cursor: pointer;
-    transition: all 0.3s ease, background-position 0.6s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                background-position 0.8s ease,
+                box-shadow 0.6s ease,
+                text-shadow 0.6s ease,
+                letter-spacing 0.5s ease;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35),
+                0 0 30px rgba(255, 204, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    /* Slow down animations with time dilation (controlled by JS) */
+    animation-duration: calc(1s * var(--time-dilation, 1));
+    transition-duration: calc(0.4s * var(--time-dilation, 1));
 }
 
 .auth-button::before {
@@ -319,161 +340,150 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.7s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.8s ease;
+    z-index: -1;
+}
+
+.auth-button::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(to right, 
+                rgba(255, 204, 0, 0.3), 
+                rgba(255, 147, 0, 0.8) 50%, 
+                rgba(255, 204, 0, 0.3));
+    border-radius: 50%;
+    filter: blur(3px);
+    opacity: 0.6;
+    transform: scaleX(0.85);
+    transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+/* Add cosmic significance effect */
+.auth-form.active .auth-button::before,
+.auth-button:hover::before {
+    left: 100%;
+    background: linear-gradient(90deg, 
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        rgba(255, 204, 0, 0.3),
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    transition: left 1.2s ease;
 }
 
 .auth-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px) scale(1.02);
     background-position: 100% 0;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(255, 204, 0, 0.35),
+                0 0 70px rgba(255, 204, 0, 0.15);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7),
+                0 0 10px rgba(255, 204, 0, 0.3);
+    letter-spacing: 1.5px; /* Subtle expansion */
+    border-color: rgba(255, 204, 0, 0.5);
 }
 
-.auth-button:hover::before {
-    left: 100%;
+.auth-button:hover::after {
+    transform: scaleX(1);
+    opacity: 0.9;
+    height: 8px;
+    filter: blur(4px);
+}
+
+.auth-button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .auth-button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
 }
 
-.auth-message {
-    margin: var(--space-md) 0;
-    padding: 12px;
-    border-radius: var(--radius-sm);
-    text-align: center;
-    font-weight: 500;
-    display: none;
-    animation: fadeIn 0.5s ease-out;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+.auth-form.active .auth-button {
+    animation: button-pulse 3s infinite ease-in-out;
 }
 
-.auth-message.error {
-    display: block;
-    background-color: var(--error-bg);
-    color: var(--error-text);
-    border: 1px solid var(--error-border);
-}
-
-.auth-message.success {
-    display: block;
-    background-color: var(--success-bg);
-    color: var(--success-text);
-    border: 1px solid var(--success-border);
-}
-
-/* Floating quote bubbles */
-.quote-bubble {
-    position: absolute;
-    padding: 15px 25px;
-    background-color: rgba(30, 30, 30, 0.7);
-    backdrop-filter: blur(5px);
-    border-radius: 15px;
-    font-size: 0.9rem;
-    max-width: 200px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transform: translateY(20px);
-    animation: floatingBubble 5s ease-in-out infinite,
-               fadeInOut 10s ease-in-out infinite;
-    z-index: 1;
-}
-
-@keyframes floatingBubble {
+@keyframes button-pulse {
     0%, 100% {
-        transform: translateY(0);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35),
+                    0 0 30px rgba(255, 204, 0, 0.2);
     }
     50% {
-        transform: translateY(-15px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35),
+                    0 0 40px rgba(255, 204, 0, 0.4);
     }
 }
 
-@keyframes fadeInOut {
+/* Add new button animations */
+@keyframes cosmic-resonance {
     0%, 100% {
-        opacity: 0;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35),
+                    0 0 30px rgba(255, 204, 0, 0.2);
     }
-    20%, 80% {
-        opacity: 1;
+    33% {
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4),
+                    0 0 50px rgba(255, 153, 0, 0.3),
+                    0 0 80px rgba(255, 204, 0, 0.1);
+    }
+    66% {
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35),
+                    0 0 40px rgba(255, 204, 0, 0.25),
+                    0 0 60px rgba(255, 153, 0, 0.1);
     }
 }
 
-.quote-bubble:nth-child(1) {
-    top: 20%;
-    left: 10%;
-    animation-delay: 0s;
+.auth-form.active .auth-button {
+    animation: cosmic-resonance 6s infinite cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
-.quote-bubble:nth-child(2) {
-    bottom: 30%;
-    right: 10%;
-    animation-delay: 3s;
-}
-
-.quote-bubble:nth-child(3) {
-    top: 50%;
-    right: 20%;
-    animation-delay: 6s;
-}
-
-.quote-bubble:nth-child(4) {
-    bottom: 20%;
-    left: 15%;
-    animation-delay: 9s;
-}
-
-.quote-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 20px;
-    border-width: 10px 10px 0;
-    border-style: solid;
-    border-color: rgba(30, 30, 30, 0.7) transparent;
+/* Enhance form transition animations */
+.auth-form.slide-in-right {
     display: block;
-    width: 0;
+    animation: slideInRight 0.6s forwards;
 }
 
-/* Responsive design adjustments */
-@media (max-width: 768px) {
-    .storytelling-container {
-        padding: 1rem 0;
-    }
-    
-    .quote-bubble {
-        display: none;
-    }
-    
-    .auth-form {
-        padding: 1.5rem 1rem;
-    }
+.auth-form.slide-in-left {
+    display: block;
+    animation: slideInLeft 0.6s forwards;
 }
 
-/* Responsive height adjustments */
-@media (max-width: 768px) {
-    .auth-form-container {
-        min-height: 400px;
-    }
+.auth-form.slide-out-right {
+    animation: slideOutRight 0.6s forwards;
 }
 
-@media (max-height: 700px) and (min-width: 601px) {
-    .auth-form-container {
-        min-height: 380px;
-    }
+.auth-form.slide-out-left {
+    animation: slideOutLeft 0.6s forwards;
 }
 
-@media (max-height: 600px) {
-    .auth-form-container {
-        min-height: 350px;
-    }
+/* Destiny Messaging */
+.destiny-message {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-heading, "Montserrat", sans-serif);
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: rgba(255, 204, 0, 0.8);
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-/* Small mobile devices */
-@media (max-width: 380px) {
-    .auth-form-container {
-        min-height: 320px;
-        width: 100%;
-    }
+.auth-button:hover + .destiny-message,
+.auth-button:focus + .destiny-message {
+    opacity: 1;
+    transform: translateY(0);
 }

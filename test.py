@@ -1,9 +1,9 @@
 import requests
 
-url = "http://localhost:8001/test"
+url = "http://127.0.0.1:8001"
 payload = {
     "message": "Hello, World!",
-    "user_id": 12345,
+    "user_id": 123,
 }
 headers = {
     "Content-Type": "application/json"

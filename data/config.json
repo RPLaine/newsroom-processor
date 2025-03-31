@@ -1,6 +1,6 @@
 {
   "port": 8001,
-  "host": "localhost",
+  "host": "127.0.0.1",
   "data_dir": "data/",
   "user_data_path": "data/users.json",
   "session_timeout": 3600,

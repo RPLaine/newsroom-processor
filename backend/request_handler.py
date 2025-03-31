@@ -1,8 +1,6 @@
 import http.server
 import json
-
 from http.cookies import SimpleCookie
-
 import backend.database_handler as database_handler
 
 def create_request_handler(server_instance):
@@ -36,21 +34,15 @@ def create_request_handler(server_instance):
             try:
                 data = json.loads(post_data.decode('utf-8'))
                 database_handler.write_json_file(self.config['data_dir'] + 'test.json', data)
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
                 response = {"status": "success", "message": "Data received successfully"}
-                self.wfile.write(json.dumps(response).encode('utf-8'))
+                self.send_json_response(200, response)
+                return
             except json.JSONDecodeError:
-                self.send_response(400)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                error_response = {"status": "error", "message": "Invalid JSON data"}
-                self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                response = {"status": "error", "message": "Invalid JSON data"}
+                self.send_json_response(400, response)
                 return
             
         def send_json_response(self, status_code, response_data):
-            """Helper method to send JSON responses with proper headers"""
             self.send_response(status_code)
             self.send_header('Content-type', 'application/json')
             self.end_headers()

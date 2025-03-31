@@ -1,5 +1,5 @@
 const Config = {
-    host: 'http://localhost:8001',
+    host: 'http://127.0.0.1:8001',
 };
 
 export default Config;

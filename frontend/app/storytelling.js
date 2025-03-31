@@ -279,16 +279,35 @@ function appendToStoryUI(content, animate = false) {
     const newContent = document.createElement('div');
     newContent.innerHTML = formatStoryText(content);
     
-    // Add animation class if requested
-    if (animate) {
-        newContent.classList.add('new-text');
-    }
-    
     // Remove loading indicator if present
     removeLoadingIndicator();
     
-    // Append the new content
-    storyContainer.appendChild(newContent);
+    // Import animation utilities if needed
+    if (!window.animationUtils) {
+        // Create a self-executing function to load the module
+        (async () => {
+            try {
+                const module = await import('../animation/animation.js');
+                window.animationUtils = module.default;
+            } catch (err) {
+                console.error('Could not load animation utilities:', err);
+            }
+        })();
+    }
+    
+    // Add the content with animation if requested
+    if (animate && window.animationUtils) {
+        // Use the addElementWithAnimation utility
+        window.animationUtils.addElementWithAnimation(newContent, storyContainer, 'new-text');
+    } else {
+        // Add animation class if requested but utility not available
+        if (animate) {
+            newContent.classList.add('new-text');
+        }
+        
+        // Append the new content
+        storyContainer.appendChild(newContent);
+    }
     
     // Scroll to the new content
     newContent.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -299,11 +318,20 @@ function appendToStoryUI(content, animate = false) {
  */
 function removeLoadingIndicator() {
     const loadingIndicators = document.querySelectorAll('.generating');
-    loadingIndicators.forEach(element => {
-        if (element.parentNode) {
-            element.parentNode.removeChild(element);
-        }
-    });
+    
+    // If animation utilities are available, use them
+    if (window.animationUtils) {
+        loadingIndicators.forEach(element => {
+            window.animationUtils.removeElementWithAnimation(element, 'fade-out');
+        });
+    } else {
+        // Fallback to standard removal
+        loadingIndicators.forEach(element => {
+            if (element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        });
+    }
 }
 
 /**

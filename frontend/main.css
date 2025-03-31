@@ -1,6 +1,7 @@
 /* Import component styles */
 @import "./app-container/app-container.css";
 @import "./login/login.css";
+@import "./animation/animation.css";
 
 /* General styles */
 body {
@@ -9,6 +10,7 @@ body {
     padding: 0;
     background-color: #121212;
     color: #e0e0e0;
+    user-select: none; /* Prevent text selection by default */
 }
 
 /* Header styles */
@@ -62,6 +64,7 @@ input, select, textarea {
     border: 1px solid #444;
     padding: 0.5rem;
     border-radius: 4px;
+    user-select: text; /* Allow text selection in form elements */
 }
 
 input:focus, select:focus, textarea:focus {
@@ -92,4 +95,9 @@ a:hover {
 ::selection {
     background-color: rgba(76, 175, 80, 0.3);
     color: #ffffff;
+}
+
+/* User-selectable content */
+.selectable, .user-content, #story-content {
+    user-select: text; /* Allow text selection for story content */
 }

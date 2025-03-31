@@ -1,7 +1,7 @@
 import AppContainer from './app-container/app-container.js';
 import App from './app/app.js';
 import Login from './login/login.js';
-import { FetchData } from './utils.js';
+import { fetchData } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -12,11 +12,11 @@ async function initializeApp() {
         action: 'application_init'
     };
 
-    let data = await FetchData(request_data);
+    let data = await fetchData(request_data);
 
     if (data.userid == undefined) {
-        data = await Login.createLogin(data, appContainer, FetchData);
+        data = await Login.createLogin(data, appContainer, fetchData);
     } else {
-        data = await App.createApp(data, appContainer, FetchData);
+        data = await App.createApp(data, appContainer, fetchData);
     }
 }

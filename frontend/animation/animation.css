@@ -1,0 +1,166 @@
+/* 
+ * Animation.css
+ * Reusable animations for smooth transitions when adding/removing content
+ */
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Fade out animation */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Slide in from top */
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide in from bottom */
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scale in animation */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Scale out animation */
+@keyframes scaleOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Utility animation classes */
+
+/* Fade animations */
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+/* Slide animations */
+.slide-in-top {
+    animation: slideInFromTop 0.4s ease forwards;
+}
+
+.slide-in-bottom {
+    animation: slideInFromBottom 0.4s ease forwards;
+}
+
+/* Scale animations */
+.scale-in {
+    animation: scaleIn 0.3s ease forwards;
+}
+
+.scale-out {
+    animation: scaleOut 0.3s ease forwards;
+}
+
+/* New text animation for storytelling */
+.new-text {
+    animation: slideInFromBottom 0.5s ease forwards;
+}
+
+/* Adding/removing content utilities */
+.animate-add {
+    animation: scaleIn 0.3s ease forwards;
+}
+
+.animate-remove {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+/* Animation for elements that change */
+.animate-change {
+    animation: fadeIn 0.2s ease;
+}
+
+/* CSS classes to handle element visibility for JavaScript manipulation */
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+.hiding {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+.showing {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+/* Animation duration variables for JavaScript use */
+:root {
+    --animation-duration-short: 0.2s;
+    --animation-duration-medium: 0.3s;
+    --animation-duration-long: 0.5s;
+}
+
+/* Transition utilities for general use */
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.transition-opacity {
+    transition: opacity 0.3s ease;
+}
+
+.transition-transform {
+    transition: transform 0.3s ease;
+}
+
+/* Staggered animations for lists - use with JS to add delays */
+.stagger-item {
+    opacity: 0;
+}
+
+.stagger-item.animated {
+    animation: fadeIn 0.3s ease forwards;
+}

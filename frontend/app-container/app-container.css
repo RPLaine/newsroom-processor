@@ -1,10 +1,20 @@
 /* App container component styles */
 #app-container {
-    max-width: 1200px;
-    margin: 2rem auto;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
     background-color: #1e1e1e;
-    border-radius: 8px;
-    padding: 2rem;
+    padding: 1rem;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-    min-height: 400px;
+    overflow: auto;
+}
+
+/* Let's also make sure the body and html have no margins/padding */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    user-select: none; /* Prevent text selection by default */
 }

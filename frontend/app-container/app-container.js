@@ -2,6 +2,7 @@
  * App Container Component
  * Provides functionality for creating and managing the main application container
  */
+import { removeElementWithAnimation, addElementWithAnimation } from '../animation/animation.js';
 
 /**
  * Create and append the app container to the document body
@@ -26,27 +27,62 @@ export function getAppContainer() {
 }
 
 /**
- * Clear the contents of the app container
+ * Clear the contents of the app container with animation
+ * @param {function} callback - Optional callback to run after clearing
+ * @returns {HTMLElement} The container element
  */
-export function clearAppContainer() {
+export function clearAppContainer(callback = null) {
     const container = getAppContainer();
-    container.innerHTML = '';
+    const children = Array.from(container.children);
+    
+    // If no children, just run callback and return
+    if (children.length === 0) {
+        if (callback) callback();
+        return container;
+    }
+    
+    // Track how many animations are in progress
+    let animationsRemaining = children.length;
+    
+    // Function to call when an animation is complete
+    const animationDone = () => {
+        animationsRemaining--;
+        if (animationsRemaining === 0 && callback) {
+            callback();
+        }
+    };
+    
+    // Remove each child with animation
+    children.forEach(child => {
+        removeElementWithAnimation(child, 'fade-out', animationDone);
+    });
+    
     return container;
 }
 
 /**
- * Set the content of the app container
+ * Set the content of the app container with animation
  * @param {string|HTMLElement} content - HTML content or element to set
+ * @param {string} animationClass - Animation class to use (default: 'fade-in')
+ * @returns {HTMLElement} The container element
  */
-export function setAppContainerContent(content) {
+export function setAppContainerContent(content, animationClass = 'fade-in') {
     const container = getAppContainer();
     
-    if (typeof content === 'string') {
-        container.innerHTML = content;
-    } else if (content instanceof HTMLElement) {
-        clearAppContainer();
-        container.appendChild(content);
-    }
+    // Clear the container first with animation
+    clearAppContainer(() => {
+        if (typeof content === 'string') {
+            // Create a wrapper for the HTML content
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = content;
+            
+            // Add the wrapper with animation
+            addElementWithAnimation(wrapper, container, animationClass);
+        } else if (content instanceof HTMLElement) {
+            // Add the element with animation
+            addElementWithAnimation(content, container, animationClass);
+        }
+    });
     
     return container;
 }

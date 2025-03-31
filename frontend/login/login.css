@@ -62,6 +62,8 @@
     border: 1px solid #444;
     border-radius: 4px;
     color: #e0e0e0;
+    user-select: text; /* Allow text selection in inputs */
+    box-sizing: border-box; /* Ensure padding and border are included in width */
 }
 
 .form-group input:focus {
@@ -98,6 +100,7 @@
     color: #f44336;
     margin-top: 1rem;
     font-size: 0.9rem;
+    user-select: text; /* Allow text selection for error messages */
 }
 
 .success-message {
@@ -105,6 +108,7 @@
     text-align: center;
     padding: 1rem;
     font-weight: 600;
+    user-select: text; /* Allow text selection for success messages */
 }
 
 @keyframes fadeIn {

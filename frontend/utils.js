@@ -11,7 +11,7 @@ import Config from './config.js';
  * @param {string} content_type - Content type for the request
  * @returns {Promise<Object>} Server response
  */
-export async function FetchData(request_data, content_type = 'application/json') {
+export async function fetchData(request_data, content_type = 'application/json') {
     console.log('Fetching data...', request_data);
     try {
         const response = await fetch(Config.host, {
@@ -112,7 +112,7 @@ export function debounce(func, wait = 300) {
 
 // Export default object with all utilities
 export default {
-    FetchData,
+    FetchData: fetchData,
     formatDate,
     sanitizeHTML,
     generateUniqueId,

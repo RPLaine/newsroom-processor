@@ -20,6 +20,9 @@
   ],
   "public_paths": [
     "/",
-    "/client/login"
-  ]
+    "/client/"
+  ],
+  "title": "Game Generator 2",
+  "javascript": "frontend/main.js",
+  "css": "frontend/main.css"
 }

@@ -1,14 +1,16 @@
 import socketserver
 import threading
-
-import backend.request_handler
+import backend.request_handler as request_handler
 
 class ApplicationServer:
     def __init__(self, config):
         self.config = config
         self.shutdown_flag = threading.Event()
         server_address = (self.config['host'], self.config['port'])
-        self.httpd = socketserver.TCPServer(server_address, backend.request_handler.create_request_handler(self))
+        self.httpd = socketserver.TCPServer(
+            server_address, 
+            request_handler.create_request_handler(self, config)
+            )
         self.httpd.allow_reuse_address = True
     
     def run(self):

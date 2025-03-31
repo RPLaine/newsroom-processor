@@ -1,5 +1,4 @@
 import json
-
 from backend.server import ApplicationServer
 
 def load_config():

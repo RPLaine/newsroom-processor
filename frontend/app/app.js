@@ -422,7 +422,7 @@ function showError(message, error) {
  * Redirect to the login page
  */
 function redirectToLogin() {
-    window.location.href = '/client/login/login.html';
+    window.location.href = '/login/login.html';
 }
 
 /**
@@ -613,24 +613,6 @@ async function deleteStory(storyId) {
         return false;
     }
 }
-
-// Initialize app when DOM content is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize the app
-    initApp({
-        theme: localStorage.getItem('gamegen2-theme') || 'default',
-        initialView: 'dashboard'
-    });
-    
-    // Load user stories for the stories view
-    document.getElementById('stories-nav-link')?.addEventListener('click', () => {
-        loadUserStories().then(stories => {
-            updateStoriesList(stories);
-        }).catch(error => {
-            showError('Failed to load stories', error);
-        });
-    });
-});
 
 // Export the module
 export default {

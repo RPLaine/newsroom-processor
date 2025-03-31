@@ -1,3 +1,7 @@
+/* Import component styles */
+@import "./app-container/app-container.css";
+@import "./login/login.css";
+
 /* General styles */
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -89,6 +93,3 @@ a:hover {
     background-color: rgba(76, 175, 80, 0.3);
     color: #ffffff;
 }
-
-/* Import component styles */
-@import url('./app-container/app-container.css');

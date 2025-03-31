@@ -24,5 +24,6 @@
   ],
   "title": "Game Generator 2",
   "javascript": "frontend/main.js",
-  "css": "frontend/main.css"
+  "css": "frontend/main.css",
+  "favicon": "frontend/favicon.svg"
 }

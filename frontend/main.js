@@ -1,27 +1,32 @@
 import Config from './config.js';
 
+console.log('Config:', Config);
+document.addEventListener('DOMContentLoaded', initializeApp);
+
 async function initializeApp() {
-    // await loadModule('styling');
-    
-    // Fetch user authentication status
-    let UserData = await FetchUserData();
-    console.log(UserData);
+    console.log('Initializing application...');
+    const request_data = {
+        action: 'application_init'
+    };
+    let data = await FetchData(request_data);
 }
 
-async function FetchUserData() {
+async function FetchData(request_data, content_type = 'application/json') {
+    console.log('Fetching data...');
     try {
         const response = await fetch(Config.host, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': content_type
             },
-            body: JSON.stringify({
-                "function": "load_user_data"
-            })
+            body: JSON.stringify(request_data)
         });
+        console.log('Response status:', response.status);
         const data = await response.json();
+        console.log('Response data:', data);
         return data;
     } catch (error) {
+        console.error('Error fetching data:', error);
         return {
             error: 'Failed to fetch user data'
         };
@@ -138,7 +143,7 @@ async function FetchUserData() {
 // }
 
 // Initialize the application once the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', initializeApp);
+
 
 // // Expose key functions to the global scope for module interaction
 // window.GameGen2 = Config;

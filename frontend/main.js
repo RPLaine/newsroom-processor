@@ -3,6 +3,8 @@ import App from './app/app.js';
 import Login from './login/login.js';
 import { fetchData } from './utils.js';
 
+let data = {};
+
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 async function initializeApp() {
@@ -12,7 +14,7 @@ async function initializeApp() {
         action: 'application_init'
     };
 
-    let data = await fetchData(request_data);
+    data = await fetchData(request_data);
 
     if (data.userid == undefined) {
         data = await Login.createLogin(data, appContainer, fetchData);

@@ -3,6 +3,8 @@ import json
 from http.cookies import SimpleCookie
 import backend.database_handler as database_handler
 import backend.html_constructor as html_constructor
+import backend.login_handler as login_handler
+import backend.user_handler as user_handler
 
 def create_request_handler(server, config):
     class RequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -25,24 +27,32 @@ def create_request_handler(server, config):
         
         def do_POST(self):
             response = {}
-
-            # Load the request dictionary
             response["request"] = self.load_request_dictionary()
-
-            # Load the cookie
             cookie = SimpleCookie(self.headers.get('Cookie'))
 
-            # Validate user_id from the cookie
             if 'userid' in cookie and database_handler.is_user_id_valid(cookie['userid'].value, config["user_data_path"]):
-                response['userid_in_database'] = True
-                response["userid"] = cookie['userid'].value
+                user_id = cookie['userid'].value
+                response["userid"] = user_id
+                response["userdata"] = user_handler.get_user_data(user_id)
+            elif response["request"]["action"] == "login":
+                response = login_handler.handle_login(response, cookie, self.config["user_data_path"])
+                self.send_json_response(response)
+                return
+            elif response["request"]["action"] == "register":
+                response = login_handler.handle_register(response, cookie, self.config["user_data_path"])
+                self.send_json_response(response)
+                return
+            elif response["request"]["action"] == "logout":
+                response = login_handler.handle_logout(response, cookie, self.config["user_data_path"])
+                self.send_json_response(response)
+                return
             else:
-                response['userid_in_database'] = False
                 response["userid"] = None
+                response["status"] = "error"
+                response["message"] = "Invalid action or user not authenticated"
                 self.send_json_response(response)
                 return
 
-            # Send the response
             self.send_json_response(response)
             return
         

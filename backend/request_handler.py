@@ -42,18 +42,24 @@ def create_request_handler(server, config):
         #         return
 
         def do_POST(self):
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            try:
-                data = json.loads(post_data.decode('utf-8'))
-                database_handler.write_json_file(self.config['data_dir'] + 'test.json', data)
-                response = {"status": "success", "message": "Data received successfully"}
-                self.send_json_response(200, response)
-                return
-            except json.JSONDecodeError:
-                response = {"status": "error", "message": "Invalid JSON data"}
+            response = {}
+            response["request"] = self.load_request_dictionary()
+            if response["request"] is None:
                 self.send_json_response(400, response)
                 return
+            self.send_json_response(200, response)
+            return
+        
+        def load_request_dictionary(self):
+            try:
+                content_length = int(self.headers['Content-Length'])
+                post_data = self.rfile.read(content_length)
+                data = json.loads(post_data.decode('utf-8'))
+                return data
+            except json.JSONDecodeError:
+                return {"error": "rfile is not a valid JSON"}
+            except Exception as e:
+                return {"error": str(e)}
             
         def send_json_response(self, status_code, response_data):
             self.send_response(status_code)

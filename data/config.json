@@ -1,0 +1,25 @@
+{
+  "port": 8001,
+  "host": "localhost",
+  "data_dir": "data/",
+  "user_data_path": "data/users.json",
+  "session_timeout": 3600,
+  "max_request_size": 1048576,
+  "password_min_length": 8,
+  "password_require_special": true,
+  "password_require_number": true,
+  "allowed_extensions": [
+    ".html", 
+    ".js", 
+    ".css", 
+    ".svg", 
+    ".ico", 
+    ".png", 
+    ".jpg", 
+    ".gif"
+  ],
+  "public_paths": [
+    "/",
+    "/client/login"
+  ]
+}

@@ -3,6 +3,7 @@
 
 class WebGPUBackground {
     constructor() {
+        console.log('🌌 WebGPUBackground: Creating instance');
         this.canvas = null;
         this.adapter = null;
         this.device = null;
@@ -13,66 +14,93 @@ class WebGPUBackground {
         this.destinyPaths = []; // For destiny path particles
         this.destinyAnimationActive = false;
         this.cosmicResonanceActive = false; // For cosmic resonance effect
+        console.log('🌌 WebGPUBackground: Instance created');
     }
 
     async init(canvasId) {
+        console.log(`🌌 WebGPUBackground: Initializing with canvas ID: ${canvasId}`);
         this.canvas = document.getElementById(canvasId);
-        if (!this.canvas) return false;
+        if (!this.canvas) {
+            console.error(`❌ WebGPUBackground: Canvas element with ID "${canvasId}" not found`);
+            return false;
+        }
+        console.log(`✅ WebGPUBackground: Canvas found, dimensions: ${this.canvas.width}x${this.canvas.height}`);
 
         // Resize canvas to full screen
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
+        console.log('🔄 WebGPUBackground: Added resize listener');
 
         // Detect GPU capabilities
         await this.detectGPUCapabilities();
-        console.log(`GPU Tier detected: ${this.gpuTier}`);
+        console.log(`🎮 WebGPUBackground: GPU Tier detected: ${this.gpuTier}`);
 
         // Check if WebGPU is supported
         if (!navigator.gpu) {
-            console.log("WebGPU not supported. Falling back to Canvas animation.");
+            console.log("⚠️ WebGPUBackground: WebGPU not supported. Falling back to Canvas animation.");
             this.initCanvasFallback();
             return false;
         }
 
         try {
             // Request adapter and device
+            console.log('🔍 WebGPUBackground: Requesting WebGPU adapter');
             this.adapter = await navigator.gpu.requestAdapter();
             if (!this.adapter) {
-                console.log("Couldn't request WebGPU adapter. Falling back to Canvas animation.");
+                console.log("⚠️ WebGPUBackground: Couldn't request WebGPU adapter. Falling back to Canvas animation.");
                 this.initCanvasFallback();
                 return false;
             }
+            console.log('✅ WebGPUBackground: WebGPU adapter obtained');
 
+            console.log('🔍 WebGPUBackground: Requesting WebGPU device');
             this.device = await this.adapter.requestDevice();
+            console.log('✅ WebGPUBackground: WebGPU device obtained');
+            
             this.context = this.canvas.getContext('webgpu');
+            if (!this.context) {
+                console.error('❌ WebGPUBackground: Failed to get WebGPU context');
+                this.initCanvasFallback();
+                return false;
+            }
+            console.log('✅ WebGPUBackground: WebGPU context obtained');
             
             const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+            console.log(`🎨 WebGPUBackground: Using preferred format: ${presentationFormat}`);
+            
             this.context.configure({
                 device: this.device,
                 format: presentationFormat,
                 alphaMode: 'premultiplied'
             });
+            console.log('✅ WebGPUBackground: Context configured');
 
             // Set up the render pipeline and resources here
             // This is a simplified version for compatibility
+            console.log('🎬 WebGPUBackground: Setup complete, starting animation');
 
             this.initialized = true;
             this.animate();
             
             // Add enhanced visual elements
+            console.log('✨ WebGPUBackground: Adding visual elements');
             this.addProfoundElements();
             
             // Find register button and add destiny path
+            console.log('🔍 WebGPUBackground: Setting up destiny path for register button');
             setTimeout(() => {
                 const registerButton = document.querySelector('#register-form .auth-button');
                 if (registerButton) {
+                    console.log('✅ WebGPUBackground: Register button found, adding destiny path');
                     this.addDestinyPath(registerButton);
+                } else {
+                    console.warn('⚠️ WebGPUBackground: Register button not found, cannot add destiny path');
                 }
             }, 1000); // Delay to ensure DOM is ready
             
             return true;
         } catch (error) {
-            console.error("WebGPU initialization failed:", error);
+            console.error("❌ WebGPUBackground: Initialization failed:", error);
             this.initCanvasFallback();
             return false;
         }
@@ -82,18 +110,21 @@ class WebGPUBackground {
      * Detect GPU capabilities to optimize visual effects
      */
     async detectGPUCapabilities() {
+        console.log('🔍 WebGPUBackground: Detecting GPU capabilities');
         // Try to detect GPU capabilities to optimize effects
         if (navigator.gpu) {
             try {
                 const adapter = await navigator.gpu.requestAdapter();
                 if (adapter) {
                     const info = await adapter.requestAdapterInfo();
+                    console.log('🎮 WebGPUBackground: Got adapter info:', info);
                     
                     // Check if we have a device name or vendor
                     if (info.device || info.vendor) {
                         // Use GPU info to determine tier
                         const deviceStr = (info.device || '').toLowerCase();
                         const vendorStr = (info.vendor || '').toLowerCase();
+                        console.log(`🎮 WebGPUBackground: Device: ${deviceStr}, Vendor: ${vendorStr}`);
                         
                         // High-end GPUs typically have keywords like RTX, Radeon RX, etc.
                         const highEndKeywords = ['rtx', 'geforce', 'radeon rx', 'radeon pro', 'quadro'];
@@ -103,46 +134,59 @@ class WebGPUBackground {
                         // Check for high-end GPU
                         if (highEndKeywords.some(keyword => deviceStr.includes(keyword) || vendorStr.includes(keyword))) {
                             this.gpuTier = 'high';
+                            console.log('🎮 WebGPUBackground: Detected high-end GPU');
                         }
                         // Check for mid-range GPU
                         else if (midRangeKeywords.some(keyword => deviceStr.includes(keyword) || vendorStr.includes(keyword))) {
                             this.gpuTier = 'medium';
+                            console.log('🎮 WebGPUBackground: Detected medium-range GPU');
                         }
                         // Otherwise assume low-end
                         else {
                             this.gpuTier = 'low';
+                            console.log('🎮 WebGPUBackground: Detected low-end GPU');
                         }
                     } else {
+                        console.log('🎮 WebGPUBackground: No device/vendor info, using memory detection');
                         // Fallback detection based on device memory (if available)
                         if (navigator.deviceMemory) {
                             if (navigator.deviceMemory >= 8) {
                                 this.gpuTier = 'high';
+                                console.log(`🎮 WebGPUBackground: High tier based on memory: ${navigator.deviceMemory}GB`);
                             } else if (navigator.deviceMemory >= 4) {
                                 this.gpuTier = 'medium';
+                                console.log(`🎮 WebGPUBackground: Medium tier based on memory: ${navigator.deviceMemory}GB`);
                             } else {
                                 this.gpuTier = 'low';
+                                console.log(`🎮 WebGPUBackground: Low tier based on memory: ${navigator.deviceMemory}GB`);
                             }
                         }
                     }
                 }
             } catch (e) {
-                console.warn("GPU capability detection failed:", e);
+                console.warn("⚠️ WebGPUBackground: GPU capability detection failed:", e);
                 // Use hardware concurrency as a fallback
                 const cores = navigator.hardwareConcurrency || 2;
+                console.log(`🎮 WebGPUBackground: Falling back to CPU cores detection: ${cores} cores`);
                 if (cores >= 8) {
                     this.gpuTier = 'high';
+                    console.log('🎮 WebGPUBackground: High tier based on CPU cores');
                 } else if (cores >= 4) {
                     this.gpuTier = 'medium';
+                    console.log('🎮 WebGPUBackground: Medium tier based on CPU cores');
                 }
             }
         } else {
+            console.log('🎮 WebGPUBackground: WebGPU not available, using alternate metrics');
             // No WebGPU, try to use other metrics
             // Use devicePixelRatio as a hint about device capability
+            console.log(`🎮 WebGPUBackground: Device pixel ratio: ${window.devicePixelRatio}`);
             if (window.devicePixelRatio >= 2) {
                 // Higher pixel ratio often indicates better hardware
                 const cores = navigator.hardwareConcurrency || 2;
                 if (cores >= 4) {
                     this.gpuTier = 'medium';
+                    console.log('🎮 WebGPUBackground: Medium tier based on pixel ratio and cores');
                 }
             }
         }
@@ -155,6 +199,7 @@ class WebGPUBackground {
      * Configure animation complexity based on GPU tier
      */
     setAnimationComplexity() {
+        console.log(`🎨 WebGPUBackground: Setting animation complexity for ${this.gpuTier} tier`);
         switch(this.gpuTier) {
             case 'high':
                 this.particleCount = 150;
@@ -182,17 +227,24 @@ class WebGPUBackground {
                 this.useCosmicResonance = false;
                 break;
         }
+        console.log(`🎨 WebGPUBackground: Animation settings - particles: ${this.particleCount}, speed: ${this.particleSpeed}`);
     }
 
     initCanvasFallback() {
+        console.log('🎨 WebGPUBackground: Initializing Canvas fallback mode');
         // Fallback to Canvas 2D animation for browsers without WebGPU support
         const ctx = this.canvas.getContext('2d');
-        if (!ctx) return;
+        if (!ctx) {
+            console.error('❌ WebGPUBackground: Failed to get 2D canvas context');
+            return;
+        }
+        console.log('✅ WebGPUBackground: 2D canvas context obtained');
 
         // Particles for the animation
         const particles = [];
         
         // Use count based on detected GPU tier
+        console.log(`🎨 WebGPUBackground: Creating ${this.particleCount} particles`);
         for (let i = 0; i < this.particleCount; i++) {
             particles.push({
                 x: Math.random() * this.canvas.width,
@@ -285,24 +337,31 @@ class WebGPUBackground {
         };
 
         animate();
+        console.log('✅ WebGPUBackground: Canvas fallback animation started');
         
         // Add profound visual elements for enhanced UX
+        console.log('✨ WebGPUBackground: Adding visual elements to fallback mode');
         this.addProfoundElements();
         
         // Find register button and add destiny path
+        console.log('🔍 WebGPUBackground: Setting up destiny path for register button in fallback mode');
         setTimeout(() => {
             const registerForm = document.getElementById('register-form');
             const registerButton = registerForm?.querySelector('.auth-button');
             if (registerButton) {
+                console.log('✅ WebGPUBackground: Register button found in fallback, adding destiny path');
                 this.addDestinyPath(registerButton);
                 
                 // Add event listener to create destiny path when register tab is clicked
                 const registerTab = document.getElementById('register-tab');
                 if (registerTab) {
                     registerTab.addEventListener('click', () => {
+                        console.log('👆 WebGPUBackground: Register tab clicked, refreshing destiny path');
                         setTimeout(() => this.addDestinyPath(registerButton), 500);
                     });
                 }
+            } else {
+                console.warn('⚠️ WebGPUBackground: Register button not found in fallback mode');
             }
         }, 2000);
     }
@@ -310,13 +369,21 @@ class WebGPUBackground {
     resizeCanvas() {
         if (!this.canvas) return;
         
+        const oldWidth = this.canvas.width;
+        const oldHeight = this.canvas.height;
+        
         // Make canvas full screen
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        
+        console.log(`📐 WebGPUBackground: Canvas resized from ${oldWidth}x${oldHeight} to ${this.canvas.width}x${this.canvas.height}`);
     }
 
     animate() {
-        if (!this.initialized) return;
+        if (!this.initialized) {
+            console.warn('⚠️ WebGPUBackground: Tried to animate before initialization');
+            return;
+        }
         
         // WebGPU animation would go here
         // For simplicity, we're using the Canvas fallback for most browsers
@@ -325,8 +392,10 @@ class WebGPUBackground {
     }
 
     destroy() {
+        console.log('🧹 WebGPUBackground: Cleaning up resources');
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);
+            console.log('🛑 WebGPUBackground: Animation stopped');
         }
     }
     
@@ -464,8 +533,8 @@ class WebGPUBackground {
             // Subtle parallax effect on background
             if (container) {
                 container.style.backgroundPosition = `
-                    ${50 + mouseX * 5}% ${50 + mouseY * 5}%
-                `;
+                    ${50 + mouseX * 5}% ${50 + mouseY * 5}%`
+                ;
             }
         });
     }
@@ -652,7 +721,6 @@ class WebGPUBackground {
                 
                 // Color based on position in the pattern
                 const hue = (cosmicNodes.indexOf(node) / nodeCount) * 30 + 40; // Gold to orange hues
-                
                 gradient.addColorStop(0, `hsla(${hue}, 80%, 60%, ${0.1 + pulseIntensity * 0.1})`);
                 gradient.addColorStop(0.5, `hsla(${hue}, 90%, 50%, ${0.05 + pulseIntensity * 0.05})`);
                 gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -904,3 +972,7 @@ class WebGPUBackground {
         animateRipple();
     }
 }
+
+// Export the class as the default export
+console.log('📦 WebGPUBackground: Exporting module');
+export default WebGPUBackground;

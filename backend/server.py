@@ -10,34 +10,21 @@ class ApplicationServer:
         self.shutdown_flag = threading.Event()
         server_address = (self.config['host'], self.config['port'])
         self.httpd = socketserver.TCPServer(server_address, backend.request_handler.create_request_handler(self))
-    
-    def keyboard_interrupt_handler(self):
-        while not self.shutdown_flag.is_set():
-            try:
-                time.sleep(1)
-            except KeyboardInterrupt:
-                break
-        
-        if not self.shutdown_flag.is_set():
-            self.shutdown_flag.set()
-            self.httpd.shutdown()
+        self.httpd.allow_reuse_address = True
     
     def run(self):
         print("GameGen2 server")
         print(f"Started at http://localhost:{self.config['port']}")
         print("Press Ctrl+C to stop the server")
         
-        interrupt_thread = threading.Thread(target=self.keyboard_interrupt_handler)
-        interrupt_thread.daemon = True
-        interrupt_thread.start()
-        
         try:
-            self.httpd.serve_forever()
+            self.httpd.serve_forever(poll_interval=0.1)
         except KeyboardInterrupt:
-            pass
+            print("\nShutting down server...")
         finally:
             self.shutdown_flag.set()
             self.httpd.server_close()
+            print("Server stopped")
 
     @staticmethod
     def run_server(config):

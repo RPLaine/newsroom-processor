@@ -1,0 +1,10 @@
+/* App container component styles */
+#app-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    min-height: 400px;
+}

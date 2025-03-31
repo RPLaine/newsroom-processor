@@ -1,14 +1,35 @@
 import Config from './config.js';
+import AppContainer from './app-container/app-container.js';
 
 console.log('Config:', Config);
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 async function initializeApp() {
     console.log('Initializing application...');
+
+    AppContainer.createAppContainer();
+
     const request_data = {
         action: 'application_init'
     };
+
     let data = await FetchData(request_data);
+
+    if (data.userid) {
+        App(data);
+    } else {
+        Login(data);
+    }
+}
+
+async function App(data) {
+    console.log('Running the application...');
+    AppContainer.setAppContainerContent('<h1>Welcome to the App</h1>');
+}
+
+async function Login(data) {
+    console.log('Running login...');
+    AppContainer.setAppContainerContent('<h1>Login</h1>');
 }
 
 async function FetchData(request_data, content_type = 'application/json') {
@@ -82,8 +103,7 @@ async function FetchData(request_data, content_type = 'application/json') {
 //  */
 // async function switchModule(moduleName) {
 //     // Clear the current content
-//     const appContainer = document.getElementById('app-container') || createAppContainer();
-//     appContainer.innerHTML = '';
+//     AppContainer.clearAppContainer();
     
 //     // Load the new module if not already loaded
 //     if (!Config.modules[moduleName]) {
@@ -100,18 +120,6 @@ async function FetchData(request_data, content_type = 'application/json') {
 // }
 
 // /**
-//  * Create the main application container if it doesn't exist
-//  * 
-//  * @returns {HTMLElement} The app container element
-//  */
-// function createAppContainer() {
-//     const appContainer = document.createElement('div');
-//     appContainer.id = 'app-container';
-//     document.body.appendChild(appContainer);
-//     return appContainer;
-// }
-
-// /**
 //  * Display an error message to the user
 //  * 
 //  * @param {string} message - Error message to display
@@ -121,7 +129,7 @@ async function FetchData(request_data, content_type = 'application/json') {
 //     errorDiv.className = 'error-message';
 //     errorDiv.textContent = message;
     
-//     const appContainer = document.getElementById('app-container') || createAppContainer();
+//     const appContainer = AppContainer.getAppContainer();
 //     appContainer.appendChild(errorDiv);
     
 //     // Auto-remove after 5 seconds
@@ -142,10 +150,8 @@ async function FetchData(request_data, content_type = 'application/json') {
 //     return string.charAt(0).toUpperCase() + string.slice(1);
 // }
 
-// Initialize the application once the DOM is fully loaded
-
-
 // // Expose key functions to the global scope for module interaction
 // window.GameGen2 = Config;
 // window.switchModule = switchModule;
 // window.displayErrorMessage = displayErrorMessage;
+// window.AppContainer = AppContainer; // Expose the app container to the global scope

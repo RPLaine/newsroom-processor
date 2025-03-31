@@ -8,34 +8,24 @@
 /**
  * Initialize the login module
  * 
- * @param {Object} app - The main application object
- * @returns {Promise<void>}
+ * @param {Object} data - Initial data from server
+ * @param {HTMLElement} appContainer - The app container element
+ * @param {Function} fetchData - The data fetching function
+ * @returns {Promise<Object>} Updated data after login
  */
-async function initLoginModule(app) {
-    console.log('Initializing login module...');
+async function createLogin(data, appContainer, fetchData) {
+    console.log('Creating login view...');
     
-    // Load login page content
-    try {
-        const loginContent = await loadLoginContent();
-        
-        // Prepare the app container
-        const appContainer = document.getElementById('app-container');
-        if (appContainer) {
-            // Set login container
-            appContainer.innerHTML = loginContent;
-            
-            // Initialize form handlers once content is loaded
-            setupFormHandlers();
-            
-            // Initialize WebGPU background if available
-            initWebGPUBackground();
-        }
-    } catch (error) {
-        console.error('Error initializing login module:', error);
-        displayErrorMessage('Failed to load login page. Please try again later.');
-    }
+    // Set the login content
+    appContainer.innerHTML = await loadLoginContent();
     
-    console.log('Login module initialized.');
+    // Initialize form handlers
+    setupFormHandlers(fetchData);
+    
+    // Initialize WebGPU background if available
+    initWebGPUBackground();
+    
+    return data;
 }
 
 /**
@@ -101,8 +91,9 @@ async function loadLoginContent() {
 
 /**
  * Set up login and registration form handlers
+ * @param {Function} fetchData - Function for making API requests
  */
-function setupFormHandlers() {
+function setupFormHandlers(fetchData) {
     // Tab switching
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -141,22 +132,14 @@ function setupFormHandlers() {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Logging in...';
                 
-                // Send login request
-                const response = await fetch('/api/post', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'login',
-                        data: {
-                            email: loginEmail,
-                            password: loginPassword
-                        }
-                    })
+                // Send login request using the fetchData function
+                const data = await fetchData({
+                    action: 'login',
+                    data: {
+                        email: loginEmail,
+                        password: loginPassword
+                    }
                 });
-                
-                const data = await response.json();
                 
                 if (data.status === 'success') {
                     // Login successful - reload page to trigger auth check
@@ -299,6 +282,11 @@ function showLoginView(container) {
     });
 }
 
-// Expose functions to the global scope
-window.initLoginModule = initLoginModule;
-window.showLoginView = showLoginView;
+// Export the functionality
+export default {
+    createLogin,
+    loadLoginContent,
+    setupFormHandlers,
+    initWebGPUBackground,
+    showLoginView
+};

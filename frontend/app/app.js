@@ -15,6 +15,112 @@ const appState = {
 };
 
 /**
+ * Create and initialize the application
+ * 
+ * @param {Object} data - Initial data from server
+ * @param {HTMLElement} appContainer - The app container element
+ * @param {Function} fetchData - The data fetching function
+ * @returns {Promise<Object>} Updated data after initialization
+ */
+async function createApp(data, appContainer, fetchData) {
+    console.log('Creating app...');
+    
+    // Store the user data
+    appState.currentUser = data;
+    
+    // Create app structure
+    appContainer.innerHTML = `
+        <header class="app-header">
+            <h1>GameGen2</h1>
+            <div class="user-info">
+                <span class="user-name">${data.username || 'User'}</span>
+                <button id="logout-btn" class="btn btn-small">Logout</button>
+            </div>
+        </header>
+        <nav class="app-nav">
+            <ul>
+                <li><a href="#" class="active" data-navigate="dashboard">Dashboard</a></li>
+                <li><a href="#" data-navigate="create">Create Story</a></li>
+                <li><a href="#" id="stories-nav-link" data-navigate="stories">My Stories</a></li>
+                <li><a href="#" data-navigate="settings">Settings</a></li>
+            </ul>
+        </nav>
+        <main>
+            <div id="dashboard-view" class="app-view">
+                <h2>Welcome to GameGen2</h2>
+                <p>Start creating your narrative adventure today!</p>
+                <button id="new-story-btn" class="btn btn-primary">Create New Story</button>
+            </div>
+            <div id="create-view" class="app-view hidden">
+                <h2>Create New Story</h2>
+                <form id="create-story-form">
+                    <div class="form-group">
+                        <label for="story-prompt">Enter a prompt to start your story:</label>
+                        <textarea id="story-prompt" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="story-genre">Genre:</label>
+                        <select id="story-genre">
+                            <option value="fantasy">Fantasy</option>
+                            <option value="sci-fi">Science Fiction</option>
+                            <option value="mystery">Mystery</option>
+                            <option value="horror">Horror</option>
+                            <option value="adventure">Adventure</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Start Story</button>
+                </form>
+            </div>
+            <div id="stories-view" class="app-view hidden">
+                <h2>My Stories</h2>
+                <div id="stories-list" class="stories-list">
+                    <p>Loading stories...</p>
+                </div>
+            </div>
+            <div id="settings-view" class="app-view hidden">
+                <h2>Settings</h2>
+                <div class="settings-section">
+                    <h3>Theme</h3>
+                    <div class="theme-options">
+                        <button class="theme-btn" data-theme="default">Default</button>
+                        <button class="theme-btn" data-theme="dark">Dark</button>
+                        <button class="theme-btn" data-theme="light">Light</button>
+                    </div>
+                </div>
+            </div>
+            <div id="story-view" class="app-view hidden">
+                <div id="story-content"></div>
+                <div id="story-controls" class="hidden">
+                    <form id="continue-story-form">
+                        <div class="form-group">
+                            <label for="user-input">What happens next?</label>
+                            <textarea id="user-input" rows="3" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Continue</button>
+                            <button type="button" id="save-story-btn" class="btn">Save Story</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <div id="notifications" class="notifications-container"></div>
+    `;
+    
+    // Initialize the app
+    await initApp({
+        theme: localStorage.getItem('gamegen2-theme') || 'default',
+        initialView: 'dashboard',
+        fetchData: fetchData
+    });
+    
+    // Initialize event handlers that need direct access to fetchData
+    initializeEventHandlersWithApi(fetchData);
+    
+    return data;
+}
+
+/**
  * Initialize the application
  * 
  * @param {Object} options - Initialization options
@@ -147,33 +253,6 @@ function registerEventListeners() {
                 }
             }
         }
-    });
-    
-    // Save story button
-    document.getElementById('save-story-btn')?.addEventListener('click', async () => {
-        if (window.saveStory) {
-            try {
-                await window.saveStory();
-                showNotification('Story saved successfully');
-            } catch (error) {
-                showError('Failed to save story', error);
-            }
-        }
-    });
-    
-    // Logout button
-    document.getElementById('logout-btn')?.addEventListener('click', () => {
-        logout();
-    });
-    
-    // Theme toggle buttons
-    document.querySelectorAll('[data-theme]').forEach(button => {
-        button.addEventListener('click', () => {
-            if (window.changeTheme) {
-                const theme = button.dataset.theme;
-                window.changeTheme(theme);
-            }
-        });
     });
 }
 
@@ -553,8 +632,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Expose key functions to global scope
-window.appNavigate = navigateToView;
-window.appShowNotification = showNotification;
-window.appShowError = showError;
-window.appLogout = logout;
+// Export the module
+export default {
+    createApp,
+    initApp,
+    navigateToView,
+    showNotification,
+    showError,
+    loadUserSession,
+    loadUserStories,
+    updateUserUI
+};

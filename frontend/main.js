@@ -1,6 +1,6 @@
 import AppContainer from './app-container/app-container.js';
 import App from './app/app.js';
-import Login from './login/login.js';
+import Login from '/login/login.js';
 import { FetchData } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', initializeApp);

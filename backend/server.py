@@ -1,6 +1,5 @@
 import socketserver
 import threading
-import time
 
 import backend.request_handler
 

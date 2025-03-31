@@ -43,3 +43,17 @@ def write_json_file(path, data, indent: int = 2):
     except (IOError, portalocker.LockException) as e:
         print(f"Error writing to {path}: {str(e)}")
         return False
+    
+def is_user_id_valid(user_id, user_data_path):
+    """
+    Check if the user ID is valid by comparing it with the user data file.
+    
+    Args:
+        user_id: The user ID to validate
+        user_data_path: Path to the user data file
+        
+    Returns:
+        True if valid, False otherwise
+    """
+    user_data = read_json_file(user_data_path)
+    return user_id in user_data

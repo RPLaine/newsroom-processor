@@ -42,11 +42,6 @@ function createHeader() {
     const buttonsContainer = document.createElement('div');
     buttonsContainer.className = 'header-buttons';
     
-    const johtoButton = document.createElement('button');
-    johtoButton.textContent = 'Johto';
-    johtoButton.className = 'johto-btn';
-    buttonsContainer.appendChild(johtoButton);
-    
     const logoutButton = document.createElement('button');
     logoutButton.textContent = 'Logout';
     logoutButton.className = 'logout-btn';
@@ -100,19 +95,13 @@ function createTabContent() {
     jobsContent.className = `tab-content ${appState.activeTab === 'jobs' ? 'active' : ''}`;
     jobsContent.innerHTML = `
         <div class="section small">
-            <h2>Create New Job</h2>
-            <form id="create-job-form" class="form">
-                <div class="form-group">
-                    <label for="job-title">Name</label>
-                    <input type="text" id="job-title" required>
-                </div>
-                <button type="submit" class="btn primary">Create Job</button>
-            </form>
+            <h2>Load Data</h2>
+            <button id="johto-data-btn" class="btn primary">Load johto.online data</button>
         </div>
         <div class="section large">
-            <h2>Your Jobs</h2>
-            <div id="jobs-list" class="jobs-list">
-                <p>Loading jobs...</p>
+            <h2>Structures</h2>
+            <div id="structures-list" class="jobs-list">
+                <p>No structures loaded. Please load johto.online data first.</p>
             </div>
         </div>
     `;

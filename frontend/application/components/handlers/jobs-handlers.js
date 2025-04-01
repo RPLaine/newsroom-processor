@@ -2,180 +2,142 @@
  * Jobs tab event handlers
  */
 import * as api from '../api.js';
-import { appState, showNotification, showError } from './common.js';
+import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
 
 /**
  * Setup event handlers for Jobs tab
  */
 export function setupJobsTabHandlers() {
-    // Create job form
-    const createJobForm = document.getElementById('create-job-form');
-    createJobForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
+    // Setup Johto data button handler
+    const johtoDataBtn = document.getElementById('johto-data-btn');
+    johtoDataBtn?.addEventListener('click', async () => {
         try {
-            const name = document.getElementById('job-title').value;
+            // Disable button and show loading state
+            johtoDataBtn.disabled = true;
+            johtoDataBtn.textContent = 'Loading...';
             
-            if (!name) {
-                showError('Job name is required');
-                return;
-            }
+            // Get and show loading animation
+            const loadingAnimation = getLoadingAnimation();
+            loadingAnimation.show();
             
-            const response = await api.createJob(name);
+            // Simulate progress updates
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                loadingAnimation.updateProgress(progress);
+            }, 600);
             
-            if (response.status === 'success' && response.job_id) {
-                showNotification('Job created successfully', 'success');
+            const response = await api.loadJohtoData();
+            
+            // Clear the progress interval
+            clearInterval(progressInterval);
+            
+            // Complete the progress to 100%
+            loadingAnimation.updateProgress(100);
+            
+            // Small delay to show 100% completion before hiding
+            await new Promise(resolve => setTimeout(resolve, 400));
+            
+            // Hide the loading animation
+            loadingAnimation.hide();
+            
+            if (response.status === 'success') {
+                showNotification('Johto data loaded successfully', 'success');
                 
-                // Store job in app state
-                appState.currentJob = {
-                    id: response.job_id,
-                    name: name,
-                    created_at: response.timestamp
-                };
-                
-                // Clear form
-                document.getElementById('job-title').value = '';
-                
-                // Load jobs
-                loadJobs();
+                // Update structures list if data is available
+                if (response.data && response.data.structures) {
+                    updateStructuresList(response.data.structures);
+                } else {
+                    updateStructuresList([]);
+                }
             } else {
-                throw new Error(response.message || 'Failed to create job');
+                throw new Error(response.message || 'Failed to load Johto data');
             }
         } catch (error) {
-            showError('Error creating job', error);
+            // Hide the loading animation in case of error
+            getLoadingAnimation().hide();
+            showError('Error loading Johto data', error);
+        } finally {
+            // Reset button state
+            johtoDataBtn.disabled = false;
+            johtoDataBtn.textContent = 'Load johto.online data';
         }
     });
     
-    // Load jobs when jobs tab is clicked
-    document.getElementById('jobs-tab')?.addEventListener('click', loadJobs);
-    
-    // Initial jobs load
-    loadJobs();
-}
-
-/**
- * Load jobs from API
- */
-export async function loadJobs() {
-    const jobsList = document.getElementById('jobs-list');
-    if (!jobsList) return;
-    
-    try {
-        jobsList.innerHTML = '<p>Loading jobs...</p>';
-        
-        const response = await api.getJobs();
-        
-        if (response.status === 'success' && response.data?.jobs) {
-            updateJobsList(response.data.jobs);
-        } else {
-            throw new Error(response.message || 'Failed to load jobs');
+    // Load structures when jobs tab is clicked
+    document.getElementById('jobs-tab')?.addEventListener('click', () => {
+        // If structures data exists in the current app state, display it
+        if (appState.structures && appState.structures.length > 0) {
+            updateStructuresList(appState.structures);
         }
-    } catch (error) {
-        showError('Error loading jobs', error);
-        jobsList.innerHTML = '<p>Error loading jobs. Please try again.</p>';
-    }
+    });
 }
 
 /**
- * Update jobs list in UI
+ * Update structures list in UI
  * 
- * @param {Array} jobs - Jobs data from API
+ * @param {Array} structures - Structures data from API
  */
-function updateJobsList(jobs) {
-    const jobsList = document.getElementById('jobs-list');
-    if (!jobsList) return;
+function updateStructuresList(structures) {
+    const structuresList = document.getElementById('structures-list');
+    if (!structuresList) return;
     
-    if (!jobs || jobs.length === 0) {
-        jobsList.innerHTML = '<p>No jobs found. Create your first job above!</p>';
+    // Store structures in app state for future reference
+    appState.structures = structures;
+    
+    if (!structures || structures.length === 0) {
+        structuresList.innerHTML = '<p>No structures loaded. Please load johto.online data first.</p>';
         return;
     }
     
-    jobsList.innerHTML = '';
+    structuresList.innerHTML = '';
     
-    jobs.forEach(job => {
-        const jobElement = document.createElement('div');
-        jobElement.className = 'job-card';
-        jobElement.dataset.jobId = job.id;
+    structures.forEach(structure => {
+        const structureElement = document.createElement('div');
+        structureElement.className = 'job-card';
+        structureElement.dataset.structureId = structure.id;
         
-        // Format dates
-        const createdDate = job.created_at ? formatDate(new Date(job.created_at * 1000)) : 'Unknown';
+        // Get number of nodes if available
+        const nodeCount = structure.nodes ? Object.keys(structure.nodes).length : 0;
         
-        jobElement.innerHTML = `
+        structureElement.innerHTML = `
             <div class="job-content">
-                <h3>${job.name || 'Untitled Job'}</h3>
+                <h3>${structure.name || 'Untitled Structure'}</h3>
                 <div class="job-meta">
-                    <span>Created: ${createdDate}</span>
+                    <span>ID: ${structure.id}</span>
+                    <span>Nodes: ${nodeCount}</span>
                 </div>
             </div>
             <div class="job-actions">
-                <button class="btn select-job-btn primary">Select</button>
-                <button class="btn delete-job-btn">Delete</button>
+                <button class="btn select-structure-btn primary">Select</button>
             </div>
         `;
         
-        jobsList.appendChild(jobElement);
+        structuresList.appendChild(structureElement);
     });
     
-    // Add event listeners to job buttons
-    document.querySelectorAll('.select-job-btn').forEach((btn, index) => {
+    // Add event listeners to structure buttons
+    document.querySelectorAll('.select-structure-btn').forEach((btn, index) => {
         btn.addEventListener('click', () => {
-            selectJob(jobs[index]);
-        });
-    });
-    
-    document.querySelectorAll('.delete-job-btn').forEach((btn, index) => {
-        btn.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to delete this job?')) {
-                return;
-            }
-            
-            try {
-                const jobId = jobs[index].id;
-                const response = await api.deleteJob(jobId);
-                
-                if (response.status === 'success') {
-                    showNotification('Job deleted successfully', 'success');
-                    
-                    // Clear current job if it was deleted
-                    if (appState.currentJob && appState.currentJob.id === jobId) {
-                        appState.currentJob = null;
-                    }
-                    
-                    // Reload jobs
-                    loadJobs();
-                } else {
-                    throw new Error(response.message || 'Failed to delete job');
-                }
-            } catch (error) {
-                showError('Error deleting job', error);
-            }
+            selectStructure(structures[index]);
         });
     });
 }
 
 /**
- * Select a job and load its data
+ * Select a structure and load its data
  * 
- * @param {Object} job - Job data
+ * @param {Object} structure - Structure data
  */
-export function selectJob(job) {
-    appState.currentJob = job;
-    showNotification(`Selected job: ${job.name}`, 'success');
+function selectStructure(structure) {
+    appState.currentStructure = structure;
+    showNotification(`Selected structure: ${structure.name}`, 'success');
     
-    // Update UI components with job data
-    updateInputsList(job.inputs || []);
-    updateConversationArea(job.conversation || []);
-    updateOutputsList(job.outputs || []);
-    
-    // Automatically switch to the Inputs tab
-    const inputsTab = document.getElementById('inputs-tab');
-    if (inputsTab) {
-        inputsTab.click();
-    }
+    // For now, just set the current job to the selected structure
+    // In the future, this could be expanded to handle structure-specific functionality
+    appState.currentJob = {
+        id: structure.id,
+        name: structure.name
+    };
 }
-
-// Helper functions from other files that will be imported
-import { updateInputsList } from './inputs-handlers.js';
-import { updateConversationArea } from './process-handlers.js';
-import { updateOutputsList } from './outputs-handlers.js';
-import { formatDate } from './common.js';

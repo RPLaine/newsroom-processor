@@ -7,7 +7,7 @@ import { setupJobsTabHandlers } from './jobs-handlers.js';
 import { setupInputsTabHandlers } from './inputs-handlers.js';
 import { setupProcessTabHandlers } from './process-handlers.js';
 import { setupOutputsTabHandlers } from './outputs-handlers.js';
-import { setupLogoutHandler, setupJohtoButtonHandler } from './misc-handlers.js';
+import { setupLogoutHandler } from './misc-handlers.js';
 import { initLoadingAnimation } from './common.js';
 
 // Initialize animation on import
@@ -22,5 +22,4 @@ export function initEventHandlers() {
     setupProcessTabHandlers();
     setupOutputsTabHandlers();
     setupLogoutHandler();
-    setupJohtoButtonHandler();
 }

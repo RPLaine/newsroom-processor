@@ -37,16 +37,32 @@ function updateStructuresList(structures) {
         const username = userData.username || 'Unknown User';
         const userStructures = userData.structures || {};
         
-        // Add a user section heading
+        // Create a container for this user section (heading + structures)
+        const userSection = document.createElement('div');
+        userSection.className = 'user-section';
+        structuresList.appendChild(userSection);
+        
+        // Add a user section heading with toggle functionality
         const userHeading = document.createElement('h3');
         userHeading.className = 'user-heading';
         userHeading.textContent = username;
-        structuresList.appendChild(userHeading);
+        // Add an expand/collapse icon
+        userHeading.innerHTML = `${username} <span class="toggle-icon">▼</span>`;
+        userSection.appendChild(userHeading);
         
         // Create a container for this user's structures
         const userStructuresContainer = document.createElement('div');
         userStructuresContainer.className = 'user-structures-container';
-        structuresList.appendChild(userStructuresContainer);
+        userSection.appendChild(userStructuresContainer);
+        
+        // Add event listener to toggle visibility
+        userHeading.addEventListener('click', () => {
+            userStructuresContainer.classList.toggle('collapsed');
+            const toggleIcon = userHeading.querySelector('.toggle-icon');
+            if (toggleIcon) {
+                toggleIcon.textContent = userStructuresContainer.classList.contains('collapsed') ? '▶' : '▼';
+            }
+        });
         
         if (Object.keys(userStructures).length === 0) {
             const noStructuresMsg = document.createElement('p');
@@ -65,6 +81,7 @@ function updateStructuresList(structures) {
             structureElement.dataset.structureId = fileName;
             
             const nodeCount = structure.nodes ? Object.keys(structure.nodes).length : 0;
+            const connectionCount = structure.connections ? Object.keys(structure.connections).length : 0;
             const structureName = structure.name || fileName.replace('.json', '');
             
             structureElement.innerHTML = `
@@ -73,6 +90,7 @@ function updateStructuresList(structures) {
                     <div class="structure-meta">
                         <span class="structure-meta-item">File: ${fileName}</span>
                         <span class="structure-meta-item">Nodes: ${nodeCount}</span>
+                        <span class="structure-meta-item">Connections: ${connectionCount}</span>
                     </div>
                 </div>
                 <div class="structure-actions">

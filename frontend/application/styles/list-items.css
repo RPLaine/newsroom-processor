@@ -168,19 +168,40 @@
 }
 
 /* User structures styling */
+.user-section {
+    margin-bottom: var(--spacing-lg);
+}
+
 .user-heading {
     margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
     color: var(--color-brand-primary-light);
     font-size: var(--font-size-lg);
     border-bottom: var(--border-width) solid var(--border-color);
     padding-bottom: var(--spacing-xs);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-heading .toggle-icon {
+    font-size: var(--font-size-sm);
+    transition: transform 0.3s ease;
 }
 
 .user-structures-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    overflow: hidden;
+}
+
+.user-structures-container.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    pointer-events: none;
 }
 
 /* First user heading shouldn't have a top margin */

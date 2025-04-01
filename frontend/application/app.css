@@ -99,7 +99,7 @@
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-auto-rows: auto;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     width: 100%;
     max-width: 1600px;
     margin: 0 auto;
@@ -114,6 +114,7 @@
     border: var(--border-width) solid rgba(255, 255, 255, 0.05);
     /* Default span 12 columns (full width) on mobile */
     grid-column: span 12;
+    margin-bottom: var(--spacing-sm);
 }
 
 /* Section size variations */

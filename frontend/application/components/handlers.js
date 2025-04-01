@@ -28,30 +28,27 @@ function setupJobsTabHandlers() {
         e.preventDefault();
         
         try {
-            const title = document.getElementById('job-title').value;
-            const description = document.getElementById('job-description').value;
-            const jobType = document.getElementById('job-type').value;
+            const name = document.getElementById('job-title').value;
             
-            if (!title) {
-                showError('Job title is required');
+            if (!name) {
+                showError('Job name is required');
                 return;
             }
             
-            const response = await api.createJob({
-                title,
-                description,
-                job_type: jobType
-            });
+            const response = await api.createJob(name);
             
-            if (response.status === 'success' && response.data?.job) {
+            if (response.status === 'success' && response.job_id) {
                 showNotification('Job created successfully', 'success');
                 
                 // Store job in app state
-                appState.currentJob = response.data.job;
+                appState.currentJob = {
+                    id: response.job_id,
+                    name: name,
+                    created_at: response.timestamp
+                };
                 
                 // Clear form
                 document.getElementById('job-title').value = '';
-                document.getElementById('job-description').value = '';
                 
                 // Load jobs
                 loadJobs();
@@ -116,14 +113,11 @@ function updateJobsList(jobs) {
         
         // Format dates
         const createdDate = job.created_at ? formatDate(new Date(job.created_at * 1000)) : 'Unknown';
-        const modifiedDate = job.last_modified ? formatDate(new Date(job.last_modified * 1000)) : 'Unknown';
         
         jobElement.innerHTML = `
-            <h3>${job.title || 'Untitled Job'}</h3>
-            <p>${job.description || 'No description'}</p>
+            <h3>${job.name || 'Untitled Job'}</h3>
             <div class="job-meta">
                 <span>Created: ${createdDate}</span>
-                <span>Modified: ${modifiedDate}</span>
             </div>
             <div class="job-actions">
                 <button class="btn select-job-btn primary">Select</button>
@@ -178,7 +172,7 @@ function updateJobsList(jobs) {
  */
 function selectJob(job) {
     appState.currentJob = job;
-    showNotification(`Selected job: ${job.title}`, 'success');
+    showNotification(`Selected job: ${job.name}`, 'success');
     
     // Update UI components with job data
     updateInputsList(job.inputs || []);

@@ -92,20 +92,8 @@ function createTabContent() {
             <h2>Create New Job</h2>
             <form id="create-job-form" class="form">
                 <div class="form-group">
-                    <label for="job-title">Title</label>
+                    <label for="job-title">Name</label>
                     <input type="text" id="job-title" required>
-                </div>
-                <div class="form-group">
-                    <label for="job-description">Description</label>
-                    <textarea id="job-description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="job-type">Type</label>
-                    <select id="job-type">
-                        <option value="document">Document</option>
-                        <option value="story">Story</option>
-                        <option value="research">Research</option>
-                    </select>
                 </div>
                 <button type="submit" class="btn primary">Create Job</button>
             </form>

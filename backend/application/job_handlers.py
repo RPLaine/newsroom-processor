@@ -19,10 +19,49 @@ def handle_create_job(response, user_id, request_data):
     Returns:
         Updated response with job creation results
     """
-    # Implementation for creating a new job
-    response["status"] = "success"
-    response["job_id"] = str(uuid4())
-    response["timestamp"] = time.time()
+    try:
+        # Get the job name from request data
+        job_name = request_data.get("name")
+        
+        if not job_name:
+            response["status"] = "error"
+            response["message"] = "Job name is required"
+            return response
+            
+        # Generate a unique job ID and timestamp
+        job_id = str(uuid4())
+        timestamp = time.time()
+        
+        # Create the job object with only a name
+        new_job = {
+            "id": job_id,
+            "name": job_name,
+            "created_at": timestamp
+        }
+        
+        # Load the user's data
+        user_data = load_user_data(user_id)
+        
+        # Add the new job to the user's jobs
+        if "jobs" not in user_data:
+            user_data["jobs"] = []
+        
+        user_data["jobs"].append(new_job)
+        
+        # Save the updated user data
+        user_data_path = os.path.join("data", "users", user_id, "data.json")
+        with open(user_data_path, "w") as file:
+            json.dump(user_data, file, indent=2)
+        
+        # Set success response
+        response["status"] = "success"
+        response["job_id"] = job_id
+        response["timestamp"] = timestamp
+        
+    except Exception as e:
+        response["status"] = "error"
+        response["message"] = f"Error creating job: {str(e)}"
+    
     return response
 
 def handle_continue_job(response, user_id, request_data):

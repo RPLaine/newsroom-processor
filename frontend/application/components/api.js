@@ -47,13 +47,13 @@ export async function getJobs() {
 /**
  * Create new job
  * 
- * @param {Object} jobData - Job data (title, description, type) 
+ * @param {string} name - Job name 
  * @returns {Promise<Object>} Job creation response
  */
-export async function createJob(jobData) {
+export async function createJob(name) {
     return await sendRequest({ 
         action: 'create_job',
-        ...jobData
+        name
     });
 }
 

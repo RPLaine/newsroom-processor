@@ -1,0 +1,572 @@
+{
+  "structures": [
+    {
+      "id": "057d023ba6b7a5e9",
+      "name": "Lauran testi",
+      "structure": {
+        "nodes": [
+          {
+            "id": "02beee6e-85f5-41ef-b7bb-ee9341012ba2",
+            "type": "process",
+            "x": -1668.289621272579,
+            "y": -254.46272487770457,
+            "configuration": {
+              "header": "Lauran testi ",
+              "prompt": "Laura avaa oven. ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "734b8cc3-bd30-4e8d-954b-8b8378dc058a",
+            "type": "process",
+            "x": -1151.1496680117334,
+            "y": -179.04648169383125,
+            "configuration": {
+              "header": "Ovi aukeaa ",
+              "prompt": "Laura astuu sis\u00e4\u00e4n ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "4ceb636b-e8e6-4f4f-87ea-adba590435b7",
+            "type": "process",
+            "x": -1011.0909306702545,
+            "y": -319.10521903531026,
+            "configuration": {
+              "header": "Ovi ei aukea",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "93af4fcd-2f11-4162-be3a-a53bca0b35d1",
+            "type": "process",
+            "x": -362.2369820833243,
+            "y": -201.66548091484535,
+            "configuration": {
+              "header": "",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          }
+        ],
+        "connections": [
+          {
+            "id": "ed6ebe7a-68d5-4c72-8084-3ff5c2ce985d",
+            "startNode": "02beee6e-85f5-41ef-b7bb-ee9341012ba2",
+            "endNode": "734b8cc3-bd30-4e8d-954b-8b8378dc058a"
+          },
+          {
+            "id": "5ff0788a-cb11-4dd3-be7e-e3b5e7535142",
+            "startNode": "02beee6e-85f5-41ef-b7bb-ee9341012ba2",
+            "endNode": "4ceb636b-e8e6-4f4f-87ea-adba590435b7"
+          },
+          {
+            "id": "84184a91-26eb-4289-a40d-7a869026b37e",
+            "startNode": "4ceb636b-e8e6-4f4f-87ea-adba590435b7",
+            "endNode": "93af4fcd-2f11-4162-be3a-a53bca0b35d1"
+          }
+        ],
+        "timestamp": "2025-03-24T13:50:46.764Z"
+      },
+      "timestamp": "2025-03-24T13:50:46.764Z"
+    },
+    {
+      "id": "c29613dc2f577fd2",
+      "name": "Jutun julkaisup\u00e4\u00e4t\u00f6s p\u00e4\u00e4toimittajan n\u00e4k\u00f6kulmasta ",
+      "structure": {
+        "nodes": [
+          {
+            "id": "87cbb328-c394-4f96-96d2-e362e3bbd1ee",
+            "type": "start",
+            "x": -1343.1065470667677,
+            "y": -286.16416689578796
+          },
+          {
+            "id": "c482f3bd-873a-49a0-bef7-a3c056a597d1",
+            "type": "process",
+            "x": -1202.1617875699162,
+            "y": -407.79417598119477,
+            "configuration": {
+              "header": "Vaativan jutun julkaisup\u00e4\u00e4t\u00f6s p\u00e4\u00e4toimittajan n\u00e4k\u00f6kulmasta ",
+              "prompt": "Esihenkil\u00f6 ottaa p\u00e4\u00e4toimittajaan etuk\u00e4teen yhteytt\u00e4 ja kertoo, ett\u00e4 seuraavalla viikolla on valmistumassa juttu, joka johdon t\u00e4ytyy lukea. Kyse on yhteiskunnallisesti merkitt\u00e4v\u00e4st\u00e4 aiheesta, joka k\u00e4sittelee v\u00e4\u00e4rink\u00e4yt\u00f6ksi\u00e4. Juttuun liittyy kuitenkin  herkkyyksi\u00e4, koska oikeusprosessi on kesken. Ainakin nimenjulkaisua pit\u00e4\u00e4 harkita. \n ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "657f8085-9d15-424f-a6d7-33782dfdfc89",
+            "type": "process",
+            "x": -1006.8166214630509,
+            "y": -466.7663015983617,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja kyselee lis\u00e4tietoja jutusta ",
+              "prompt": "Alustavien tietojen perusteella p\u00e4\u00e4toimittaja alkaa mietti\u00e4, onko juttu syyt\u00e4 j\u00e4tt\u00e4\u00e4 julkaisematta, koska siin\u00e4 on eettisi\u00e4 ja oikeudellisia riskej\u00e4. H\u00e4n kyselee lis\u00e4tietoja tiedonhankintaprosessista ja siit\u00e4, onko rikoksesta ep\u00e4ilty\u00e4 kuultu jutunteon aikana.  ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "963dc481-cd2d-44f0-890a-adc1c0d09c2b",
+            "type": "process",
+            "x": -1039.9884421227073,
+            "y": -235.7921429311246,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja kuittaa tiedon ",
+              "prompt": "P\u00e4\u00e4toimittaja pyyt\u00e4\u00e4, ett\u00e4 juttu l\u00e4hetet\u00e4\u00e4n h\u00e4nelle luettavaksi, kunhan se valmistuu. ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "5da9adb0-0378-4ab9-b838-cfd00137f9e6",
+            "type": "process",
+            "x": -738.9848842850845,
+            "y": -463.08054374728874,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja saa lis\u00e4tietoa tiedonhankintaprosessista ja n\u00e4ytt\u00e4\u00e4 vihre\u00e4\u00e4 valoa ",
+              "prompt": "Lis\u00e4tiedon perusteella p\u00e4\u00e4toimittaja p\u00e4\u00e4tt\u00e4\u00e4, ett\u00e4 ep\u00e4ilty\u00e4 on kuultu riitt\u00e4v\u00e4ss\u00e4 m\u00e4\u00e4rin, jotta Journalistin ohjeet t\u00e4yttyv\u00e4t, ja jutuntekoa voi jatkaa.  ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "2e85d885-37d1-443a-851d-2ebc97f0369b",
+            "type": "process",
+            "x": -775.8424627958138,
+            "y": -357.42215201653136,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja saa lis\u00e4tietoa jutuntekoprosessista ja p\u00e4\u00e4tt\u00e4\u00e4, ett\u00e4 juttuhanketta pit\u00e4\u00e4 lyk\u00e4t\u00e4 ",
+              "prompt": "P\u00e4\u00e4toimittaja arvioi, ett\u00e4 ep\u00e4ilty\u00e4 ei ole kuultu riitt\u00e4viss\u00e4 m\u00e4\u00e4rin, eik\u00e4 juttua voi julkaista ilman samanaikaista kuulemista. H\u00e4n p\u00e4\u00e4tt\u00e4\u00e4, ett\u00e4 jutunteko vaatii lis\u00e4aikaa, ja kertoo t\u00e4m\u00e4n esihenkil\u00f6lle ja toimittajalle. ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "3bbfe35e-cd16-4a91-a638-9139c401b98a",
+            "type": "process",
+            "x": -926.958534689804,
+            "y": -115.3907197960755,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja saa lis\u00e4tietoa prosessista ja p\u00e4\u00e4tt\u00e4\u00e4, ettei juttuhanke voi edet\u00e4 ",
+              "prompt": "P\u00e4\u00e4toimittaja p\u00e4\u00e4ttelee, ett\u00e4 jutun oikeudelliset tai eettiset riskit ovat liian suuria suhteessa sen yhteiskunnalliseen merkitt\u00e4vyyteen. P\u00e4\u00e4toimittaja k\u00e4y esihenkil\u00f6n ja toimittajan kanssa keskustelun, jossa h\u00e4n perustelee, miksi juttuhanke ei voi t\u00e4llaisena edet\u00e4. ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "677144bb-9a3f-45db-8875-554916864860",
+            "type": "process",
+            "x": -312.665559510982,
+            "y": -428.6801371372747,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja lukee valmiin jutun ensimm\u00e4isen version ",
+              "prompt": "P\u00e4\u00e4toimittaja hyv\u00e4ksyy jutun julkaistavaksi ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "b9372f22-0992-4130-8cac-49ce7ebf1d2c",
+            "type": "process",
+            "x": -327.4085909152737,
+            "y": -320.564573505802,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja lukee jutun ensimm\u00e4isen version ",
+              "prompt": "P\u00e4\u00e4toimittaja pyyt\u00e4\u00e4 juttuun tarkennuksia, lis\u00e4yksi\u00e4 ja poistoja esimerkiksi Journalistin ohjeiden, tyyliseikkojen tai kokonaisharkinnan perusteella. Juttu voi olla esimerkiksi huonosti ajoitettu suhteessa ajankohtaiseen keskusteluun tai liian suuri verrattuna aiheen merkitt\u00e4vyyteen.   ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "48bd8c44-b990-4720-957a-cfc085b52338",
+            "type": "process",
+            "x": -343.3802082699231,
+            "y": -214.90618177504464,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja lukee jutun ensimm\u00e4isen version ",
+              "prompt": "P\u00e4\u00e4toimittaja p\u00e4\u00e4tt\u00e4\u00e4, ett\u00e4 juttua ei voi t\u00e4llaisena tai t\u00e4ss\u00e4 hetkess\u00e4 julkaista. P\u00e4\u00e4t\u00f6s on perusteltava esihenkil\u00f6lle ja toimittajalle. ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "cf1caff3-2fa7-4901-a9d0-1c7db281c940",
+            "type": "process",
+            "x": -781.985392547602,
+            "y": -4.8179842638875385,
+            "configuration": {
+              "header": "Toimittaja perustelee, miksi juttu olisi syyt\u00e4 julkaista p\u00e4\u00e4toimittajan vastustuksesta huolimatta ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "7171aca2-f23f-4bd7-b65d-a8fefb611b32",
+            "type": "process",
+            "x": -345.83738017063837,
+            "y": -71.1616255832003,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja p\u00e4\u00e4tt\u00e4\u00e4 silti, ett\u00e4 juttua ei voi julkaista ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "8d2ba016-c346-4c77-804d-40585173cf30",
+            "type": "process",
+            "x": -650.5266958593342,
+            "y": -112.93354789536019,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja my\u00f6ntyy toimittajan perusteluihin ja k\u00e4y keskustelun, mill\u00e4 muutoksilla jutun voisi mahdollisesti julkaista  ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "e10bc879-1034-4070-bb96-c72b430085ff",
+            "type": "process",
+            "x": 410.91652749119163,
+            "y": -444.4672811231767,
+            "configuration": {
+              "header": "Juttu julkaistaan ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "487c3b27-8518-4a06-a31a-f6251dcbcac8",
+            "type": "process",
+            "x": -105.97165527102719,
+            "y": -122.57284395389075,
+            "configuration": {
+              "header": "Toimittaja ymm\u00e4rt\u00e4\u00e4 p\u00e4\u00e4toimittajan p\u00e4\u00e4t\u00f6ksen perustelut ",
+              "prompt": "Hyllytt\u00e4misen syyt otetaan todenn\u00e4k\u00f6isesti huomioon seuraavassa jutuntekoprosessissa",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "a446d70c-f17f-4ab3-bdba-91bd212ef7b7",
+            "type": "process",
+            "x": -51.80672593965696,
+            "y": 41.46951344968767,
+            "configuration": {
+              "header": "Toimittaja ei ymm\u00e4rr\u00e4 p\u00e4\u00e4toimittajan perusteluita",
+              "prompt": "Jutun hyllytt\u00e4minen voi vaikuttaa toimittajan motivaatioon. Juttua ei kuitenkaan voi julkaista ilman p\u00e4\u00e4toimittajan lupaa. ",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "6dee5e91-7421-423e-b933-af09d79bad44",
+            "type": "process",
+            "x": -33.235893026044295,
+            "y": -354.70825537404886,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja lukee jutun toisen version ja hyv\u00e4ksyy sen julkaistavaksi ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "9ccc416a-61a6-4d83-9105-cec9d596315d",
+            "type": "process",
+            "x": 23.905772801181,
+            "y": -244.9027026166312,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja lukee jutun toisen version ja pyyt\u00e4\u00e4 viel\u00e4 lis\u00e4muutoksia ennen hyv\u00e4ksymist\u00e4 ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "a64f7c5b-7e6f-404b-aacd-61070aab9f53",
+            "type": "process",
+            "x": 231.39847599293597,
+            "y": -292.80547899534,
+            "configuration": {
+              "header": "P\u00e4\u00e4toimittaja lukee jutun kolmannen version ja hyv\u00e4ksyy sen julkaistavaksi ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          },
+          {
+            "id": "6b80020e-7957-4257-a85d-b4d3152307e3",
+            "type": "process",
+            "x": 322.58666882845114,
+            "y": -105.62145576453634,
+            "configuration": {
+              "header": "Juttua ei julkaista tai sit\u00e4 lyk\u00e4t\u00e4\u00e4n ",
+              "prompt": "",
+              "settings": {
+                "require_human_review": false,
+                "allow_automation": false,
+                "use_rss_feed": false,
+                "use_file_input": false
+              }
+            }
+          }
+        ],
+        "connections": [
+          {
+            "id": "4d053ce7-6541-4558-ac2c-8528715b3d03",
+            "startNode": "87cbb328-c394-4f96-96d2-e362e3bbd1ee",
+            "endNode": "c482f3bd-873a-49a0-bef7-a3c056a597d1"
+          },
+          {
+            "id": "09246cbb-511d-443b-bfab-e6169f9cabfd",
+            "startNode": "c482f3bd-873a-49a0-bef7-a3c056a597d1",
+            "endNode": "657f8085-9d15-424f-a6d7-33782dfdfc89"
+          },
+          {
+            "id": "2d392cbe-8cba-442e-93b4-c92097ca3e79",
+            "startNode": "c482f3bd-873a-49a0-bef7-a3c056a597d1",
+            "endNode": "963dc481-cd2d-44f0-890a-adc1c0d09c2b"
+          },
+          {
+            "id": "36cc3566-0bb0-46f0-88a4-eb4355fe50c9",
+            "startNode": "657f8085-9d15-424f-a6d7-33782dfdfc89",
+            "endNode": "5da9adb0-0378-4ab9-b838-cfd00137f9e6"
+          },
+          {
+            "id": "b2b55053-73ef-4108-9b5e-c389ebecad65",
+            "startNode": "5da9adb0-0378-4ab9-b838-cfd00137f9e6",
+            "endNode": "677144bb-9a3f-45db-8875-554916864860"
+          },
+          {
+            "id": "4ee5d7ac-aa6c-4d7b-a806-2ad873dccd74",
+            "startNode": "2e85d885-37d1-443a-851d-2ebc97f0369b",
+            "endNode": "677144bb-9a3f-45db-8875-554916864860"
+          },
+          {
+            "id": "594c4296-e743-4b0f-a1e1-eb4858e1c8b1",
+            "startNode": "963dc481-cd2d-44f0-890a-adc1c0d09c2b",
+            "endNode": "677144bb-9a3f-45db-8875-554916864860"
+          },
+          {
+            "id": "530deda6-db7d-4143-932c-0638ddfcc5b1",
+            "startNode": "963dc481-cd2d-44f0-890a-adc1c0d09c2b",
+            "endNode": "b9372f22-0992-4130-8cac-49ce7ebf1d2c"
+          },
+          {
+            "id": "5e50f329-fae8-4a56-96e2-ce1bed0c26a5",
+            "startNode": "963dc481-cd2d-44f0-890a-adc1c0d09c2b",
+            "endNode": "48bd8c44-b990-4720-957a-cfc085b52338"
+          },
+          {
+            "id": "a0a497b5-d660-4f6e-acf0-8b57c1e7b227",
+            "startNode": "657f8085-9d15-424f-a6d7-33782dfdfc89",
+            "endNode": "2e85d885-37d1-443a-851d-2ebc97f0369b"
+          },
+          {
+            "id": "1e70c7fc-76ed-48b5-b2d0-a5ff37fb2256",
+            "startNode": "657f8085-9d15-424f-a6d7-33782dfdfc89",
+            "endNode": "3bbfe35e-cd16-4a91-a638-9139c401b98a"
+          },
+          {
+            "id": "c0fc9569-a8c4-4eaa-823b-335002a926a9",
+            "startNode": "3bbfe35e-cd16-4a91-a638-9139c401b98a",
+            "endNode": "cf1caff3-2fa7-4901-a9d0-1c7db281c940"
+          },
+          {
+            "id": "eaca7077-45f2-4198-a9e3-5d7140ef2047",
+            "startNode": "cf1caff3-2fa7-4901-a9d0-1c7db281c940",
+            "endNode": "7171aca2-f23f-4bd7-b65d-a8fefb611b32"
+          },
+          {
+            "id": "7a112d2d-a6d2-4682-b85f-34adb72aefe3",
+            "startNode": "cf1caff3-2fa7-4901-a9d0-1c7db281c940",
+            "endNode": "8d2ba016-c346-4c77-804d-40585173cf30"
+          },
+          {
+            "id": "a23141f3-4e7d-4b08-af04-aeffb15cf003",
+            "startNode": "8d2ba016-c346-4c77-804d-40585173cf30",
+            "endNode": "677144bb-9a3f-45db-8875-554916864860"
+          },
+          {
+            "id": "4c1534ac-2bc6-42b2-ba46-22806907dadd",
+            "startNode": "8d2ba016-c346-4c77-804d-40585173cf30",
+            "endNode": "b9372f22-0992-4130-8cac-49ce7ebf1d2c"
+          },
+          {
+            "id": "720bc83e-bde2-4eaa-9674-b13886a090a5",
+            "startNode": "8d2ba016-c346-4c77-804d-40585173cf30",
+            "endNode": "48bd8c44-b990-4720-957a-cfc085b52338"
+          },
+          {
+            "id": "e1c5053f-ce60-4f9b-a42a-999a370c2431",
+            "startNode": "677144bb-9a3f-45db-8875-554916864860",
+            "endNode": "e10bc879-1034-4070-bb96-c72b430085ff"
+          },
+          {
+            "id": "2e9aa989-7f63-4112-ab2d-c09d30a06e5f",
+            "startNode": "48bd8c44-b990-4720-957a-cfc085b52338",
+            "endNode": "487c3b27-8518-4a06-a31a-f6251dcbcac8"
+          },
+          {
+            "id": "443d3053-3b25-43df-96bf-b8d30490012e",
+            "startNode": "7171aca2-f23f-4bd7-b65d-a8fefb611b32",
+            "endNode": "487c3b27-8518-4a06-a31a-f6251dcbcac8"
+          },
+          {
+            "id": "9a7fbb0c-08ae-4df8-bb6d-d1c14cf38390",
+            "startNode": "48bd8c44-b990-4720-957a-cfc085b52338",
+            "endNode": "a446d70c-f17f-4ab3-bdba-91bd212ef7b7"
+          },
+          {
+            "id": "5670224b-b2f4-4bc1-9bb2-b9fbe2818b20",
+            "startNode": "7171aca2-f23f-4bd7-b65d-a8fefb611b32",
+            "endNode": "a446d70c-f17f-4ab3-bdba-91bd212ef7b7"
+          },
+          {
+            "id": "c0bde801-5e4a-4f0e-ad6a-af5926776189",
+            "startNode": "b9372f22-0992-4130-8cac-49ce7ebf1d2c",
+            "endNode": "6dee5e91-7421-423e-b933-af09d79bad44"
+          },
+          {
+            "id": "b128c957-2784-4e06-a7a1-003ffb26fb77",
+            "startNode": "6dee5e91-7421-423e-b933-af09d79bad44",
+            "endNode": "e10bc879-1034-4070-bb96-c72b430085ff"
+          },
+          {
+            "id": "bef4069b-165e-4207-b693-d895f1359638",
+            "startNode": "b9372f22-0992-4130-8cac-49ce7ebf1d2c",
+            "endNode": "9ccc416a-61a6-4d83-9105-cec9d596315d"
+          },
+          {
+            "id": "cffbbb56-82b6-44e6-b4a0-ad9d31f0d0be",
+            "startNode": "9ccc416a-61a6-4d83-9105-cec9d596315d",
+            "endNode": "a64f7c5b-7e6f-404b-aacd-61070aab9f53"
+          },
+          {
+            "id": "70cf9163-3d60-4432-9ded-b57fda365c6a",
+            "startNode": "a64f7c5b-7e6f-404b-aacd-61070aab9f53",
+            "endNode": "e10bc879-1034-4070-bb96-c72b430085ff"
+          },
+          {
+            "id": "042f925e-0010-478a-8799-579c773e9875",
+            "startNode": "48bd8c44-b990-4720-957a-cfc085b52338",
+            "endNode": "6b80020e-7957-4257-a85d-b4d3152307e3"
+          },
+          {
+            "id": "59e6a343-90d3-4520-80ee-8cb49b434120",
+            "startNode": "7171aca2-f23f-4bd7-b65d-a8fefb611b32",
+            "endNode": "6b80020e-7957-4257-a85d-b4d3152307e3"
+          },
+          {
+            "id": "c5468b0a-4e87-4998-9ca6-77d7d3baa383",
+            "startNode": "a446d70c-f17f-4ab3-bdba-91bd212ef7b7",
+            "endNode": "6b80020e-7957-4257-a85d-b4d3152307e3"
+          },
+          {
+            "id": "c2a7a7fc-b496-429d-814c-fea7eddb22b7",
+            "startNode": "487c3b27-8518-4a06-a31a-f6251dcbcac8",
+            "endNode": "6b80020e-7957-4257-a85d-b4d3152307e3"
+          }
+        ],
+        "timestamp": "2025-04-01T06:31:04.942Z"
+      },
+      "timestamp": "2025-04-01T06:31:04.942Z"
+    }
+  ]
+}

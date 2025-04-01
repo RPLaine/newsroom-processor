@@ -7,6 +7,34 @@ import os
 from uuid import uuid4
 from backend.user_handler import load_user_data
 
+def ensure_user_jobs_folder(user_id):
+    """
+    Ensure that a "jobs" folder exists for the given user.
+
+    Args:
+        user_id (str): The unique identifier of the user.
+    """
+    user_folder = os.path.join("data", "users", user_id, "jobs")
+    os.makedirs(user_folder, exist_ok=True)
+
+def create_job(user_id, job_id, job_data):
+    """
+    Create a folder for a new job under the user's "jobs" folder.
+
+    Args:
+        user_id (str): The unique identifier of the user.
+        job_id (str): The unique identifier of the job.
+        job_data (dict): Data associated with the job.
+    """
+    ensure_user_jobs_folder(user_id)
+    job_folder = os.path.join("data", "users", user_id, "jobs", job_id)
+    os.makedirs(job_folder, exist_ok=True)
+
+    # Save job data to a file in the job folder
+    job_file = os.path.join(job_folder, "data.json")
+    with open(job_file, "w") as f:
+        json.dump(job_data, f, indent=4)
+
 def handle_create_job(response, user_id, request_data):
     """
     Create a new job
@@ -57,6 +85,9 @@ def handle_create_job(response, user_id, request_data):
         response["status"] = "success"
         response["job_id"] = job_id
         response["timestamp"] = timestamp
+        
+        # Create job folder and save job data
+        create_job(user_id, job_id, new_job)
         
     except Exception as e:
         response["status"] = "error"

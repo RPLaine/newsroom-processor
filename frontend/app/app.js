@@ -1,39 +1,16 @@
-import { createApp } from './application/applicationBuilder.js';
-import { initApp } from './application/core.js';
-import { showNotification, showError, navigateToView } from './application/utils.js';
-import { 
-    sendActionRequest,
-    createJob, continueJob, getJobs, deleteJob, 
-    searchWeb, readRSS, loadFile, processData, saveOutput,
-    applicationInit 
-} from './application/apiMethods.js';
-
 /**
- * Main application module for GameGen2
+ * Main App Module
  * 
- * The backend server processes all requests as JSON objects with an "action" key
- * determining the operation to perform. URL paths are not used for different actions.
- * All requests are sent to the server as POST requests with JSON data.
+ * Provides interface for the application with a clean 4-tab structure
  */
+import { createApp } from './components/app.js';
+import { sendRequest } from './components/api.js';
+import { showNotification, showError } from './components/ui.js';
 
-// Export the module with all accessible functions
+// Export main functionality
 export default {
     createApp,
-    initApp,
-    navigateToView,
+    sendRequest,
     showNotification,
-    showError,
-    // Core API method for sending action-based requests
-    sendActionRequest,
-    // Specific API methods (all use sendActionRequest internally)
-    applicationInit,
-    createJob,
-    continueJob,
-    getJobs,
-    deleteJob,
-    searchWeb,
-    readRSS,
-    loadFile,
-    processData,
-    saveOutput
+    showError
 };

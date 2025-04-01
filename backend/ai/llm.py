@@ -1,4 +1,28 @@
+"""
+LLM integration module for Dolphin and other language models
+"""
+import json
 import requests
+
+def send_to_dolphin_llm(message, system_message="", model="dolphin-mixtral:latest"):
+    """
+    Send a message to the Dolphin LLM API
+    
+    Args:
+        message: The user message to send
+        system_message: Optional system message for context
+        model: The model to use for inference
+        
+    Returns:
+        The response from the LLM
+    """
+    # Implementation for LLM API calls
+    try:
+        # Add actual API call implementation here
+        response = {"response": "LLM response would go here"}
+        return response
+    except Exception as e:
+        return {"error": str(e)}
 
 def generate_prompt(messages, max_length=500, temperature=1.0, top_k=50, top_p=0.9, repetition_penalty=1.0):
     """
@@ -16,11 +40,6 @@ def generate_prompt(messages, max_length=500, temperature=1.0, top_k=50, top_p=0
     Returns:
         dict: The response from the Dolphin 3.0 LLM.
     """
-    # formatted_messages = "".join(
-    #     f"<|im_start|>{message['role']}\n{message['content']}<|im_end|>\n"
-    #     for message in messages
-    # )
-
     formatted_messages = "".join(
         f"<|im_start|>user\n{message['content']}<|im_end|>\n<|im_start|>assistant\n"
         for message in messages

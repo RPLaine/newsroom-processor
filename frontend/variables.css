@@ -1,0 +1,126 @@
+/**
+ * Global CSS Variables
+ * This file defines the core design system variables used across the application
+ */
+
+:root {
+    /* Color palette - Dark theme (default) */
+    --color-bg-primary: #121212;
+    --color-bg-secondary: #1e1e1e;
+    --color-bg-tertiary: #2a2a2a;
+    --color-bg-elevated: #303030;
+    --color-bg-interactive: #3a3a3a;
+    
+    /* Text colors */
+    --color-text-primary: #e0e0e0;
+    --color-text-secondary: #b0b0b0;
+    --color-text-tertiary: #909090;
+    --color-text-disabled: #707070;
+    
+    /* Brand colors */
+    --color-brand-primary: #4CAF50;
+    --color-brand-primary-light: #66bb6a;
+    --color-brand-primary-dark: #2e7d32;
+    --color-brand-secondary: #66bb6a;
+    --color-brand-accent: #81c784;
+    
+    /* Functional colors */
+    --color-success: #4CAF50;
+    --color-warning: #FFC107;
+    --color-error: #f44336;
+    --color-info: #2196F3;
+    
+    /* Borders & Shadows */
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+    --border-width: 1px;
+    --border-color: #444;
+    
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.4);
+    
+    /* Typography */
+    --font-family-base: 'Segoe UI', Arial, sans-serif;
+    --font-family-mono: 'Consolas', 'Monaco', monospace;
+    
+    --font-size-xs: 0.8rem;
+    --font-size-sm: 0.9rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.1rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* Animation */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Z-index layers */
+    --z-index-dropdown: 1000;
+    --z-index-sticky: 1020;
+    --z-index-fixed: 1030;
+    --z-index-modal-backdrop: 1040;
+    --z-index-modal: 1050;
+    --z-index-popover: 1060;
+    --z-index-tooltip: 1070;
+}
+
+/* Optional Light Theme Variables - Can be applied with .light-theme class */
+.light-theme {
+    --color-bg-primary: #f5f5f5;
+    --color-bg-secondary: #ffffff;
+    --color-bg-tertiary: #f0f0f0;
+    --color-bg-elevated: #ffffff;
+    --color-bg-interactive: #e8e8e8;
+    
+    --color-text-primary: #202124;
+    --color-text-secondary: #5f6368;
+    --color-text-tertiary: #757575;
+    --color-text-disabled: #9e9e9e;
+    
+    --border-color: #dadce0;
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive breakpoints */
+@media (min-width: 640px) {
+    :root {
+        --breakpoint-sm: 640px;
+    }
+}
+
+@media (min-width: 768px) {
+    :root {
+        --breakpoint-md: 768px;
+    }
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --breakpoint-lg: 1024px;
+    }
+}
+
+@media (min-width: 1280px) {
+    :root {
+        --breakpoint-xl: 1280px;
+    }
+}

@@ -1,7 +1,8 @@
+// filepath: c:\git\gamegen2\frontend\application\components\handlers\structures-handlers.js
 import * as api from '../api.js';
 import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
 
-export function setupJobsTabHandlers() {
+export function setupStructuresTabHandlers() {
     const johtoDataBtn = document.getElementById('johto-data-btn');
     johtoDataBtn?.addEventListener('click', async () => {
         try {
@@ -48,7 +49,7 @@ export function setupJobsTabHandlers() {
         }
     });
     
-    document.getElementById('jobs-tab')?.addEventListener('click', () => {
+    document.getElementById('structures-tab')?.addEventListener('click', () => {
         if (appState.structures && appState.structures.length > 0) {
             updateStructuresList(appState.structures);
         }
@@ -70,20 +71,20 @@ function updateStructuresList(structures) {
     
     structures.forEach(structure => {
         const structureElement = document.createElement('div');
-        structureElement.className = 'job-card';
+        structureElement.className = 'structure-card';
         structureElement.dataset.structureId = structure.id;
         
         const nodeCount = structure.nodes ? Object.keys(structure.nodes).length : 0;
         
         structureElement.innerHTML = `
-            <div class="job-content">
+            <div class="structure-content">
                 <h3>${structure.name || 'Untitled Structure'}</h3>
-                <div class="job-meta">
+                <div class="structure-meta">
                     <span>ID: ${structure.id}</span>
                     <span>Nodes: ${nodeCount}</span>
                 </div>
             </div>
-            <div class="job-actions">
+            <div class="structure-actions">
                 <button class="btn select-structure-btn primary">Select</button>
             </div>
         `;
@@ -101,9 +102,4 @@ function updateStructuresList(structures) {
 function selectStructure(structure) {
     appState.currentStructure = structure;
     showNotification(`Selected structure: ${structure.name}`, 'success');
-    
-    appState.currentJob = {
-        id: structure.id,
-        name: structure.name
-    };
 }

@@ -38,7 +38,7 @@ function createTabs() {
     tabsContainer.className = 'tabs-container';
     
     const tabs = [
-        { id: 'jobs', label: 'Jobs' },
+        { id: 'structures', label: 'Structures' },
         { id: 'inputs', label: 'Inputs' },
         { id: 'process', label: 'Process' },
         { id: 'outputs', label: 'Outputs' }
@@ -60,22 +60,22 @@ function createTabContent() {
     const contentContainer = document.createElement('div');
     contentContainer.className = 'tab-content-container';
     
-    const jobsContent = document.createElement('div');
-    jobsContent.id = 'jobs-content';
-    jobsContent.className = `tab-content ${appState.activeTab === 'jobs' ? 'active' : ''}`;
-    jobsContent.innerHTML = `
+    const structuresContent = document.createElement('div');
+    structuresContent.id = 'structures-content';
+    structuresContent.className = `tab-content ${appState.activeTab === 'structures' ? 'active' : ''}`;
+    structuresContent.innerHTML = `
         <div class="section small">
             <h2>Load Data</h2>
             <button id="johto-data-btn" class="btn primary">Load johto.online data</button>
         </div>
         <div class="section large">
             <h2>Structures</h2>
-            <div id="structures-list" class="jobs-list">
+            <div id="structures-list" class="structures-list">
                 <p>No structures loaded. Please load johto.online data first.</p>
             </div>
         </div>
     `;
-    contentContainer.appendChild(jobsContent);
+    contentContainer.appendChild(structuresContent);
     
     const inputsContent = document.createElement('div');
     inputsContent.id = 'inputs-content';

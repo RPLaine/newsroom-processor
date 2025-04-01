@@ -1,4 +1,4 @@
-import { setupJobsTabHandlers } from './jobs-handlers.js';
+import { setupStructuresTabHandlers } from './structures-handlers.js';
 import { setupInputsTabHandlers } from './inputs-handlers.js';
 import { setupProcessTabHandlers } from './process-handlers.js';
 import { setupOutputsTabHandlers } from './outputs-handlers.js';
@@ -8,7 +8,7 @@ import { initLoadingAnimation } from './common.js';
 initLoadingAnimation();
 
 export function initEventHandlers() {
-    setupJobsTabHandlers();
+    setupStructuresTabHandlers();
     setupInputsTabHandlers();
     setupProcessTabHandlers();
     setupOutputsTabHandlers();

@@ -1,7 +1,7 @@
 // Application state manager
 const appState = {
-    currentJob: null,
-    activeTab: 'jobs',      // 'jobs', 'inputs', 'process', 'outputs'
+    currentStructure: null,
+    activeTab: 'structures',      // 'structures', 'inputs', 'process', 'outputs'
     isProcessing: false,
     lastNotification: null
 };

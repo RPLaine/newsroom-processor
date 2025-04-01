@@ -1,7 +1,8 @@
 /* Import component styles */
 @import "./app-container/app-container.css";
-@import "./login/login.css";
 @import "./animation/animation.css";
+@import "./login/login.css";
+@import "./app/app.css";
 
 /* General styles */
 body {

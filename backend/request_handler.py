@@ -5,6 +5,7 @@ import backend.database_handler as database_handler
 import backend.html_constructor as html_constructor
 import backend.login_handler as login_handler
 import backend.user_handler as user_handler
+import backend.app_handler as app_handler
 
 def create_request_handler(server, config):
     class RequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -34,23 +35,13 @@ def create_request_handler(server, config):
                 user_id = cookie['userid'].value
                 response["userid"] = user_id
                 response["userdata"] = user_handler.get_user_data(user_id)
-            elif response["request"]["action"] == "login":
-                response = login_handler.handle_login(response, cookie, self.config["user_data_path"])
-                self.send_json_response(response, cookie)
-                return
-            elif response["request"]["action"] == "register":
-                response = login_handler.handle_register(response, cookie, self.config["user_data_path"])
-                self.send_json_response(response, cookie)
-                return
-            elif response["request"]["action"] == "logout":
-                response = login_handler.handle_logout(response, cookie, self.config["user_data_path"])
-                self.send_json_response(response, cookie)
-                return
-            else:
-                response["userid"] = None
-                self.send_json_response(response, cookie)
-                return
 
+            if 'action' in response["request"]:
+                if response["request"]["action"] in ["login", "register", "logout"]:
+                    response = login_handler.handle_login_actions(response, cookie, self.config)
+                else:
+                    response = app_handler.handle_app_actions(response, cookie, self.config)
+                    
             self.send_json_response(response, cookie)
             return
         

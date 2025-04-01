@@ -1,6 +1,5 @@
 import os
 import time
-import json
 import backend.database_handler as database_handler
 
 def get_user_data_file_path(user_id):

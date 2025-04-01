@@ -10,7 +10,7 @@ const appState = {
     isInitialized: false,
     currentUser: null,
     currentView: 'dashboard',
-    availableViews: ['dashboard', 'create', 'stories', 'settings'],
+    availableViews: ['dashboard', 'create', 'stories', 'settings', 'story'],
     sessionStartTime: null
 };
 
@@ -33,7 +33,7 @@ async function createApp(data, appContainer, fetchData) {
         <header class="app-header">
             <h1>GameGen2</h1>
             <div class="user-info">
-                <span class="user-name">${data.username || 'User'}</span>
+                <span class="user-name">${data.userdata?.profile?.username || 'User'}</span>
                 <button id="logout-btn" class="btn btn-small">Logout</button>
             </div>
         </header>
@@ -142,13 +142,9 @@ async function initApp(options = {}) {
         await loadUserSession();
         
         // Initialize styling
-        if (window.initStyling) {
-            await window.initStyling({
-                defaultTheme: options.theme || 'default'
-            });
-        } else {
-            console.warn('Styling module not available');
-        }
+        initStyling({
+            defaultTheme: options.theme || 'default'
+        });
         
         // Initialize storytelling module
         if (window.initStorytelling) {
@@ -163,11 +159,6 @@ async function initApp(options = {}) {
         
         // Register event listeners
         registerEventListeners();
-        
-        // Set up UI effects if available
-        if (window.UIEffects && typeof window.UIEffects.initialize === 'function') {
-            window.UIEffects.initialize();
-        }
         
         // Set initial view
         navigateToView(options.initialView || 'dashboard');
@@ -254,6 +245,82 @@ function registerEventListeners() {
             }
         }
     });
+    
+    // Theme buttons
+    document.querySelectorAll('.theme-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const theme = button.dataset.theme;
+            if (theme) {
+                setTheme(theme);
+            }
+        });
+    });
+    
+    // Logout button
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Force redirect to login even if there was an error
+            window.location.href = '/';
+        }
+    });
+}
+
+/**
+ * Initialize event handlers that need access to the fetch data function
+ * 
+ * @param {Function} fetchData - The data fetching function
+ */
+function initializeEventHandlersWithApi(fetchData) {
+    // Stories tab click - load stories
+    document.getElementById('stories-nav-link')?.addEventListener('click', async () => {
+        try {
+            const response = await fetchData({
+                action: 'get_stories'
+            });
+            
+            if (response.status === 'success' && response.data?.stories) {
+                updateStoriesList(response.data.stories);
+            } else {
+                throw new Error(response.message || 'Failed to load stories');
+            }
+        } catch (error) {
+            showError('Failed to load stories', error);
+        }
+    });
+}
+
+/**
+ * Initialize styling module
+ * 
+ * @param {Object} options - Styling options
+ */
+function initStyling(options = {}) {
+    // Set theme
+    setTheme(options.defaultTheme || 'default');
+}
+
+/**
+ * Set application theme
+ * 
+ * @param {string} themeName - Name of the theme to set
+ */
+function setTheme(themeName) {
+    // Set theme class on body
+    document.body.classList.remove('theme-default', 'theme-dark', 'theme-light');
+    document.body.classList.add(`theme-${themeName}`);
+    
+    // Store theme preference
+    localStorage.setItem('gamegen2-theme', themeName);
+    
+    // Dispatch theme changed event
+    window.dispatchEvent(new CustomEvent('themeChanged', {
+        detail: { theme: themeName }
+    }));
+    
+    console.log(`Theme set to: ${themeName}`);
 }
 
 /**
@@ -263,7 +330,7 @@ function registerEventListeners() {
  */
 function navigateToView(viewName) {
     // Validate view exists
-    if (!appState.availableViews.includes(viewName) && viewName !== 'story') {
+    if (!appState.availableViews.includes(viewName)) {
         console.error(`View "${viewName}" does not exist`);
         return;
     }
@@ -305,27 +372,11 @@ function navigateToView(viewName) {
  */
 async function loadUserSession() {
     try {
-        // Request user session data from server
-        const response = await fetch('/api/post', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'get_session'
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success' && data.data.user) {
-            // Set user in state
-            appState.currentUser = data.data.user;
-            
+        // User data should already be available in appState from createApp
+        if (appState.currentUser) {
             // Update UI with user info
-            updateUserUI(data.data.user);
-            
-            return data.data.user;
+            updateUserUI(appState.currentUser);
+            return appState.currentUser;
         } else {
             // No valid session found, redirect to login
             redirectToLogin();
@@ -346,17 +397,7 @@ async function loadUserSession() {
 function updateUserUI(user) {
     // Update username displays
     document.querySelectorAll('.user-name').forEach(element => {
-        element.textContent = user.name || user.username;
-    });
-    
-    // Update user avatar if available
-    document.querySelectorAll('.user-avatar').forEach(element => {
-        if (user.avatar) {
-            element.src = user.avatar;
-        } else {
-            element.src = '/images/default-avatar.png';  // Default avatar
-        }
-        element.alt = `${user.name || user.username}'s avatar`;
+        element.textContent = user.userdata?.profile?.username || user.username || 'User';
     });
 }
 
@@ -415,14 +456,14 @@ function showNotification(message, type = 'info') {
  */
 function showError(message, error) {
     console.error(message, error);
-    showNotification(`${message}: ${error.message}`, 'error');
+    showNotification(`${message}: ${error.message || 'Unknown error'}`, 'error');
 }
 
 /**
  * Redirect to the login page
  */
 function redirectToLogin() {
-    window.location.href = '/login/login.html';
+    window.location.href = '/';
 }
 
 /**
@@ -431,7 +472,7 @@ function redirectToLogin() {
 async function logout() {
     try {
         // Send logout request to server
-        await fetch('/api/post', {
+        const response = await fetch('/api/post', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -441,44 +482,12 @@ async function logout() {
             })
         });
         
-        // Redirect to login page
+        // Redirect to login page regardless of response
         redirectToLogin();
     } catch (error) {
         console.error('Error during logout:', error);
         // Still redirect even if there was an error
         redirectToLogin();
-    }
-}
-
-/**
- * Load user stories from the server
- * 
- * @returns {Promise<Array>} - Array of story objects
- */
-async function loadUserStories() {
-    try {
-        // Request user stories data from server
-        const response = await fetch('/api/post', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'get_user_stories'
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success') {
-            return data.data.stories || [];
-        } else {
-            console.error('Failed to load stories:', data.message);
-            return [];
-        }
-    } catch (error) {
-        console.error('Error loading user stories:', error);
-        return [];
     }
 }
 
@@ -491,26 +500,27 @@ function updateStoriesList(stories) {
     const storiesListElement = document.getElementById('stories-list');
     if (!storiesListElement) return;
     
+    // Clear the current list
+    storiesListElement.innerHTML = '';
+    
+    // If no stories, show a message
     if (!stories || stories.length === 0) {
-        storiesListElement.innerHTML = '<p class="no-stories">You don\'t have any stories yet.</p>';
+        storiesListElement.innerHTML = '<p>You haven\'t created any stories yet.</p>';
         return;
     }
     
-    // Clear existing list
-    storiesListElement.innerHTML = '';
-    
-    // Add each story to the list
+    // Create a story item for each story
     stories.forEach(story => {
         const storyElement = document.createElement('div');
         storyElement.className = 'story-item';
-        storyElement.dataset.storyId = story.id;
-        
         storyElement.innerHTML = `
-            <h3 class="story-item-title">${story.title || 'Untitled Story'}</h3>
-            <p class="story-item-meta">
-                <span class="story-genre">${story.genre || 'General'}</span>
+            <div class="story-item-header">
+                <div>
+                    <h3 class="story-title">${story.title || 'Untitled Story'}</h3>
+                    <span class="story-genre">${story.genre || 'Unknown'}</span>
+                </div>
                 <span class="story-date">${formatDate(story.last_modified || story.created_at)}</span>
-            </p>
+            </div>
             <p class="story-item-preview">${getStoryPreview(story.content)}</p>
             <div class="story-item-actions">
                 <button class="btn btn-primary" data-action="open" data-story-id="${story.id}">Open</button>
@@ -523,7 +533,7 @@ function updateStoriesList(stories) {
         // Add event listener to open button
         storyElement.querySelector('[data-action="open"]').addEventListener('click', () => {
             if (window.loadStory) {
-                loadStory(story.id).then(() => {
+                window.loadStory(story.id).then(() => {
                     navigateToView('story');
                 }).catch(error => {
                     showError('Failed to open story', error);
@@ -535,9 +545,16 @@ function updateStoriesList(stories) {
         storyElement.querySelector('[data-action="delete"]').addEventListener('click', () => {
             if (confirm(`Are you sure you want to delete "${story.title || 'Untitled Story'}"?`)) {
                 deleteStory(story.id).then(() => {
+                    showNotification('Story deleted successfully', 'success');
                     // Refresh stories list
-                    loadUserStories().then(stories => {
-                        updateStoriesList(stories);
+                    window.fetchData({
+                        action: 'get_stories'
+                    }).then(response => {
+                        if (response.status === 'success') {
+                            updateStoriesList(response.data.stories);
+                        }
+                    }).catch(error => {
+                        showError('Failed to refresh stories', error);
                     });
                 }).catch(error => {
                     showError('Failed to delete story', error);
@@ -565,27 +582,37 @@ function getStoryPreview(content) {
 /**
  * Format a date for display
  * 
- * @param {string} dateString - ISO date string
+ * @param {string|number} timestamp - ISO date string or Unix timestamp
  * @returns {string} - Formatted date
  */
-function formatDate(dateString) {
+function formatDate(timestamp) {
     try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
+        const date = typeof timestamp === 'number' 
+            ? new Date(timestamp * 1000) // Convert Unix timestamp to milliseconds
+            : new Date(timestamp);
+            
+        return date.toLocaleDateString(undefined, { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
     } catch (e) {
         return 'Unknown date';
     }
 }
 
 /**
- * Delete a story
+ * Delete a story by ID
  * 
  * @param {string} storyId - ID of the story to delete
  * @returns {Promise<boolean>} - Success status
  */
 async function deleteStory(storyId) {
+    if (!storyId) {
+        throw new Error('Story ID is required');
+    }
+    
     try {
-        // Send delete request
         const response = await fetch('/api/post', {
             method: 'POST',
             headers: {
@@ -593,26 +620,27 @@ async function deleteStory(storyId) {
             },
             body: JSON.stringify({
                 action: 'delete_story',
-                data: {
-                    story_id: storyId
-                }
+                story_id: storyId
             })
         });
         
         const data = await response.json();
         
         if (data.status === 'success') {
-            showNotification('Story deleted successfully', 'success');
             return true;
         } else {
             throw new Error(data.message || 'Failed to delete story');
         }
     } catch (error) {
         console.error('Error deleting story:', error);
-        showError('Failed to delete story', error);
-        return false;
+        throw error;
     }
 }
+
+// Expose functions to global scope
+window.showNotification = showNotification;
+window.showError = showError;
+window.navigateToView = navigateToView;
 
 // Export the module
 export default {
@@ -620,8 +648,5 @@ export default {
     initApp,
     navigateToView,
     showNotification,
-    showError,
-    loadUserSession,
-    loadUserStories,
-    updateUserUI
+    showError
 };

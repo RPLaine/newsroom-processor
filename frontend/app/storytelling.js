@@ -49,6 +49,18 @@ function registerEventListeners() {
         // Apply theme-specific styles to story elements
         applyThemeToStory(theme);
     });
+    
+    // Save story button
+    document.getElementById('save-story-btn')?.addEventListener('click', async () => {
+        if (storyState.currentStory) {
+            try {
+                await saveStory();
+                showNotification('Story saved successfully!', 'success');
+            } catch (error) {
+                showError('Failed to save story', error);
+            }
+        }
+    });
 }
 
 /**
@@ -57,46 +69,38 @@ function registerEventListeners() {
  * @param {string} themeName - Name of the theme to apply
  */
 function applyThemeToStory(themeName) {
-    const storyElements = document.querySelectorAll('.story-content, .story-text');
+    const storyContent = document.getElementById('story-content');
+    if (!storyContent) return;
     
-    // Remove existing theme classes
-    storyElements.forEach(element => {
-        element.classList.forEach(className => {
-            if (className.startsWith('theme-')) {
-                element.classList.remove(className);
-            }
-        });
-        
-        // Add new theme class
-        element.classList.add(`theme-${themeName}`);
-    });
+    // Remove any existing theme classes
+    storyContent.classList.remove('theme-default', 'theme-dark', 'theme-light');
+    
+    // Add the new theme class
+    storyContent.classList.add(`theme-${themeName}`);
 }
 
 /**
  * Create a new story with the given prompt
  * 
  * @param {string} prompt - The initial story prompt
- * @param {Object} params - Story generation parameters
+ * @param {Object} options - Additional options (genre, style, etc.)
  * @returns {Promise<Object>} - Created story object
  */
-async function createStory(prompt, params = {}) {
-    // Merge with default parameters
-    const genParams = {
-        ...storyState.currentParams,
-        ...params
-    };
+async function createStory(prompt, options = {}) {
+    if (!prompt) {
+        throw new Error('Story prompt is required');
+    }
     
     try {
+        // Show loading indicator
+        addLoadingIndicator();
         storyState.isGenerating = true;
         
-        console.log('Creating new story with prompt:', prompt);
-        console.log('Generation parameters:', genParams);
-        
-        // Show loading state in UI if available
-        const storyContainer = document.querySelector('.story-content');
-        if (storyContainer) {
-            storyContainer.innerHTML = '<p class="generating">Generating your story</p>';
-        }
+        // Merge options with current parameters
+        const params = {
+            ...storyState.currentParams,
+            ...options
+        };
         
         // Send request to create story
         const response = await fetch('/api/post', {
@@ -106,53 +110,38 @@ async function createStory(prompt, params = {}) {
             },
             body: JSON.stringify({
                 action: 'create_story',
-                data: {
-                    prompt: prompt,
-                    genre: genParams.genre,
-                    style: genParams.style,
-                    temperature: genParams.temperature
-                }
+                prompt: prompt,
+                genre: params.genre
             })
         });
         
-        const result = await response.json();
+        const data = await response.json();
         
-        if (result.status !== 'success') {
-            throw new Error(result.message || 'Failed to create story');
+        if (data.status === 'success' && data.data.story) {
+            // Set current story
+            storyState.currentStory = data.data.story;
+            
+            // Add to history
+            storyState.storyHistory.push({
+                type: 'create',
+                prompt: prompt,
+                result: data.data.story.content
+            });
+            
+            // Update UI with story content
+            updateStoryUI(data.data.story);
+            
+            // Return the created story
+            return data.data.story;
+        } else {
+            throw new Error(data.message || 'Failed to create story');
         }
-        
-        // Create story object
-        const story = {
-            id: result.data.story_id,
-            title: result.data.title || 'Untitled Story',
-            content: result.data.content || '',
-            genre: genParams.genre,
-            created_at: new Date().toISOString(),
-            last_modified: new Date().toISOString()
-        };
-        
-        // Update story state
-        storyState.currentStory = story;
-        storyState.storyHistory = [{ 
-            content: story.content, 
-            timestamp: new Date().toISOString() 
-        }];
-        
-        // Update UI if available
-        updateStoryUI(story);
-        
-        return story;
     } catch (error) {
         console.error('Error creating story:', error);
-        
-        // Show error in UI if available
-        const storyContainer = document.querySelector('.story-content');
-        if (storyContainer) {
-            storyContainer.innerHTML = `<p class="error">Error creating story: ${error.message}</p>`;
-        }
-        
         throw error;
     } finally {
+        // Remove loading indicator
+        removeLoadingIndicator();
         storyState.isGenerating = false;
     }
 }
@@ -160,29 +149,22 @@ async function createStory(prompt, params = {}) {
 /**
  * Continue an existing story with user input
  * 
- * @param {string} userInput - User input to continue the story
- * @param {Object} params - Story generation parameters
+ * @param {string} userInput - The user's continuation input
  * @returns {Promise<Object>} - Updated story object
  */
-async function continueStory(userInput, params = {}) {
-    // Ensure there's a current story
+async function continueStory(userInput) {
+    if (!userInput) {
+        throw new Error('User input is required');
+    }
+    
     if (!storyState.currentStory) {
         throw new Error('No active story to continue');
     }
     
-    // Merge with default parameters
-    const genParams = {
-        ...storyState.currentParams,
-        ...params
-    };
-    
     try {
+        // Show loading indicator
+        addLoadingIndicator();
         storyState.isGenerating = true;
-        
-        console.log('Continuing story with input:', userInput);
-        
-        // Show loading state in UI if available
-        appendToStoryUI('<p class="generating">Generating continuation</p>');
         
         // Send request to continue story
         const response = await fetch('/api/post', {
@@ -192,145 +174,92 @@ async function continueStory(userInput, params = {}) {
             },
             body: JSON.stringify({
                 action: 'continue_story',
-                data: {
-                    story_id: storyState.currentStory.id,
-                    user_input: userInput,
-                    temperature: genParams.temperature
-                }
+                story_id: storyState.currentStory.id,
+                user_input: userInput
             })
         });
         
-        const result = await response.json();
+        const data = await response.json();
         
-        if (result.status !== 'success') {
-            throw new Error(result.message || 'Failed to continue story');
+        if (data.status === 'success' && data.data.story) {
+            // Update current story
+            storyState.currentStory = data.data.story;
+            
+            // Add to history
+            storyState.storyHistory.push({
+                type: 'continue',
+                input: userInput,
+                result: data.data.story.content
+            });
+            
+            // Update UI with story content
+            updateStoryUI(data.data.story);
+            
+            // Return the updated story
+            return data.data.story;
+        } else {
+            throw new Error(data.message || 'Failed to continue story');
         }
-        
-        // Remove loading indicator
-        removeLoadingIndicator();
-        
-        // Get continuation text
-        const continuationText = result.data.continuation || '';
-        
-        // Update the current story with new content
-        storyState.currentStory.content += '\n\n' + continuationText;
-        storyState.currentStory.last_modified = new Date().toISOString();
-        
-        // Add to history
-        storyState.storyHistory.push({
-            content: continuationText,
-            userInput: userInput,
-            timestamp: new Date().toISOString()
-        });
-        
-        // Update UI with only the new content
-        appendToStoryUI(continuationText, true);
-        
-        return storyState.currentStory;
     } catch (error) {
         console.error('Error continuing story:', error);
-        
-        // Remove loading indicator
-        removeLoadingIndicator();
-        
-        // Show error in UI
-        appendToStoryUI(`<p class="error">Error continuing story: ${error.message}</p>`);
-        
         throw error;
     } finally {
+        // Remove loading indicator
+        removeLoadingIndicator();
         storyState.isGenerating = false;
     }
 }
 
 /**
- * Update the story UI with a complete story
+ * Update the story UI with content
  * 
- * @param {Object} story - Story object
+ * @param {Object} story - Story object with content
  */
 function updateStoryUI(story) {
-    const storyContainer = document.querySelector('.story-content');
-    if (!storyContainer) return;
-    
-    // Set story content
-    storyContainer.innerHTML = `<div class="story-text">${formatStoryText(story.content)}</div>`;
-    
-    // Update title if available
-    const titleElement = document.querySelector('.story-title');
-    if (titleElement && story.title) {
-        titleElement.textContent = story.title;
+    const storyContentElement = document.getElementById('story-content');
+    if (storyContentElement) {
+        storyContentElement.innerHTML = formatStoryText(story.content);
+        storyContentElement.scrollTop = 0; // Scroll to the top
     }
-    
-    // Apply current theme
-    const currentTheme = window.getCurrentTheme ? window.getCurrentTheme() : 'default';
-    applyThemeToStory(currentTheme);
 }
 
 /**
- * Append new content to the story UI
- * 
- * @param {string} content - Content to append
- * @param {boolean} animate - Whether to animate the new content
+ * Add loading indicator to the story UI
  */
-function appendToStoryUI(content, animate = false) {
-    const storyContainer = document.querySelector('.story-content');
-    if (!storyContainer) return;
+function addLoadingIndicator() {
+    const storyContent = document.getElementById('story-content');
+    if (!storyContent) return;
     
-    // Create new element for the content
-    const newContent = document.createElement('div');
-    newContent.innerHTML = formatStoryText(content);
+    // Add loading class
+    storyContent.classList.add('loading');
     
-    // Remove loading indicator if present
-    removeLoadingIndicator();
-    
-    // Import animation utilities if needed
-    if (!window.animationUtils) {
-        // Create a self-executing function to load the module
-        (async () => {
-            try {
-                const module = await import('../animation/animation.js');
-                window.animationUtils = module.default;
-            } catch (err) {
-                console.error('Could not load animation utilities:', err);
-            }
-        })();
+    // Create loading indicator if it doesn't exist
+    if (!document.getElementById('story-loading')) {
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.id = 'story-loading';
+        loadingIndicator.className = 'story-loading';
+        loadingIndicator.innerHTML = `
+            <div class="spinner"></div>
+            <p>Generating story...</p>
+        `;
+        storyContent.appendChild(loadingIndicator);
     }
-    
-    // Add the content with animation if requested
-    if (animate && window.animationUtils) {
-        // Use the addElementWithAnimation utility
-        window.animationUtils.addElementWithAnimation(newContent, storyContainer, 'new-text');
-    } else {
-        // Add animation class if requested but utility not available
-        if (animate) {
-            newContent.classList.add('new-text');
-        }
-        
-        // Append the new content
-        storyContainer.appendChild(newContent);
-    }
-    
-    // Scroll to the new content
-    newContent.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
 /**
  * Remove loading indicator from the story UI
  */
 function removeLoadingIndicator() {
-    const loadingIndicators = document.querySelectorAll('.generating');
+    const storyContent = document.getElementById('story-content');
+    if (!storyContent) return;
     
-    // If animation utilities are available, use them
-    if (window.animationUtils) {
-        loadingIndicators.forEach(element => {
-            window.animationUtils.removeElementWithAnimation(element, 'fade-out');
-        });
-    } else {
-        // Fallback to standard removal
-        loadingIndicators.forEach(element => {
-            if (element.parentNode) {
-                element.parentNode.removeChild(element);
-            }
-        });
+    // Remove loading class
+    storyContent.classList.remove('loading');
+    
+    // Remove loading indicator if it exists
+    const loadingIndicator = document.getElementById('story-loading');
+    if (loadingIndicator) {
+        loadingIndicator.remove();
     }
 }
 
@@ -343,14 +272,11 @@ function removeLoadingIndicator() {
 function formatStoryText(text) {
     if (!text) return '';
     
-    // Handle paragraphs
-    let formatted = text
-        .split('\n\n')
-        .filter(para => para.trim().length > 0)
-        .map(para => `<p>${para.trim()}</p>`)
+    // Convert line breaks to paragraphs
+    return text.split('\n\n')
+        .filter(paragraph => paragraph.trim() !== '')
+        .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
         .join('');
-    
-    return formatted;
 }
 
 /**
@@ -360,46 +286,15 @@ function formatStoryText(text) {
  * @returns {Promise<Object>} - Saved story object
  */
 async function saveStory(metadata = {}) {
-    // Ensure there's a current story
     if (!storyState.currentStory) {
         throw new Error('No active story to save');
     }
     
     try {
-        console.log('Saving story:', storyState.currentStory.id);
+        // For now, our backend automatically saves stories when they're created/continued
+        // This function would be used for explicit save actions or metadata updates
         
-        // Prepare save data
-        const saveData = {
-            story_id: storyState.currentStory.id,
-            title: metadata.title || storyState.currentStory.title,
-            content: storyState.currentStory.content,
-            description: metadata.description || storyState.currentStory.description
-        };
-        
-        // Send save request
-        const response = await fetch('/api/post', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'save_story',
-                data: saveData
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.status !== 'success') {
-            throw new Error(result.message || 'Failed to save story');
-        }
-        
-        // Update story metadata
-        if (metadata.title) storyState.currentStory.title = metadata.title;
-        if (metadata.description) storyState.currentStory.description = metadata.description;
-        
-        storyState.currentStory.last_modified = new Date().toISOString();
-        
+        // Return the current story
         return storyState.currentStory;
     } catch (error) {
         console.error('Error saving story:', error);
@@ -414,51 +309,45 @@ async function saveStory(metadata = {}) {
  * @returns {Promise<Object>} - Loaded story object
  */
 async function loadStory(storyId) {
+    if (!storyId) {
+        throw new Error('Story ID is required');
+    }
+    
     try {
-        console.log('Loading story:', storyId);
+        // For now, we'll fetch all stories and find the one we want
+        // In a future enhancement, we could add a specific endpoint
         
-        // Send load request
         const response = await fetch('/api/post', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                action: 'load_story',
-                data: {
-                    story_id: storyId
-                }
+                action: 'get_stories'
             })
         });
         
-        const result = await response.json();
+        const data = await response.json();
         
-        if (result.status !== 'success') {
-            throw new Error(result.message || 'Failed to load story');
+        if (data.status === 'success' && data.data.stories) {
+            // Find the story by ID
+            const story = data.data.stories.find(s => s.id === storyId);
+            
+            if (!story) {
+                throw new Error('Story not found');
+            }
+            
+            // Set as current story
+            storyState.currentStory = story;
+            
+            // Update UI with story content
+            updateStoryUI(story);
+            
+            // Return the story
+            return story;
+        } else {
+            throw new Error(data.message || 'Failed to load stories');
         }
-        
-        // Create story object from result
-        const story = {
-            id: storyId,
-            title: result.data.title || 'Untitled Story',
-            content: result.data.content || '',
-            description: result.data.description,
-            genre: result.data.genre || storyState.currentParams.genre,
-            created_at: result.data.created_at || new Date().toISOString(),
-            last_modified: result.data.last_modified || new Date().toISOString()
-        };
-        
-        // Update story state
-        storyState.currentStory = story;
-        storyState.storyHistory = [{ 
-            content: story.content, 
-            timestamp: new Date().toISOString() 
-        }];
-        
-        // Update UI
-        updateStoryUI(story);
-        
-        return story;
     } catch (error) {
         console.error('Error loading story:', error);
         throw error;
@@ -472,11 +361,12 @@ async function loadStory(storyId) {
  */
 function setStoryParams(params = {}) {
     // Update parameters
-    if (params.genre !== undefined) storyState.currentParams.genre = params.genre;
-    if (params.style !== undefined) storyState.currentParams.style = params.style;
-    if (params.temperature !== undefined) storyState.currentParams.temperature = params.temperature;
+    storyState.currentParams = {
+        ...storyState.currentParams,
+        ...params
+    };
     
-    console.log('Updated story parameters:', storyState.currentParams);
+    console.log('Story parameters updated:', storyState.currentParams);
 }
 
 /**
@@ -494,7 +384,7 @@ function getStoryParams() {
  * @returns {Object|null} - Current story or null if none
  */
 function getCurrentStory() {
-    return storyState.currentStory ? { ...storyState.currentStory } : null;
+    return storyState.currentStory;
 }
 
 /**
@@ -522,6 +412,24 @@ function resetStory() {
  */
 function getStoryHistory() {
     return [...storyState.storyHistory];
+}
+
+// Helper function to show notifications
+function showNotification(message, type = 'info') {
+    if (window.showNotification) {
+        window.showNotification(message, type);
+    } else {
+        console.log(`${type.toUpperCase()}: ${message}`);
+    }
+}
+
+// Helper function to show errors
+function showError(message, error) {
+    if (window.showError) {
+        window.showError(message, error);
+    } else {
+        console.error(message, error);
+    }
 }
 
 // Expose functions to global scope

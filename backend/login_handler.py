@@ -2,7 +2,32 @@ import uuid
 import time
 import backend.database_handler as database_handler
 import backend.user_handler as user_handler
-from http.cookies import SimpleCookie
+
+def handle_login_actions(response, cookie, config):
+    """
+    Route login-related actions to the appropriate handler
+    
+    Args:
+        response: Response object containing request data
+        cookie: Cookie object for session management
+        config: Server configuration
+        
+    Returns:
+        Updated response object
+    """
+    action = response["request"]["action"]
+    user_data_path = config["user_data_path"]
+    
+    if action == "login":
+        return handle_login(response, cookie, user_data_path)
+    elif action == "register":
+        return handle_register(response, cookie, user_data_path)
+    elif action == "logout":
+        return handle_logout(response, cookie, user_data_path)
+    else:
+        response["status"] = "error"
+        response["message"] = f"Unknown login action: {action}"
+        return response
 
 def handle_login(response, cookie, user_data_path):
     """

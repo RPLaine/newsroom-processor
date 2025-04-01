@@ -6,11 +6,13 @@
     box-shadow: var(--shadow-lg);
     border: var(--border-width) solid rgba(255, 255, 255, 0.05);
     max-width: 100%;
+    box-sizing: border-box;
 }
 
 .login-form {
     width: 100%;
     display: block;
+    box-sizing: border-box;
 }
 
 .login-container h1 {
@@ -21,8 +23,8 @@
 }
 
 input {
-    min-width: 420px;
     max-width: 100%;
+    box-sizing: border-box; /* Ensure all inputs have border-box sizing */
 }
 
 .tabs {
@@ -179,7 +181,8 @@ input {
     }
     
     input {
-        min-width: 300px;
+        min-width: unset; /* Remove min-width that could cause overflow */
+        width: 100%;
     }
     
     .btn-primary {

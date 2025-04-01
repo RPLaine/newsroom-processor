@@ -5,6 +5,9 @@
  * It initializes all required modules and handles the application lifecycle.
  */
 
+// Import the storytelling module
+import storytelling from './componenents/storytelling.js';
+
 // Application state
 const appState = {
     isInitialized: false,
@@ -147,14 +150,15 @@ async function initApp(options = {}) {
         });
         
         // Initialize storytelling module
-        if (window.initStorytelling) {
-            await window.initStorytelling({
+        try {
+            await storytelling.initStorytelling({
                 genre: options.defaultGenre || 'fantasy',
                 style: options.defaultStyle || 'descriptive',
                 temperature: options.temperature || 0.7
             });
-        } else {
-            console.warn('Storytelling module not available');
+        } catch (error) {
+            console.error('Error initializing storytelling module:', error);
+            console.warn('Storytelling module not fully initialized');
         }
         
         // Register event listeners

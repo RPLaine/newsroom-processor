@@ -40,6 +40,11 @@ def handle_load_johto_data(response: dict) -> dict:
                 
             print(f"Saved structures data to {structures_path}")
             
+            # Include structures data in the response
+            response['data'] = {
+                'structures': structures_data
+            }
+            
             response['status'] = 'success'
             response['message'] = 'Johto data downloaded and processed successfully'
         except Exception as process_error:

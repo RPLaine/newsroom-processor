@@ -166,3 +166,36 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* User structures styling */
+.user-heading {
+    margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+    color: var(--color-brand-primary-light);
+    font-size: var(--font-size-lg);
+    border-bottom: var(--border-width) solid var(--border-color);
+    padding-bottom: var(--spacing-xs);
+}
+
+.user-structures-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* First user heading shouldn't have a top margin */
+.user-heading:first-of-type {
+    margin-top: 0;
+}
+
+/* Empty state messaging */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-lg);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-md);
+    margin: var(--spacing-md) 0;
+    background-color: var(--color-bg-tertiary);
+}

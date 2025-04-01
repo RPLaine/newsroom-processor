@@ -5,14 +5,14 @@ import { appState, showNotification, showError, getLoadingAnimation } from './co
 export function setupStructuresTabHandlers() {
     // Listen for the johto-data-loaded event
     document.addEventListener('johto-data-loaded', () => {
-        if (appState.structures && appState.structures.length > 0) {
+        if (appState.structures) {
             updateStructuresList(appState.structures);
         }
     });
     
     // Update structures list when switching to structures tab
     document.getElementById('structures-tab')?.addEventListener('click', () => {
-        if (appState.structures && appState.structures.length > 0) {
+        if (appState.structures) {
             updateStructuresList(appState.structures);
         }
     });
@@ -24,39 +24,77 @@ function updateStructuresList(structures) {
     
     appState.structures = structures;
     
-    if (!structures || structures.length === 0) {
-        structuresList.innerHTML = '<p>No structures loaded. Please load johto.online data first.</p>';
+    if (!structures || Object.keys(structures).length === 0) {
+        structuresList.innerHTML = '<p class="empty-state">No structures loaded. Please load johto.online data first.</p>';
         return;
     }
     
     structuresList.innerHTML = '';
     
-    structures.forEach(structure => {
-        const structureElement = document.createElement('div');
-        structureElement.className = 'structure-card';
-        structureElement.dataset.structureId = structure.id;
+    // Iterate through each user's structures
+    Object.keys(structures).forEach(userId => {
+        const userData = structures[userId];
+        const username = userData.username || 'Unknown User';
+        const userStructures = userData.structures || {};
         
-        const nodeCount = structure.nodes ? Object.keys(structure.nodes).length : 0;
+        // Add a user section heading
+        const userHeading = document.createElement('h3');
+        userHeading.className = 'user-heading';
+        userHeading.textContent = username;
+        structuresList.appendChild(userHeading);
         
-        structureElement.innerHTML = `
-            <div class="structure-content">
-                <h3>${structure.name || 'Untitled Structure'}</h3>
-                <div class="structure-meta">
-                    <span>ID: ${structure.id}</span>
-                    <span>Nodes: ${nodeCount}</span>
+        // Create a container for this user's structures
+        const userStructuresContainer = document.createElement('div');
+        userStructuresContainer.className = 'user-structures-container';
+        structuresList.appendChild(userStructuresContainer);
+        
+        if (Object.keys(userStructures).length === 0) {
+            const noStructuresMsg = document.createElement('p');
+            noStructuresMsg.className = 'empty-state';
+            noStructuresMsg.textContent = 'No structures available for this user.';
+            userStructuresContainer.appendChild(noStructuresMsg);
+            return;
+        }
+        
+        // Iterate through each structure file for this user
+        Object.keys(userStructures).forEach(fileName => {
+            const structure = userStructures[fileName];
+            
+            const structureElement = document.createElement('div');
+            structureElement.className = 'structure-card';
+            structureElement.dataset.structureId = fileName;
+            
+            const nodeCount = structure.nodes ? Object.keys(structure.nodes).length : 0;
+            const structureName = structure.name || fileName.replace('.json', '');
+            
+            structureElement.innerHTML = `
+                <div class="structure-content">
+                    <h3>${structureName}</h3>
+                    <div class="structure-meta">
+                        <span class="structure-meta-item">File: ${fileName}</span>
+                        <span class="structure-meta-item">Nodes: ${nodeCount}</span>
+                    </div>
                 </div>
-            </div>
-            <div class="structure-actions">
-                <button class="btn select-structure-btn primary">Select</button>
-            </div>
-        `;
-        
-        structuresList.appendChild(structureElement);
-    });
-    
-    document.querySelectorAll('.select-structure-btn').forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-            selectStructure(structures[index]);
+                <div class="structure-actions">
+                    <button class="btn select-structure-btn primary">Select</button>
+                </div>
+            `;
+            
+            userStructuresContainer.appendChild(structureElement);
+            
+            // Add event listener to the select button
+            const selectBtn = structureElement.querySelector('.select-structure-btn');
+            if (selectBtn) {
+                selectBtn.addEventListener('click', () => {
+                    selectStructure({
+                        id: fileName,
+                        name: structureName,
+                        userId: userId,
+                        username: username,
+                        ...structure
+                    });
+                });
+            }
         });
     });
 }

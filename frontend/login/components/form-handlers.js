@@ -76,6 +76,12 @@ function setupRegisterForm(FetchData) {
             if (response.status === 'success') {
                 showSuccess('Registration successful! You can now log in.');
                 switchTab('login');
+                
+                // Auto-fill the login email field with the registered email
+                const loginEmailField = document.getElementById('login-email');
+                if (loginEmailField) {
+                    loginEmailField.value = email;
+                }
             } else {
                 showError(response.message || 'Registration failed');
             }

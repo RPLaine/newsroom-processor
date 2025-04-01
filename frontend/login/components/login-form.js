@@ -5,7 +5,7 @@ export function createLoginForm() {
     form.id = 'login-form';
     form.className = 'auth-form';
     
-    const emailField = createFormField('email', 'login-email', 'Email Address', 'Enter your email', 'username');
+    const emailField = createFormField('email', 'login-email', 'Email Address', 'Enter your email', 'email');
     const passwordField = createFormField('password', 'login-password', 'Password', 'Enter your password', 'current-password');
     
     form.appendChild(emailField);

@@ -14,7 +14,7 @@ export function createLoginContainer() {
     
     // Create title
     const title = document.createElement('h1');
-    title.textContent = 'GameGen2';
+    title.textContent = 'AI Processor Agent';
     loginContainer.appendChild(title);
     
     // Create form container

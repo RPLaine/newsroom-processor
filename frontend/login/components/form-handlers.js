@@ -6,11 +6,11 @@
 export function setupFormHandlers(FetchData) {
     setupLoginForm(FetchData);
     setupRegisterForm(FetchData);
-    setupSwitchForms();
+    setupTabSwitching(); // Added tab switching setup
 }
 
 function setupLoginForm(FetchData) {
-    const loginForm = document.querySelector('.login-form');
+    const loginForm = document.getElementById('login-form');
     if (!loginForm) return;
 
     loginForm.addEventListener('submit', async (e) => {
@@ -43,7 +43,7 @@ function setupLoginForm(FetchData) {
 }
 
 function setupRegisterForm(FetchData) {
-    const registerForm = document.querySelector('.register-form');
+    const registerForm = document.getElementById('register-form');
     if (!registerForm) return;
 
     registerForm.addEventListener('submit', async (e) => {
@@ -51,7 +51,7 @@ function setupRegisterForm(FetchData) {
         
         const email = document.getElementById('register-email').value;
         const password = document.getElementById('register-password').value;
-        const confirmPassword = document.getElementById('register-confirm-password').value;
+        const confirmPassword = document.getElementById('register-confirm').value;
         
         if (password !== confirmPassword) {
             showErrorMessage('register-error', 'Passwords do not match');
@@ -81,25 +81,46 @@ function setupRegisterForm(FetchData) {
     });
 }
 
-function setupSwitchForms() {
-    const switchToRegister = document.getElementById('switch-to-register');
-    const switchToLogin = document.getElementById('switch-to-login');
-    const loginForm = document.querySelector('.login-form');
-    const registerForm = document.querySelector('.register-form');
-    
-    if (switchToRegister && switchToLogin && loginForm && registerForm) {
-        switchToRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-        });
-        
-        switchToLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            registerForm.classList.add('hidden');
-            loginForm.classList.remove('hidden');
-        });
+/**
+ * Setup tab switching functionality
+ * This function adds event listeners to the tab buttons to switch between login and register forms
+ */
+function setupTabSwitching() {
+    const tabs = document.querySelectorAll('.tab');
+    if (!tabs.length) {
+        console.error('No tab elements found');
+        return;
     }
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Get the tab identifier from the data-tab attribute
+            const tabId = tab.dataset.tab;
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show the selected tab content
+            const activeContent = document.getElementById(`${tabId}-tab`);
+            if (activeContent) {
+                activeContent.classList.add('active');
+            } else {
+                console.error(`Tab content #${tabId}-tab not found`);
+            }
+        });
+    });
+    
+    console.log('Tab switching functionality initialized');
 }
 
 function showErrorMessage(elementId, message) {

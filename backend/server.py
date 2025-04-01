@@ -14,7 +14,7 @@ class ApplicationServer:
         self.httpd.allow_reuse_address = True
     
     def run(self):
-        print("GameGen2 server")
+        print("AI Processor Agent server")
         print(f"Started at http://localhost:{self.config['port']}")
         print("Press Ctrl+C to stop the server")
         

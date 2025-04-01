@@ -1,120 +1,70 @@
 /**
- * GameGen2 Utilities Module
+ * Utility functions for the GameGen2 application
+ * Handles communication with the backend server using JSON with action keys
  */
-
-import Config from './config.js';
 
 /**
- * Fetch data from the server API
+ * Send a POST request to the backend with JSON data
+ * The backend expects all requests to contain an 'action' key
  * 
- * @param {Object} request_data - Data to send to the server
- * @param {string} content_type - Content type for the request
- * @returns {Promise<Object>} Server response
+ * @param {Object} requestData - Object containing the action and data
+ * @returns {Promise<Object>} Response from the server
  */
-export async function fetchData(request_data, content_type = 'application/json') {
-    console.log('Fetching data...', request_data);
+export async function fetchData(requestData) {
     try {
-        const response = await fetch(Config.host, {
+        const response = await fetch('/', {
             method: 'POST',
             headers: {
-                'Content-Type': content_type
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(request_data)
+            body: JSON.stringify(requestData)
         });
-        console.log('Response status:', response.status);
-        
-        // Handle non-OK responses
+
         if (!response.ok) {
             throw new Error(`Server responded with status: ${response.status}`);
         }
-        
-        const data = await response.json();
-        console.log('Response data:', data);
-        return data;
+
+        return await response.json();
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Fetch error:', error);
         return {
-            error: 'Failed to fetch data',
-            message: error.message
+            status: 'error',
+            message: error.message || 'Failed to connect to server'
         };
     }
 }
 
 /**
- * Format a date for display
+ * Format a date object or timestamp into a readable string
  * 
- * @param {string|Date} date - Date to format
+ * @param {Date|number} date - Date object or timestamp to format
  * @param {Object} options - Formatting options
+ * @param {boolean} options.includeTime - Whether to include time in the output
+ * @param {boolean} options.shortFormat - Whether to use a shorter date format
  * @returns {string} Formatted date string
  */
 export function formatDate(date, options = {}) {
-    try {
-        const dateObj = date instanceof Date ? date : new Date(date);
-        
-        const defaultOptions = {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        };
-        
-        return dateObj.toLocaleDateString(undefined, { ...defaultOptions, ...options });
-    } catch (error) {
-        console.error('Error formatting date:', error);
+    const dateObj = date instanceof Date ? date : new Date(date);
+    
+    if (isNaN(dateObj.getTime())) {
         return 'Invalid date';
     }
-}
-
-/**
- * Sanitize HTML to prevent XSS attacks
- * 
- * @param {string} html - HTML string to sanitize
- * @returns {string} Sanitized HTML
- */
-export function sanitizeHTML(html) {
-    if (!html) return '';
     
-    const temp = document.createElement('div');
-    temp.textContent = html;
-    return temp.innerHTML;
-}
-
-/**
- * Generate a unique ID
- * 
- * @returns {string} Unique ID
- */
-export function generateUniqueId() {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2);
-}
-
-/**
- * Debounce a function to limit how often it can be called
- * 
- * @param {Function} func - Function to debounce
- * @param {number} wait - Wait time in milliseconds
- * @returns {Function} Debounced function
- */
-export function debounce(func, wait = 300) {
-    let timeout;
+    const {
+        includeTime = true,
+        shortFormat = false
+    } = options;
     
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+    const dateOptions = {
+        year: 'numeric',
+        month: shortFormat ? 'numeric' : 'long',
+        day: 'numeric'
     };
+    
+    if (includeTime) {
+        dateOptions.hour = '2-digit';
+        dateOptions.minute = '2-digit';
+    }
+    
+    return dateObj.toLocaleString(undefined, dateOptions);
 }
-
-// Export default object with all utilities
-export default {
-    FetchData: fetchData,
-    formatDate,
-    sanitizeHTML,
-    generateUniqueId,
-    debounce
-};

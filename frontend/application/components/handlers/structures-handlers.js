@@ -2,6 +2,7 @@
 import * as api from '../api.js';
 import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
 import { switchTab } from '../ui.js';
+import { updateStructureInfo } from './inputs-handlers.js';
 
 export function setupStructuresTabHandlers() {
     // Listen for the johto-data-loaded event
@@ -139,4 +140,7 @@ function selectStructure(structure) {
     
     // Automatically switch to the Inputs tab after selecting a structure
     switchTab('inputs');
+    
+    // Update structure information display
+    updateStructureInfo();
 }

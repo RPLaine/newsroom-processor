@@ -76,6 +76,12 @@ function createTabContent() {
     inputsContent.id = 'inputs-content';
     inputsContent.className = `tab-content ${appState.activeTab === 'inputs' ? 'active' : ''}`;
     inputsContent.innerHTML = `
+        <div class="section full-width" id="structure-info-section">
+            <h2>Selected Structure</h2>
+            <div id="selected-structure-info">
+                <p class="empty-state">No structure selected. Please select a structure from the Structures tab.</p>
+            </div>
+        </div>
         <div class="section small">
             <h2>Add Web Search</h2>
             <form id="web-search-form" class="form">

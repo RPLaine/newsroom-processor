@@ -8,6 +8,11 @@ import { appState, showNotification, showError, formatDate } from './common.js';
  * Setup event handlers for Inputs tab
  */
 export function setupInputsTabHandlers() {
+    // Update structure info when switching to inputs tab
+    document.getElementById('inputs-tab')?.addEventListener('click', () => {
+        updateStructureInfo();
+    });
+    
     // Web search form
     const webSearchForm = document.getElementById('web-search-form');
     webSearchForm?.addEventListener('submit', async (e) => {
@@ -214,4 +219,80 @@ export function getInputTypeLabel(type) {
         case 'file': return 'File Upload';
         default: return 'Input';
     }
+}
+
+/**
+ * Update structure information in the Inputs tab
+ */
+export function updateStructureInfo() {
+    const structureInfoContainer = document.getElementById('selected-structure-info');
+    if (!structureInfoContainer) return;
+    
+    if (!appState.currentStructure) {
+        structureInfoContainer.innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab.</p>';
+        return;
+    }
+    
+    const structure = appState.currentStructure;
+    
+    // Calculate node and connection counts
+    let nodeCount = 0;
+    let connectionCount = 0;
+    
+    if (structure.nodes && typeof structure.nodes === 'object') {
+        nodeCount = Object.keys(structure.nodes).length;
+    }
+    
+    if (structure.connections && typeof structure.connections === 'object') {
+        connectionCount = Object.keys(structure.connections).length;
+    }
+    
+    // Create detailed HTML for the structure
+    let structureDetailsHTML = `
+        <div class="structure-details">
+            <div class="structure-header">
+                <h3>${structure.name || 'Unnamed Structure'}</h3>
+                <div class="structure-meta">
+                    <span class="structure-meta-item">ID: ${structure.id || 'Unknown'}</span>
+                    <span class="structure-meta-item">User: ${structure.username || 'Unknown'}</span>
+                    <span class="structure-meta-item">Nodes: ${nodeCount}</span>
+                    <span class="structure-meta-item">Connections: ${connectionCount}</span>
+                </div>
+            </div>
+    `;
+    
+    // Add node information if available
+    if (nodeCount > 0) {
+        structureDetailsHTML += `
+            <div class="structure-section">
+                <h4>Nodes</h4>
+                <div class="structure-data-grid">
+        `;
+        
+        for (const [nodeId, node] of Object.entries(structure.nodes)) {
+            const nodeType = node.type || 'Unknown';
+            const nodeTitle = node.title || node.name || nodeId;
+            
+            structureDetailsHTML += `
+                <div class="structure-data-item">
+                    <div class="structure-data-header">${nodeTitle}</div>
+                    <div class="structure-data-content">
+                        <div>Type: ${nodeType}</div>
+                        <div>ID: ${nodeId}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        structureDetailsHTML += `
+                </div>
+            </div>
+        `;
+    }
+    
+    // Close the structure details container
+    structureDetailsHTML += `</div>`;
+    
+    // Update the container with the HTML
+    structureInfoContainer.innerHTML = structureDetailsHTML;
 }

@@ -1,22 +1,9 @@
-/**
- * Application UI builder
- * 
- * Creates the main application UI components
- */
 import appState from './state.js';
 import { switchTab } from './ui.js';
 
-/**
- * Create the application UI components and add them to the provided container
- * 
- * @param {HTMLElement} container - The container to add UI components to (optional)
- * @returns {HTMLElement} The container with UI components
- */
 export function createApplicationUI(container) {
-    // Use the provided container or create a new div
     const appContainer = container || document.createElement('div');
     
-    // Add app components directly to the container
     appContainer.appendChild(createHeader());
     appContainer.appendChild(createTabs());
     appContainer.appendChild(createTabContent());
@@ -25,11 +12,6 @@ export function createApplicationUI(container) {
     return appContainer;
 }
 
-/**
- * Create application header
- * 
- * @returns {HTMLElement} The header element
- */
 function createHeader() {
     const header = document.createElement('header');
     header.className = 'app-header';
@@ -38,7 +20,6 @@ function createHeader() {
     title.textContent = 'AI Processor Agent';
     header.appendChild(title);
     
-    // Create a container for the buttons
     const buttonsContainer = document.createElement('div');
     buttonsContainer.className = 'header-buttons';
     
@@ -52,11 +33,6 @@ function createHeader() {
     return header;
 }
 
-/**
- * Create tabs navigation
- * 
- * @returns {HTMLElement} The tabs element
- */
 function createTabs() {
     const tabsContainer = document.createElement('div');
     tabsContainer.className = 'tabs-container';
@@ -80,16 +56,10 @@ function createTabs() {
     return tabsContainer;
 }
 
-/**
- * Create tab content containers
- * 
- * @returns {HTMLElement} The tab content container
- */
 function createTabContent() {
     const contentContainer = document.createElement('div');
     contentContainer.className = 'tab-content-container';
     
-    // Jobs tab content
     const jobsContent = document.createElement('div');
     jobsContent.id = 'jobs-content';
     jobsContent.className = `tab-content ${appState.activeTab === 'jobs' ? 'active' : ''}`;
@@ -107,7 +77,6 @@ function createTabContent() {
     `;
     contentContainer.appendChild(jobsContent);
     
-    // Inputs tab content
     const inputsContent = document.createElement('div');
     inputsContent.id = 'inputs-content';
     inputsContent.className = `tab-content ${appState.activeTab === 'inputs' ? 'active' : ''}`;
@@ -149,7 +118,6 @@ function createTabContent() {
     `;
     contentContainer.appendChild(inputsContent);
     
-    // Process tab content
     const processContent = document.createElement('div');
     processContent.id = 'process-content';
     processContent.className = `tab-content ${appState.activeTab === 'process' ? 'active' : ''}`;
@@ -178,7 +146,6 @@ function createTabContent() {
     `;
     contentContainer.appendChild(processContent);
     
-    // Outputs tab content
     const outputsContent = document.createElement('div');
     outputsContent.id = 'outputs-content';
     outputsContent.className = `tab-content ${appState.activeTab === 'outputs' ? 'active' : ''}`;
@@ -207,11 +174,6 @@ function createTabContent() {
     return contentContainer;
 }
 
-/**
- * Create notifications container
- * 
- * @returns {HTMLElement} The notifications container
- */
 function createNotifications() {
     const notificationsContainer = document.createElement('div');
     notificationsContainer.id = 'notification-container';

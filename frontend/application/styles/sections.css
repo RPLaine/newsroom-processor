@@ -2,6 +2,7 @@
     background-color: var(--color-bg-primary);
     overflow-y: auto;
     width: 100%;
+    padding: var(--spacing-sm);
 }
 
 .tab-content {
@@ -10,13 +11,12 @@
 }
 
 .tab-content.active {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-md);
     width: 100%;
-    max-width: 1600px;
+    max-width: 1800px;
     margin: 0 auto;
-    padding: var(--spacing-sm);
 }
 
 .section {
@@ -25,11 +25,7 @@
     box-shadow: var(--shadow-md);
     padding: var(--spacing-md);
     border: var(--border-width) solid rgba(255, 255, 255, 0.05);
-    flex-grow: 1;
-    margin-bottom: var(--spacing-sm);
-    
-    min-width: 100%;
-    max-width: 100%;
+    height: fit-content;
 }
 
 .section h2 {
@@ -43,69 +39,51 @@
 }
 
 .section.small {
-    flex: 1 1 100%;
+    grid-column: span 1;
 }
 
 .section.medium {
-    flex: 1 1 100%;  
+    grid-column: span 1;
 }
 
 .section.large {
-    flex: 1 1 100%;
+    grid-column: span 1;
 }
 
 .section.full-width {
-    flex: 1 1 100%;
+    grid-column: 1 / -1;
 }
 
 @media (min-width: 768px) {
-    .tab-content-container {
-        padding: var(--spacing-sm);
-    }
-    
-    .section {
-        margin-bottom: var(--spacing-sm);
-    }
-    
-    .section.small {
-        flex: 1 1 calc(50% - var(--spacing-sm));
-        min-width: calc(50% - var(--spacing-sm));
-        max-width: calc(50% - var(--spacing-sm));
+    .tab-content.active {
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .section.medium {
-        flex: 1 1 calc(50% - var(--spacing-sm));
-        min-width: calc(50% - var(--spacing-sm));
-        max-width: calc(50% - var(--spacing-sm));
+        grid-column: span 1;
     }
     
     .section.large {
-        flex: 1 1 100%;
+        grid-column: span 2;
     }
 }
 
 @media (min-width: 1200px) {
-    .section.small {
-        flex: 1 1 calc(33.333% - var(--spacing-sm));
-        min-width: calc(33.333% - var(--spacing-sm));
-        max-width: calc(33.333% - var(--spacing-sm));
+    .tab-content.active {
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .section.medium {
-        flex: 1 1 calc(50% - var(--spacing-sm));
-        min-width: calc(50% - var(--spacing-sm));
-        max-width: calc(50% - var(--spacing-sm));
+        grid-column: span 2;
     }
     
     .section.large {
-        flex: 1 1 calc(66.666% - var(--spacing-sm));
-        min-width: calc(66.666% - var(--spacing-sm));
-        max-width: calc(66.666% - var(--spacing-sm));
+        grid-column: span 2;
     }
 }
 
 @media (min-width: 1600px) {
-    .tab-content-container {
-        padding: var(--spacing-sm);
+    .tab-content.active {
+        grid-template-columns: repeat(4, 1fr);
     }
 }

@@ -1,7 +1,7 @@
 import http.server
 import json
 from http.cookies import SimpleCookie
-import backend.database_handler as database_handler
+import backend.file_handler as file_handler
 import backend.html_constructor as html_constructor
 import backend.login_handler as login_handler
 import backend.user_handler as user_handler
@@ -37,7 +37,7 @@ def create_request_handler(server, config):
             response["request"] = self.load_request_dictionary()
             cookie = SimpleCookie(self.headers.get('Cookie'))
 
-            if 'userid' in cookie and database_handler.is_user_id_valid(cookie['userid'].value, config["user_data_path"]):
+            if 'userid' in cookie and file_handler.is_user_id_valid(cookie['userid'].value, config["user_data_path"]):
                 user_id = cookie['userid'].value
                 response["userid"] = user_id
                 response["userdata"] = user_handler.load_user_data(user_id)
@@ -46,7 +46,7 @@ def create_request_handler(server, config):
                 if response["request"]["action"] in ["login", "register", "logout"]:
                     response = login_handler.handle_login_actions(response, cookie, self.config)
                 else:
-                    response = app_handler.handle_app_actions(response, cookie, self.config)
+                    response = app_handler.handle_application_actions(response, cookie, self.config)
                     
             self.send_json_response(response, cookie)
             return

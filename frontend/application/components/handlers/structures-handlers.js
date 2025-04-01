@@ -3,52 +3,14 @@ import * as api from '../api.js';
 import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
 
 export function setupStructuresTabHandlers() {
-    const johtoDataBtn = document.getElementById('johto-data-btn');
-    johtoDataBtn?.addEventListener('click', async () => {
-        try {
-            johtoDataBtn.disabled = true;
-            johtoDataBtn.textContent = 'Loading...';
-            
-            const loadingAnimation = getLoadingAnimation();
-            loadingAnimation.show();
-            
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 100) progress = 100;
-                loadingAnimation.updateProgress(progress);
-            }, 600);
-            
-            const response = await api.loadJohtoData();
-            
-            clearInterval(progressInterval);
-            
-            loadingAnimation.updateProgress(100);
-            
-            await new Promise(resolve => setTimeout(resolve, 400));
-            
-            loadingAnimation.hide();
-            
-            if (response.status === 'success') {
-                showNotification('Johto data loaded successfully', 'success');
-                
-                if (response.data && response.data.structures) {
-                    updateStructuresList(response.data.structures);
-                } else {
-                    updateStructuresList([]);
-                }
-            } else {
-                throw new Error(response.message || 'Failed to load Johto data');
-            }
-        } catch (error) {
-            getLoadingAnimation().hide();
-            showError('Error loading Johto data', error);
-        } finally {
-            johtoDataBtn.disabled = false;
-            johtoDataBtn.textContent = 'Load johto.online data';
+    // Listen for the johto-data-loaded event
+    document.addEventListener('johto-data-loaded', () => {
+        if (appState.structures && appState.structures.length > 0) {
+            updateStructuresList(appState.structures);
         }
     });
     
+    // Update structures list when switching to structures tab
     document.getElementById('structures-tab')?.addEventListener('click', () => {
         if (appState.structures && appState.structures.length > 0) {
             updateStructuresList(appState.structures);

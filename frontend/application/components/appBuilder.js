@@ -64,14 +64,10 @@ function createTabContent() {
     structuresContent.id = 'structures-content';
     structuresContent.className = `tab-content ${appState.activeTab === 'structures' ? 'active' : ''}`;
     structuresContent.innerHTML = `
-        <div class="section small">
-            <h2>Load Data</h2>
-            <button id="johto-data-btn" class="btn primary">Load johto.online data</button>
-        </div>
         <div class="section large">
             <h2>Structures</h2>
             <div id="structures-list" class="structures-list">
-                <p>No structures loaded. Please load johto.online data first.</p>
+                <p>Loading structures from johto.online...</p>
             </div>
         </div>
     `;

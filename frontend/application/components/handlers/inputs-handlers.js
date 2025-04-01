@@ -249,16 +249,15 @@ export function updateStructureInfo() {
     
     // Create detailed HTML for the structure
     let structureDetailsHTML = `
-        <div class="structure-details">
-            <div class="structure-header">
-                <h3>${structure.name || 'Unnamed Structure'}</h3>
-                <div class="structure-meta">
-                    <span class="structure-meta-item">ID: ${structure.id || 'Unknown'}</span>
-                    <span class="structure-meta-item">User: ${structure.username || 'Unknown'}</span>
-                    <span class="structure-meta-item">Nodes: ${nodeCount}</span>
-                    <span class="structure-meta-item">Connections: ${connectionCount}</span>
-                </div>
+        <div class="structure-header">
+            <h3>${structure.name || 'Unnamed Structure'}</h3>
+            <div class="structure-meta">
+                <span class="structure-meta-item">ID: ${structure.id || 'Unknown'}</span>
+                <span class="structure-meta-item">User: ${structure.username || 'Unknown'}</span>
+                <span class="structure-meta-item">Nodes: ${nodeCount}</span>
+                <span class="structure-meta-item">Connections: ${connectionCount}</span>
             </div>
+        </div>
     `;
     
     // Add node information if available
@@ -289,9 +288,6 @@ export function updateStructureInfo() {
             </div>
         `;
     }
-    
-    // Close the structure details container
-    structureDetailsHTML += `</div>`;
     
     // Update the container with the HTML
     structureInfoContainer.innerHTML = structureDetailsHTML;

@@ -66,11 +66,8 @@ def create_user_data_directory(user_id, username, email):
             "created_at": int(time.time()),
             "last_login": int(time.time())
         },
-        "settings": {
-            "theme": "default",
-            "notifications": True
-        },
-        "stories": []
+        "jobs": [],
+        "files": []
     }
     
     # Save user data.json
@@ -161,15 +158,3 @@ def get_user_session_data(user_id, user_data_path):
         "email": user_info.get("email", ""),
         "settings": user_settings
     }
-
-def get_user_data(user_id):
-    """
-    Get the complete user data from their data.json file
-    
-    Args:
-        user_id: The user ID
-        
-    Returns:
-        Complete user data dictionary or empty dict if not found
-    """
-    return load_user_data(user_id)

@@ -34,26 +34,20 @@ def create_request_handler(server, config):
                 return
         
         def do_POST(self):
-            # All requests must be JSON data in the request body
-            # The server doesn't handle URL paths for different actions
             response = {}
-            # Parse JSON from request body
+
             response["request"] = self.load_request_dictionary()
             cookie = SimpleCookie(self.headers.get('Cookie'))
 
-            # Add user info to response if user is logged in
             if 'userid' in cookie and database_handler.is_user_id_valid(cookie['userid'].value, config["user_data_path"]):
                 user_id = cookie['userid'].value
                 response["userid"] = user_id
-                response["userdata"] = user_handler.get_user_data(user_id)
+                response["userdata"] = user_handler.load_user_data(user_id)
 
-            # All actions are routed based on the "action" key in the JSON request
             if 'action' in response["request"]:
                 if response["request"]["action"] in ["login", "register", "logout"]:
-                    # Authentication actions handled by login_handler
                     response = login_handler.handle_login_actions(response, cookie, self.config)
                 else:
-                    # All other actions are application actions handled by app_handler
                     response = app_handler.handle_app_actions(response, cookie, self.config)
                     
             self.send_json_response(response, cookie)
@@ -83,6 +77,8 @@ def create_request_handler(server, config):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             if 'userid' in cookie:
+                cookie["userid"]["secure"] = True
+                cookie["userid"]["httponly"] = True
                 self.send_header('Set-Cookie', cookie["userid"].OutputString())
             self.send_cors_headers()
             self.end_headers()

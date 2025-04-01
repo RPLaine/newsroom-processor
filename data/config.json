@@ -22,7 +22,7 @@
     "/",
     "/client/"
   ],
-  "title": "Game Generator 2",
+  "title": "AI Processor Agent",
   "javascript": "frontend/main.js",
   "css": "frontend/main.css",
   "favicon": "frontend/favicon.svg"

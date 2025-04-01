@@ -19,6 +19,13 @@ html, body {
     user-select: none;
 }
 
+/* All other elements should still have their content fully available */
+.section, .form, .input-content, .output-preview {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
 .tab-content-container {
     flex: 1;
     overflow: auto;

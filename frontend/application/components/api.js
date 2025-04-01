@@ -100,6 +100,12 @@ export async function saveOutput(fileName, content, jobId) {
     });
 }
 
+export async function loadJohtoData() {
+    return await sendRequest({
+        action: 'load_johto_data'
+    });
+}
+
 export async function logout() {
     const response = await sendRequest({ action: 'logout' });
     

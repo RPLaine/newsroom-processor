@@ -16,6 +16,7 @@ export function initEventHandlers() {
     setupProcessTabHandlers();
     setupOutputsTabHandlers();
     setupLogoutHandler();
+    setupJohtoButtonHandler();
 }
 
 /**
@@ -735,6 +736,32 @@ function setupLogoutHandler() {
             await api.logout();
         } catch (error) {
             showError('Error logging out', error);
+        }
+    });
+}
+
+/**
+ * Setup Johto button handler
+ */
+function setupJohtoButtonHandler() {
+    const johtoButton = document.querySelector('.johto-btn');
+    johtoButton?.addEventListener('click', async () => {
+        try {
+            johtoButton.disabled = true;
+            johtoButton.textContent = 'Loading...';
+            
+            const response = await api.loadJohtoData();
+            
+            if (response.status === 'success') {
+                showNotification('Johto data downloaded successfully', 'success');
+            } else {
+                throw new Error(response.message || 'Failed to download Johto data');
+            }
+        } catch (error) {
+            showError('Error downloading Johto data', error);
+        } finally {
+            johtoButton.disabled = false;
+            johtoButton.textContent = 'Johto';
         }
     });
 }

@@ -1,56 +1,47 @@
-/* Tab content and section layouts */
-
-/* Tab content container */
 .tab-content-container {
     background-color: var(--color-bg-primary);
     overflow-y: auto;
     width: 100%;
 }
 
-/* Tab content */
 .tab-content {
     display: none;
     animation: fadeIn var(--transition-normal);
 }
 
-/* Active tab content with flexbox layout for better responsiveness */
 .tab-content.active {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-sm); /* Reduced from spacing-md for tighter fit */
+    gap: var(--spacing-sm);
     width: 100%;
     max-width: 1600px;
     margin: 0 auto;
     padding: var(--spacing-sm);
 }
 
-/* Sections - Base styles */
 .section {
     background-color: var(--color-bg-secondary);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
-    padding: var(--spacing-md); /* Reduced from spacing-lg */
+    padding: var(--spacing-md);
     border: var(--border-width) solid rgba(255, 255, 255, 0.05);
     flex-grow: 1;
-    margin-bottom: var(--spacing-sm); /* Reduced from spacing-md */
+    margin-bottom: var(--spacing-sm);
     
-    /* Default for small screens - full width */
     min-width: 100%;
     max-width: 100%;
 }
 
-/* Section header */
 .section h2 {
     margin-top: 0;
-    margin-bottom: var(--spacing-md); /* Reduced from spacing-lg */
+    margin-bottom: var(--spacing-md);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--color-brand-primary-light);
-    padding-bottom: var(--spacing-xs); /* Reduced from spacing-sm */
+    padding-bottom: var(--spacing-xs);
     border-bottom: var(--border-width) solid var(--border-color);
 }
 
-/* Section sizes */
 .section.small {
     flex: 1 1 100%;
 }
@@ -67,18 +58,17 @@
     flex: 1 1 100%;
 }
 
-/* Tablet and larger screens */
 @media (min-width: 768px) {
     .tab-content-container {
-        padding: var(--spacing-sm); /* Reduced from spacing-lg */
+        padding: var(--spacing-sm);
     }
     
     .section {
-        margin-bottom: var(--spacing-sm); /* Reduced from spacing-lg */
+        margin-bottom: var(--spacing-sm);
     }
     
     .section.small {
-        flex: 1 1 calc(50% - var(--spacing-sm)); /* Adjusted for new gap */
+        flex: 1 1 calc(50% - var(--spacing-sm));
         min-width: calc(50% - var(--spacing-sm));
         max-width: calc(50% - var(--spacing-sm));
     }
@@ -94,7 +84,6 @@
     }
 }
 
-/* Desktop screens */
 @media (min-width: 1200px) {
     .section.small {
         flex: 1 1 calc(33.333% - var(--spacing-sm));
@@ -115,9 +104,8 @@
     }
 }
 
-/* Large desktop screens */
 @media (min-width: 1600px) {
     .tab-content-container {
-        padding: var(--spacing-sm); /* Changed from spacing-md */
+        padding: var(--spacing-sm);
     }
 }

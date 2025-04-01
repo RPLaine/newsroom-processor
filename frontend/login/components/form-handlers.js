@@ -1,132 +1,147 @@
-/**
- * Form handlers for login and registration forms
- * Uses JSON objects with 'action' key for backend communication
- */
-
 export function setupFormHandlers(FetchData) {
     setupLoginForm(FetchData);
     setupRegisterForm(FetchData);
-    setupTabSwitching(); // Added tab switching setup
+    setupTabHandlers();
 }
 
 function setupLoginForm(FetchData) {
     const loginForm = document.getElementById('login-form');
+    
     if (!loginForm) return;
-
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
         
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
         
-        const request = {
-            action: 'login',
-            data: {
-                email: email,
-                password: password
-            }
-        };
+        if (!email || !password) {
+            showError('Please fill in all fields');
+            return;
+        }
         
         try {
-            const response = await FetchData(request);
+            const response = await FetchData({
+                action: 'login',
+                email,
+                password
+            });
             
             if (response.status === 'success') {
                 window.location.reload();
             } else {
-                showErrorMessage('login-error', response.message || 'Login failed');
+                showError(response.message || 'Login failed');
             }
         } catch (error) {
-            showErrorMessage('login-error', 'Error connecting to server');
-            console.error(error);
+            showError('Connection error. Please try again.');
         }
     });
 }
 
 function setupRegisterForm(FetchData) {
     const registerForm = document.getElementById('register-form');
+    
     if (!registerForm) return;
-
-    registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
         
-        const email = document.getElementById('register-email').value;
-        const password = document.getElementById('register-password').value;
-        const confirmPassword = document.getElementById('register-confirm').value;
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
         
-        if (password !== confirmPassword) {
-            showErrorMessage('register-error', 'Passwords do not match');
+        if (!name || !email || !password || !confirmPassword) {
+            showError('Please fill in all fields');
             return;
         }
         
-        const request = {
-            action: 'register',
-            data: {
-                email: email,
-                password: password
-            }
-        };
+        if (password !== confirmPassword) {
+            showError('Passwords do not match');
+            return;
+        }
         
         try {
-            const response = await FetchData(request);
+            const response = await FetchData({
+                action: 'register',
+                name,
+                email,
+                password
+            });
             
             if (response.status === 'success') {
-                window.location.reload();
+                showSuccess('Registration successful! You can now log in.');
+                switchTab('login');
             } else {
-                showErrorMessage('register-error', response.message || 'Registration failed');
+                showError(response.message || 'Registration failed');
             }
         } catch (error) {
-            showErrorMessage('register-error', 'Error connecting to server');
-            console.error(error);
+            showError('Connection error. Please try again.');
         }
     });
 }
 
-/**
- * Setup tab switching functionality
- * This function adds event listeners to the tab buttons to switch between login and register forms
- */
-function setupTabSwitching() {
-    const tabs = document.querySelectorAll('.tab');
-    if (!tabs.length) {
-        console.error('No tab elements found');
-        return;
-    }
+function setupTabHandlers() {
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
     
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Get the tab identifier from the data-tab attribute
-            const tabId = tab.dataset.tab;
-            
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab').forEach(t => {
-                t.classList.remove('active');
-            });
-            
-            // Add active class to clicked tab
-            tab.classList.add('active');
-            
-            // Hide all tab content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Show the selected tab content
-            const activeContent = document.getElementById(`${tabId}-tab`);
-            if (activeContent) {
-                activeContent.classList.add('active');
-            } else {
-                console.error(`Tab content #${tabId}-tab not found`);
-            }
-        });
-    });
+    if (!loginTab || !registerTab) return;
     
-    console.log('Tab switching functionality initialized');
+    loginTab.addEventListener('click', () => switchTab('login'));
+    registerTab.addEventListener('click', () => switchTab('register'));
 }
 
-function showErrorMessage(elementId, message) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.remove('hidden');
+function switchTab(tabName) {
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginContent = document.getElementById('login-content');
+    const registerContent = document.getElementById('register-content');
+    
+    if (tabName === 'login') {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginContent.classList.add('active');
+        registerContent.classList.remove('active');
+    } else {
+        loginTab.classList.remove('active');
+        registerTab.classList.add('active');
+        loginContent.classList.remove('active');
+        registerContent.classList.add('active');
     }
+}
+
+function showError(message) {
+    const errorElement = getOrCreateMessageElement('error-message', 'error');
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    
+    setTimeout(() => {
+        errorElement.style.display = 'none';
+    }, 5000);
+}
+
+function showSuccess(message) {
+    const successElement = getOrCreateMessageElement('success-message', 'success');
+    successElement.textContent = message;
+    successElement.style.display = 'block';
+    
+    setTimeout(() => {
+        successElement.style.display = 'none';
+    }, 5000);
+}
+
+function getOrCreateMessageElement(id, className) {
+    let element = document.getElementById(id);
+    
+    if (!element) {
+        element = document.createElement('div');
+        element.id = id;
+        element.className = `message ${className}`;
+        element.style.display = 'none';
+        
+        const formContainer = document.querySelector('.form-container');
+        formContainer.insertBefore(element, formContainer.firstChild);
+    }
+    
+    return element;
 }

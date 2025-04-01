@@ -1,15 +1,3 @@
-/**
- * API communication module
- * 
- * Handles all server communication using action-based JSON requests
- */
-
-/**
- * Send JSON request to server with 'action' key
- * 
- * @param {Object} requestData - Object containing action and parameters 
- * @returns {Promise<Object>} Response from server
- */
 export async function sendRequest(requestData) {
     try {
         const response = await fetch('/', {
@@ -35,21 +23,10 @@ export async function sendRequest(requestData) {
     }
 }
 
-/**
- * Get all jobs
- * 
- * @returns {Promise<Object>} Jobs list response
- */
 export async function getJobs() {
     return await sendRequest({ action: 'get_jobs' });
 }
 
-/**
- * Create new job
- * 
- * @param {string} name - Job name 
- * @returns {Promise<Object>} Job creation response
- */
 export async function createJob(name) {
     return await sendRequest({ 
         action: 'create_job',
@@ -57,12 +34,6 @@ export async function createJob(name) {
     });
 }
 
-/**
- * Delete existing job
- * 
- * @param {string} jobId - ID of job to delete 
- * @returns {Promise<Object>} Job deletion response
- */
 export async function deleteJob(jobId) {
     return await sendRequest({ 
         action: 'delete_job',
@@ -70,13 +41,6 @@ export async function deleteJob(jobId) {
     });
 }
 
-/**
- * Perform web search
- * 
- * @param {string} query - Search query 
- * @param {string} jobId - Job ID to associate search with
- * @returns {Promise<Object>} Search results
- */
 export async function searchWeb(query, jobId) {
     return await sendRequest({
         action: 'search_web',
@@ -85,13 +49,6 @@ export async function searchWeb(query, jobId) {
     });
 }
 
-/**
- * Process RSS feed
- * 
- * @param {string} url - RSS feed URL 
- * @param {string} jobId - Job ID to associate feed with
- * @returns {Promise<Object>} RSS feed processing results
- */
 export async function processRSS(url, jobId) {
     return await sendRequest({
         action: 'read_rss',
@@ -100,14 +57,6 @@ export async function processRSS(url, jobId) {
     });
 }
 
-/**
- * Process file upload
- * 
- * @param {string} fileName - Name of file
- * @param {string} fileContent - Content of file
- * @param {string} jobId - Job ID to associate file with 
- * @returns {Promise<Object>} File processing results
- */
 export async function processFile(fileName, fileContent, jobId) {
     return await sendRequest({
         action: 'load_file',
@@ -117,13 +66,6 @@ export async function processFile(fileName, fileContent, jobId) {
     });
 }
 
-/**
- * Process user prompt
- * 
- * @param {string} prompt - User prompt
- * @param {string} jobId - Job ID
- * @returns {Promise<Object>} Processing results
- */
 export async function processPrompt(prompt, jobId) {
     return await sendRequest({
         action: 'process_data',
@@ -133,12 +75,6 @@ export async function processPrompt(prompt, jobId) {
     });
 }
 
-/**
- * Run auto-refinement on inputs
- * 
- * @param {string} jobId - Job ID
- * @returns {Promise<Object>} Refinement results
- */
 export async function runAutoRefinement(jobId) {
     return await sendRequest({
         action: 'process_data',
@@ -147,12 +83,6 @@ export async function runAutoRefinement(jobId) {
     });
 }
 
-/**
- * Generate self-reflection
- * 
- * @param {string} jobId - Job ID
- * @returns {Promise<Object>} Self-reflection results
- */
 export async function generateReflection(jobId) {
     return await sendRequest({
         action: 'process_data',
@@ -161,14 +91,6 @@ export async function generateReflection(jobId) {
     });
 }
 
-/**
- * Save output file
- * 
- * @param {string} fileName - Output file name
- * @param {string} content - Output file content
- * @param {string} jobId - Job ID
- * @returns {Promise<Object>} Save output results
- */
 export async function saveOutput(fileName, content, jobId) {
     return await sendRequest({
         action: 'save_output',
@@ -178,11 +100,6 @@ export async function saveOutput(fileName, content, jobId) {
     });
 }
 
-/**
- * Log out current user
- * 
- * @returns {Promise<Object>} Logout response
- */
 export async function logout() {
     const response = await sendRequest({ action: 'logout' });
     

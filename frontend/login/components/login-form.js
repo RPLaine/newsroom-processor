@@ -1,33 +1,22 @@
-/**
- * Creates the login form component
- * 
- * @returns {HTMLElement} The login form element
- */
 import { createFormField } from './form-field.js';
 
 export function createLoginForm() {
-    // Create login form
-    const loginForm = document.createElement('form');
-    loginForm.id = 'login-form';
+    const form = document.createElement('form');
+    form.id = 'login-form';
+    form.className = 'auth-form';
     
-    // Add email field
-    loginForm.appendChild(createFormField('login-email', 'Email', 'email'));
+    const emailField = createFormField('email', 'email', 'Email Address', 'Enter your email');
+    const passwordField = createFormField('password', 'password', 'Password', 'Enter your password');
     
-    // Add password field
-    loginForm.appendChild(createFormField('login-password', 'Password', 'password'));
+    form.appendChild(emailField);
+    form.appendChild(passwordField);
     
-    // Add login button
-    const loginButton = document.createElement('button');
-    loginButton.type = 'submit';
-    loginButton.className = 'btn btn-primary';
-    loginButton.textContent = 'Log In';
-    loginForm.appendChild(loginButton);
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.className = 'auth-button';
+    submitButton.textContent = 'Sign In';
     
-    // Add error message container
-    const loginError = document.createElement('p');
-    loginError.className = 'error-message';
-    loginError.id = 'login-error';
-    loginForm.appendChild(loginError);
+    form.appendChild(submitButton);
     
-    return loginForm;
+    return form;
 }

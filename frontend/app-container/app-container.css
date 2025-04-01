@@ -1,4 +1,3 @@
-/* App container component styles */
 #app-container {
     width: 100%;
     height: 100vh;
@@ -10,17 +9,15 @@
     flex-direction: column;
 }
 
-/* Let's also make sure the body and html have no margins/padding */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
     overflow: hidden;
-    user-select: none; /* Prevent text selection by default */
+    user-select: none;
 }
 
-/* Tab content container should take up available space */
 .tab-content-container {
     flex: 1;
     overflow: auto;
@@ -34,7 +31,6 @@ html, body {
     padding: var(--spacing-md);
 }
 
-/* User info styling in header */
 .user-info {
     display: flex;
     align-items: center;

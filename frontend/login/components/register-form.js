@@ -1,36 +1,26 @@
-/**
- * Creates the registration form component
- * 
- * @returns {HTMLElement} The registration form element
- */
 import { createFormField } from './form-field.js';
 
 export function createRegisterForm() {
-    // Create register form
-    const registerForm = document.createElement('form');
-    registerForm.id = 'register-form';
+    const form = document.createElement('form');
+    form.id = 'register-form';
+    form.className = 'auth-form';
     
-    // Add email field
-    registerForm.appendChild(createFormField('register-email', 'Email', 'email'));
+    const nameField = createFormField('text', 'name', 'Full Name', 'Enter your full name');
+    const emailField = createFormField('email', 'email', 'Email Address', 'Enter your email');
+    const passwordField = createFormField('password', 'password', 'Password', 'Create a password');
+    const confirmPasswordField = createFormField('password', 'confirm-password', 'Confirm Password', 'Confirm your password');
     
-    // Add password field
-    registerForm.appendChild(createFormField('register-password', 'Password', 'password'));
+    form.appendChild(nameField);
+    form.appendChild(emailField);
+    form.appendChild(passwordField);
+    form.appendChild(confirmPasswordField);
     
-    // Add confirm password field
-    registerForm.appendChild(createFormField('register-confirm', 'Confirm Password', 'password'));
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.className = 'auth-button';
+    submitButton.textContent = 'Create Account';
     
-    // Add register button
-    const registerButton = document.createElement('button');
-    registerButton.type = 'submit';
-    registerButton.className = 'btn btn-primary';
-    registerButton.textContent = 'Register';
-    registerForm.appendChild(registerButton);
+    form.appendChild(submitButton);
     
-    // Add error message container
-    const registerError = document.createElement('p');
-    registerError.className = 'error-message';
-    registerError.id = 'register-error';
-    registerForm.appendChild(registerError);
-    
-    return registerForm;
+    return form;
 }

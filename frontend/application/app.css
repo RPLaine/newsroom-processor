@@ -1,13 +1,7 @@
-/**
- * Main Application Styling
- */
-
-/* Application Container */
 .app-container {
     color: var(--color-text-primary);
 }
 
-/* Header */
 .app-header {
     background-color: var(--color-bg-secondary);
     color: var(--color-text-primary);
@@ -46,18 +40,17 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* Tabs */
 .tabs-container {
     display: flex;
     background-color: var(--color-bg-secondary);
     border-bottom: var(--border-width) solid var(--border-color);
     overflow-x: auto;
-    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .tabs-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar in Chrome, Safari, and Opera */
+    display: none;
 }
 
 .tab {
@@ -84,7 +77,6 @@
     font-weight: var(--font-weight-medium);
 }
 
-/* Tab content */
 .tab-content-container {
     background-color: var(--color-bg-primary);
     overflow-y: auto;
@@ -105,19 +97,16 @@
     margin: 0 auto;
 }
 
-/* Sections */
 .section {
     background-color: var(--color-bg-secondary);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     padding: var(--spacing-lg);
     border: var(--border-width) solid rgba(255, 255, 255, 0.05);
-    /* Default span 12 columns (full width) on mobile */
     grid-column: span 12;
     margin-bottom: var(--spacing-sm);
 }
 
-/* Section size variations */
 .section.small {
     grid-column: span 12;
 }
@@ -130,7 +119,6 @@
     grid-column: span 12;
 }
 
-/* Media queries for responsive section layout */
 @media (min-width: 768px) {
     .tab-content-container {
         padding: var(--spacing-sm);
@@ -162,7 +150,6 @@
         grid-column: span 8;
     }
     
-    /* Keep full-width at all sizes if explicitly specified */
     .section.full-width {
         grid-column: 1 / -1;
     }
@@ -178,7 +165,6 @@
     border-bottom: var(--border-width) solid var(--border-color);
 }
 
-/* Forms */
 .form {
     display: flex;
     flex-direction: column;
@@ -218,7 +204,6 @@
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
 }
 
-/* Buttons */
 .btn {
     padding: var(--spacing-md) var(--spacing-lg);
     border-radius: var(--border-radius-sm);
@@ -286,7 +271,6 @@
     gap: var(--spacing-md);
 }
 
-/* Jobs list */
 .jobs-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -352,7 +336,6 @@
     margin-top: var(--spacing-md);
 }
 
-/* Inputs list */
 .input-item {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
@@ -383,7 +366,7 @@
     font-size: var(--font-size-sm);
     max-height: 200px;
     overflow-y: auto;
-    user-select: text; /* Allow text selection */
+    user-select: text;
 }
 
 .input-meta {
@@ -394,7 +377,6 @@
     gap: var(--spacing-md);
 }
 
-/* Conversation area */
 .conversation-area {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
@@ -413,7 +395,7 @@
     border-radius: var(--border-radius-md);
     position: relative;
     animation: fadeIn 0.3s ease;
-    user-select: text; /* Allow text selection */
+    user-select: text;
 }
 
 .message.user {
@@ -451,7 +433,6 @@
     text-align: right;
 }
 
-/* Message input area */
 .message-input-container {
     display: flex;
     gap: var(--spacing-md);
@@ -477,7 +458,6 @@
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
 }
 
-/* Outputs list */
 .outputs-list {
     display: flex;
     flex-direction: column;
@@ -509,7 +489,7 @@
     padding: var(--spacing-md);
     margin: var(--spacing-md) 0;
     overflow-x: auto;
-    user-select: text; /* Allow text selection */
+    user-select: text;
 }
 
 .output-preview pre {
@@ -527,7 +507,6 @@
     color: var(--color-text-secondary);
 }
 
-/* Notifications */
 .notification-container {
     position: fixed;
     top: var(--spacing-md);
@@ -590,7 +569,6 @@
     animation: fadeOut 0.5s ease forwards;
 }
 
-/* Loading states */
 .loading {
     position: relative;
     display: inline-block;
@@ -612,7 +590,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Empty states */
 .empty-state {
     text-align: center;
     padding: var(--spacing-xl);
@@ -629,7 +606,6 @@
     color: var(--color-text-tertiary);
 }
 
-/* Keyframes */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -645,7 +621,6 @@
     to { opacity: 0; }
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .section {
         padding: var(--spacing-md);

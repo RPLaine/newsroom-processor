@@ -1,6 +1,3 @@
-/* Messaging and conversation styles */
-
-/* Conversation area */
 .conversation-area {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
@@ -19,7 +16,7 @@
     border-radius: var(--border-radius-md);
     position: relative;
     animation: fadeIn 0.3s ease;
-    user-select: text; /* Allow text selection */
+    user-select: text;
 }
 
 .message.user {

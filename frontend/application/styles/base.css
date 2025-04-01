@@ -1,9 +1,7 @@
-/* Base styles and layout */
 .app-container {
     color: var(--color-text-primary);
 }
 
-/* Header */
 .app-header {
     background-color: var(--color-bg-secondary);
     color: var(--color-text-primary);
@@ -42,18 +40,17 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* Tabs */
 .tabs-container {
     display: flex;
     background-color: var(--color-bg-secondary);
     border-bottom: var(--border-width) solid var(--border-color);
     overflow-x: auto;
-    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .tabs-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar in Chrome, Safari, and Opera */
+    display: none;
 }
 
 .tab {
@@ -80,7 +77,6 @@
     font-weight: var(--font-weight-medium);
 }
 
-/* Loading states */
 .loading {
     position: relative;
     display: inline-block;
@@ -97,7 +93,6 @@
     animation: spin 1s linear infinite;
 }
 
-/* Empty states */
 .empty-state {
     text-align: center;
     padding: var(--spacing-xl);

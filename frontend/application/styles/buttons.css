@@ -1,4 +1,3 @@
-/* Button styles */
 .btn {
     padding: var(--spacing-md) var(--spacing-lg);
     border-radius: var(--border-radius-sm);

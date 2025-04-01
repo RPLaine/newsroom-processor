@@ -2,10 +2,13 @@ import { createApplicationUI } from './appBuilder.js';
 import { initEventHandlers } from './handlers.js';
 import appState from './state.js';
 import * as api from './api.js';
-import { showNotification, showError } from './ui.js';
+import { showError } from './ui.js';
 
 export async function createApp(data, container) {
     console.log('Initializing app with data:', data);
+    
+    // Access the loading animation from the window object
+    const loadingAnimation = window.johtoLoadingAnimation;
     
     container.innerHTML = '';
     
@@ -21,7 +24,7 @@ export async function createApp(data, container) {
         const response = await api.loadJohtoData();
         
         if (response.status === 'success') {
-            showNotification('Johto data loaded automatically', 'success');
+            // No notification needed as the loading animation signals completion
             
             if (response.data && response.data.structures) {
                 appState.structures = response.data.structures;
@@ -32,11 +35,24 @@ export async function createApp(data, container) {
                     document.dispatchEvent(event);
                 }
             }
+            
+            // Hide loading animation after structures are loaded
+            if (loadingAnimation) {
+                loadingAnimation.hide();
+            }
         } else {
             console.error('Failed to load Johto data:', response.message);
+            // Hide loading animation even if loading failed
+            if (loadingAnimation) {
+                loadingAnimation.hide();
+            }
         }
     } catch (error) {
         console.error('Error automatically loading Johto data:', error);
+        // Hide loading animation if there was an error
+        if (loadingAnimation) {
+            loadingAnimation.hide();
+        }
     }
     
     return data;

@@ -1,3 +1,12 @@
+/* Ensure body and app-container have the primary background color in login */
+body.login-page {
+    background-color: var(--color-bg-primary);
+}
+
+#app-container.login-view {
+    background-color: var(--color-bg-primary);
+}
+
 .login-container {
     margin: var(--spacing-2xl) auto;
     padding: var(--spacing-xl);

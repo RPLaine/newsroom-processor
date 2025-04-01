@@ -1,3 +1,5 @@
+import LoadingAnimation from '../../animation/loading-animation.js';
+
 export function setupFormHandlers(FetchData) {
     setupLoginForm(FetchData);
     setupRegisterForm(FetchData);
@@ -30,6 +32,10 @@ function setupLoginForm(FetchData) {
             });
             
             if (response.status === 'success') {
+                // Set a flag in localStorage to indicate we need to show loading animation after reload
+                localStorage.setItem('showLoadingAnimation', 'true');
+                
+                // Reload the page to load the main application
                 window.location.reload();
             } else {
                 showError(response.message || 'Login failed');

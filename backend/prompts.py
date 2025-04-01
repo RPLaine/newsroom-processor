@@ -16,8 +16,13 @@ def generate_prompt(messages, max_length=500, temperature=1.0, top_k=50, top_p=0
     Returns:
         dict: The response from the Dolphin 3.0 LLM.
     """
+    # formatted_messages = "".join(
+    #     f"<|im_start|>{message['role']}\n{message['content']}<|im_end|>\n"
+    #     for message in messages
+    # )
+
     formatted_messages = "".join(
-        f"<|im_start|>{message['role']}\n{message['content']}<|im_end|>\n"
+        f"<|im_start|>user\n{message['content']}<|im_end|>\n<|im_start|>assistant\n"
         for message in messages
     )
 
@@ -34,11 +39,30 @@ def generate_prompt(messages, max_length=500, temperature=1.0, top_k=50, top_p=0
     print("🐬 Sending request to Dolphin LLM...")
 
     try:
-        response = requests.post(url, json=payload, headers={"Accept": "application/json"})
+        # Ensure proper encoding for the request
+        response = requests.post(
+            url, 
+            json=payload, 
+            headers={"Content-Type": "application/json"}
+        )
         response.raise_for_status()
-        print(response.text)
+        
+        # Get response and set encoding to UTF-8 explicitly
+        response.encoding = 'utf-8'
+        response_text = response.text
+        
+        print("Raw response:", response_text)
+        
+        # Extract the assistant's response after the last occurrence of the marker
+        answer = response_text.rsplit("<|im_start|>assistant\n", 1)[-1]
+        
+        # Clean up any remaining markers if present
+        if "<|im_end|>" in answer:
+            answer = answer.split("<|im_end|>")[0]
+            
+        print("Processed answer:", answer)
         print("🐬 Response received successfully.")
-        return response.text
+        return answer
     except requests.exceptions.RequestException as e:
         print(f"Error communicating with Dolphin 3.0 LLM: {e}")
         return None

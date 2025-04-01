@@ -5,6 +5,7 @@ export async function fetchData(requestData) {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify(requestData)
         });
 

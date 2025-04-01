@@ -10,9 +10,7 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 async function initializeApp() {
     const appContainer = AppContainer.createAppContainer();
 
-    const request_data = {
-        action: 'application_init'
-    };
+    const request_data = {};
 
     data = await fetchData(request_data);
     console.log('data', data);

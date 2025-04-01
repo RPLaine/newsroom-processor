@@ -27,6 +27,7 @@
     background-color: var(--color-bg-tertiary);
     color: var(--color-text-primary);
     transition: all var(--transition-fast);
+    width: 100%;
 }
 
 .form-group input:focus, 
@@ -54,6 +55,7 @@
     font-size: var(--font-size-md);
     resize: none;
     min-height: 80px;
+    max-width: 100%;
 }
 
 .message-input:focus {

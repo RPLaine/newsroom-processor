@@ -29,13 +29,11 @@ def create_request_handler(server, config):
             elif any(self.path.endswith(ext) for ext in self.config["allowed_extensions"]):
                 super().do_GET()
                 return
-            else:
-                self.send_error(404, "File not found")
-                return
+            self.send_error(404, "File not found")
+            return
         
         def do_POST(self):
             response = {}
-
             response["request"] = self.load_request_dictionary()
             cookie = SimpleCookie(self.headers.get('Cookie'))
 
@@ -54,20 +52,15 @@ def create_request_handler(server, config):
             return
         
         def load_request_dictionary(self):
-            try:
-                content_length = int(self.headers['Content-Length'])
-                post_data = self.rfile.read(content_length)
-                data = json.loads(post_data.decode('utf-8'))
-                print(json.dumps(data, indent=4))
-                return data
-            except json.JSONDecodeError:
-                return {"error": "rfile is not a valid JSON"}
-            except Exception as e:
-                return {"error": str(e)}
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            print(json.dumps(data, indent=4))
+            return data
         
         def send_cors_headers(self):
             origin = self.headers.get('Origin')
-            if origin:
+            if self.headers.get('Origin'):
                 self.send_header('Access-Control-Allow-Origin', origin)
                 self.send_header('Access-Control-Allow-Credentials', 'true')
             else:

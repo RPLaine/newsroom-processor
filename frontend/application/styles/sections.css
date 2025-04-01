@@ -1,0 +1,123 @@
+/* Tab content and section layouts */
+
+/* Tab content container */
+.tab-content-container {
+    background-color: var(--color-bg-primary);
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* Tab content */
+.tab-content {
+    display: none;
+    animation: fadeIn var(--transition-normal);
+}
+
+/* Active tab content with flexbox layout for better responsiveness */
+.tab-content.active {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Sections - Base styles */
+.section {
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    border: var(--border-width) solid rgba(255, 255, 255, 0.05);
+    flex-grow: 1;
+    margin-bottom: var(--spacing-md);
+    
+    /* Default for small screens - full width */
+    min-width: 100%;
+    max-width: 100%;
+}
+
+/* Section header */
+.section h2 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-brand-primary-light);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: var(--border-width) solid var(--border-color);
+}
+
+/* Section sizes */
+.section.small {
+    flex: 1 1 100%;
+}
+
+.section.medium {
+    flex: 1 1 100%;  
+}
+
+.section.large {
+    flex: 1 1 100%;
+}
+
+.section.full-width {
+    flex: 1 1 100%;
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+    .tab-content-container {
+        padding: var(--spacing-lg);
+    }
+    
+    .section {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .section.small {
+        flex: 1 1 calc(50% - var(--spacing-md));
+        min-width: calc(50% - var(--spacing-md));
+        max-width: calc(50% - var(--spacing-md));
+    }
+    
+    .section.medium {
+        flex: 1 1 calc(50% - var(--spacing-md));
+        min-width: calc(50% - var(--spacing-md));
+        max-width: calc(50% - var(--spacing-md));
+    }
+    
+    .section.large {
+        flex: 1 1 100%;
+    }
+}
+
+/* Desktop screens */
+@media (min-width: 1200px) {
+    .section.small {
+        flex: 1 1 calc(33.333% - var(--spacing-md));
+        min-width: calc(33.333% - var(--spacing-md));
+        max-width: calc(33.333% - var(--spacing-md));
+    }
+    
+    .section.medium {
+        flex: 1 1 calc(50% - var(--spacing-md));
+        min-width: calc(50% - var(--spacing-md));
+        max-width: calc(50% - var(--spacing-md));
+    }
+    
+    .section.large {
+        flex: 1 1 calc(66.666% - var(--spacing-md));
+        min-width: calc(66.666% - var(--spacing-md));
+        max-width: calc(66.666% - var(--spacing-md));
+    }
+}
+
+/* Large desktop screens */
+@media (min-width: 1600px) {
+    .tab-content-container {
+        padding: var(--spacing-xl);
+    }
+}

@@ -35,7 +35,7 @@ function createHeader() {
     header.className = 'app-header';
     
     const title = document.createElement('h1');
-    title.textContent = 'AI Document Processor';
+    title.textContent = 'AI Processor Agent';
     header.appendChild(title);
     
     const logoutButton = document.createElement('button');
@@ -88,7 +88,7 @@ function createTabContent() {
     jobsContent.id = 'jobs-content';
     jobsContent.className = `tab-content ${appState.activeTab === 'jobs' ? 'active' : ''}`;
     jobsContent.innerHTML = `
-        <div class="section">
+        <div class="section small">
             <h2>Create New Job</h2>
             <form id="create-job-form" class="form">
                 <div class="form-group">
@@ -98,7 +98,7 @@ function createTabContent() {
                 <button type="submit" class="btn primary">Create Job</button>
             </form>
         </div>
-        <div class="section">
+        <div class="section large">
             <h2>Your Jobs</h2>
             <div id="jobs-list" class="jobs-list">
                 <p>Loading jobs...</p>
@@ -112,7 +112,7 @@ function createTabContent() {
     inputsContent.id = 'inputs-content';
     inputsContent.className = `tab-content ${appState.activeTab === 'inputs' ? 'active' : ''}`;
     inputsContent.innerHTML = `
-        <div class="section">
+        <div class="section small">
             <h2>Add Web Search</h2>
             <form id="web-search-form" class="form">
                 <div class="form-group">
@@ -122,7 +122,7 @@ function createTabContent() {
                 <button type="submit" class="btn primary">Search Web</button>
             </form>
         </div>
-        <div class="section">
+        <div class="section small">
             <h2>Add RSS Feed</h2>
             <form id="rss-form" class="form">
                 <div class="form-group">
@@ -132,7 +132,7 @@ function createTabContent() {
                 <button type="submit" class="btn primary">Process RSS</button>
             </form>
         </div>
-        <div class="section">
+        <div class="section small">
             <h2>Upload File</h2>
             <form id="file-form" class="form">
                 <div class="form-group">
@@ -142,7 +142,7 @@ function createTabContent() {
                 <button type="submit" class="btn primary">Upload File</button>
             </form>
         </div>
-        <div class="section">
+        <div class="section full-width">
             <h2>Current Inputs</h2>
             <div id="inputs-list" class="inputs-list"></div>
         </div>
@@ -154,7 +154,7 @@ function createTabContent() {
     processContent.id = 'process-content';
     processContent.className = `tab-content ${appState.activeTab === 'process' ? 'active' : ''}`;
     processContent.innerHTML = `
-        <div class="section">
+        <div class="section medium">
             <h2>Prompt AI Assistant</h2>
             <form id="prompt-form" class="form">
                 <div class="form-group">
@@ -164,14 +164,14 @@ function createTabContent() {
                 <button type="submit" class="btn primary">Send Prompt</button>
             </form>
         </div>
-        <div class="section">
+        <div class="section medium">
             <h2>Automated Processing</h2>
             <div class="button-group">
                 <button id="refine-btn" class="btn">Auto-Refine Inputs</button>
                 <button id="reflect-btn" class="btn">Generate Self-Reflection</button>
             </div>
         </div>
-        <div class="section">
+        <div class="section full-width">
             <h2>Conversation</h2>
             <div id="conversation-area" class="conversation-area"></div>
         </div>
@@ -183,7 +183,7 @@ function createTabContent() {
     outputsContent.id = 'outputs-content';
     outputsContent.className = `tab-content ${appState.activeTab === 'outputs' ? 'active' : ''}`;
     outputsContent.innerHTML = `
-        <div class="section">
+        <div class="section medium">
             <h2>Create Output</h2>
             <form id="create-output-form" class="form">
                 <div class="form-group">
@@ -197,7 +197,7 @@ function createTabContent() {
                 <button type="submit" class="btn primary">Save Output</button>
             </form>
         </div>
-        <div class="section">
+        <div class="section full-width">
             <h2>Saved Outputs</h2>
             <div id="outputs-list" class="outputs-list"></div>
         </div>

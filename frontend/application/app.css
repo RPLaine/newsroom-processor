@@ -87,6 +87,8 @@
 /* Tab content */
 .tab-content-container {
     background-color: var(--color-bg-primary);
+    padding: var(--spacing-md);
+    overflow-y: auto;
 }
 
 .tab-content {
@@ -95,7 +97,13 @@
 }
 
 .tab-content.active {
-    display: block;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: auto;
+    gap: var(--spacing-md);
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 /* Sections */
@@ -104,8 +112,60 @@
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
     border: var(--border-width) solid rgba(255, 255, 255, 0.05);
+    /* Default span 12 columns (full width) on mobile */
+    grid-column: span 12;
+}
+
+/* Section size variations */
+.section.small {
+    grid-column: span 12;
+}
+
+.section.medium {
+    grid-column: span 12;
+}
+
+.section.large {
+    grid-column: span 12;
+}
+
+/* Media queries for responsive section layout */
+@media (min-width: 768px) {
+    .tab-content-container {
+        padding: var(--spacing-lg);
+    }
+    
+    .section.small {
+        grid-column: span 6;
+    }
+    
+    .section.medium {
+        grid-column: span 6;
+    }
+    
+    .section.large {
+        grid-column: span 12;
+    }
+}
+
+@media (min-width: 1200px) {
+    .section.small {
+        grid-column: span 4;
+    }
+    
+    .section.medium {
+        grid-column: span 6;
+    }
+    
+    .section.large {
+        grid-column: span 8;
+    }
+    
+    /* Keep full-width at all sizes if explicitly specified */
+    .section.full-width {
+        grid-column: 1 / -1;
+    }
 }
 
 .section h2 {

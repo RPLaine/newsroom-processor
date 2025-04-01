@@ -1,6 +1,7 @@
 // filepath: c:\git\gamegen2\frontend\application\components\handlers\structures-handlers.js
 import * as api from '../api.js';
 import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
+import { switchTab } from '../ui.js';
 
 export function setupStructuresTabHandlers() {
     // Listen for the johto-data-loaded event
@@ -135,4 +136,7 @@ function updateStructuresList(structures) {
 function selectStructure(structure) {
     appState.currentStructure = structure;
     showNotification(`Selected structure: ${structure.name}`, 'success');
+    
+    // Automatically switch to the Inputs tab after selecting a structure
+    switchTab('inputs');
 }

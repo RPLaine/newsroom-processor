@@ -1,3 +1,7 @@
+import backend.file_handler as file_handler
+import backend.structure_interpreter as structure_interpreter
+import backend.application.jobs_handler as jobs_handler
+
 def handle_application_actions(response: dict) -> dict:
     if 'action' not in response['request']:
         response['status'] = 'error'
@@ -12,7 +16,13 @@ def handle_application_actions(response: dict) -> dict:
         response['message'] = 'Not authenticated'
         return response
     
-    # insert handlers
+    # Job-related actions
+    if action == 'get_jobs':
+        return jobs_handler.handle_get_jobs(response, user_id)
+    elif action == 'create_job':
+        return jobs_handler.handle_create_job(response, user_id)
+    elif action == 'delete_job':
+        return jobs_handler.handle_delete_job(response, user_id)
     
     response['status'] = 'error'
     response['message'] = f'Unknown application action: {action}'

@@ -87,7 +87,6 @@
 /* Tab content */
 .tab-content-container {
     background-color: var(--color-bg-primary);
-    padding: var(--spacing-md);
     overflow-y: auto;
 }
 
@@ -133,7 +132,7 @@
 /* Media queries for responsive section layout */
 @media (min-width: 768px) {
     .tab-content-container {
-        padding: var(--spacing-lg);
+        padding: var(--spacing-sm);
     }
     
     .section.small {
@@ -647,10 +646,6 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .tab-content-container {
-        padding: var(--spacing-md);
-    }
-    
     .section {
         padding: var(--spacing-md);
     }

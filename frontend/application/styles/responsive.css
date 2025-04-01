@@ -1,9 +1,7 @@
 @media (max-width: 768px) {
     .app-header {
         padding: var(--spacing-md);
-        flex-direction: column;
         gap: var(--spacing-md);
-        text-align: center;
     }
     
     .section {

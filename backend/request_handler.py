@@ -14,6 +14,13 @@ def create_request_handler(server, config):
             self.config = config
             super().__init__(*args, **kwargs)
 
+        def do_OPTIONS(self):
+            self.send_response(200)
+            self.send_cors_headers()
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
+            
         def do_GET(self):
             if self.path == '/':
                 response = html_constructor.generate_html(self.config)
@@ -56,19 +63,28 @@ def create_request_handler(server, config):
                 return {"error": "rfile is not a valid JSON"}
             except Exception as e:
                 return {"error": str(e)}
+        
+        def send_cors_headers(self):
+            origin = self.headers.get('Origin')
+            if origin:
+                self.send_header('Access-Control-Allow-Origin', origin)
+                self.send_header('Access-Control-Allow-Credentials', 'true')
+            else:
+                self.send_header('Access-Control-Allow-Origin', '*')
             
         def send_json_response(self, response_data, cookie):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             if 'userid' in cookie:
                 self.send_header('Set-Cookie', cookie["userid"].OutputString())
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_cors_headers()
             self.end_headers()
             self.wfile.write(json.dumps(response_data).encode('utf-8'))
 
         def send_html_response(self, html_content):
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
+            self.send_cors_headers()
             self.end_headers()
             self.wfile.write(html_content.encode('utf-8'))
                 

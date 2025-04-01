@@ -38,10 +38,21 @@ function createHeader() {
     title.textContent = 'AI Processor Agent';
     header.appendChild(title);
     
+    // Create a container for the buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'header-buttons';
+    
+    const johtoButton = document.createElement('button');
+    johtoButton.textContent = 'Johto';
+    johtoButton.className = 'johto-btn';
+    buttonsContainer.appendChild(johtoButton);
+    
     const logoutButton = document.createElement('button');
     logoutButton.textContent = 'Logout';
     logoutButton.className = 'logout-btn';
-    header.appendChild(logoutButton);
+    buttonsContainer.appendChild(logoutButton);
+    
+    header.appendChild(buttonsContainer);
     
     return header;
 }

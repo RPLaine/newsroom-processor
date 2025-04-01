@@ -21,6 +21,13 @@
     color: var(--color-brand-primary-light);
 }
 
+.header-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.johto-btn,
 .logout-btn {
     background: var(--color-bg-elevated);
     border: var(--border-width) solid var(--color-brand-primary-dark);
@@ -33,6 +40,7 @@
     transition: all var(--transition-fast);
 }
 
+.johto-btn:hover,
 .logout-btn:hover {
     background-color: var(--color-brand-primary-dark);
     color: white;
@@ -600,5 +608,10 @@
         flex-direction: column;
         gap: var(--spacing-md);
         text-align: center;
+    }
+    
+    .header-buttons {
+        width: 100%;
+        justify-content: center;
     }
 }

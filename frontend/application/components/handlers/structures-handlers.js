@@ -31,12 +31,26 @@ function updateStructuresList(structures) {
     
     structuresList.innerHTML = '';
     
-    // Iterate through each user's structures
-    Object.keys(structures).forEach(userId => {
-        const userData = structures[userId];
-        const username = userData.username || 'Unknown User';
-        const userStructures = userData.structures || {};
-        
+    // Filter out users with no structures and get structure counts
+    const usersWithStructures = Object.keys(structures)
+        .map(userId => {
+            const userData = structures[userId];
+            const username = userData.username || 'Unknown User';
+            const userStructures = userData.structures || {};
+            const structureCount = Object.keys(userStructures).length;
+            
+            return {
+                userId,
+                username,
+                userStructures,
+                structureCount
+            };
+        })
+        .filter(user => user.structureCount > 0)
+        .sort((a, b) => b.structureCount - a.structureCount); // Sort by most structures first
+    
+    // Iterate through sorted users with structures
+    usersWithStructures.forEach(({ userId, username, userStructures }) => {
         // Create a container for this user section (heading + structures)
         const userSection = document.createElement('div');
         userSection.className = 'user-section';
@@ -45,9 +59,8 @@ function updateStructuresList(structures) {
         // Add a user section heading with toggle functionality
         const userHeading = document.createElement('h3');
         userHeading.className = 'user-heading';
-        userHeading.textContent = username;
-        // Add an expand/collapse icon
-        userHeading.innerHTML = `${username} <span class="toggle-icon">▶</span>`;
+        // Add an expand/collapse icon and structure count
+        userHeading.innerHTML = `${username} (${Object.keys(userStructures).length}) <span class="toggle-icon">▶</span>`;
         userSection.appendChild(userHeading);
         
         // Create a container for this user's structures
@@ -64,14 +77,6 @@ function updateStructuresList(structures) {
             }
         });
         
-        if (Object.keys(userStructures).length === 0) {
-            const noStructuresMsg = document.createElement('p');
-            noStructuresMsg.className = 'empty-state';
-            noStructuresMsg.textContent = 'No structures available for this user.';
-            userStructuresContainer.appendChild(noStructuresMsg);
-            return;
-        }
-        
         // Iterate through each structure file for this user
         Object.keys(userStructures).forEach(fileName => {
             const structure = userStructures[fileName];
@@ -80,15 +85,25 @@ function updateStructuresList(structures) {
             structureElement.className = 'structure-card';
             structureElement.dataset.structureId = fileName;
             
-            const nodeCount = structure.nodes ? Object.keys(structure.nodes).length : 0;
-            const connectionCount = structure.connections ? Object.keys(structure.connections).length : 0;
+            // Correctly calculate node and connection counts
+            // Ensure we're counting actual nodes and connections, not just object keys at the top level
+            let nodeCount = 0;
+            let connectionCount = 0;
+            
+            if (structure.nodes && typeof structure.nodes === 'object') {
+                nodeCount = Object.keys(structure.nodes).length;
+            }
+            
+            if (structure.connections && typeof structure.connections === 'object') {
+                connectionCount = Object.keys(structure.connections).length;
+            }
+            
             const structureName = structure.name || fileName.replace('.json', '');
             
             structureElement.innerHTML = `
                 <div class="structure-content">
                     <h3>${structureName}</h3>
                     <div class="structure-meta">
-                        <span class="structure-meta-item">File: ${fileName}</span>
                         <span class="structure-meta-item">Nodes: ${nodeCount}</span>
                         <span class="structure-meta-item">Connections: ${connectionCount}</span>
                     </div>

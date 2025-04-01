@@ -170,30 +170,49 @@
 /* User structures styling */
 .user-section {
     margin-bottom: var(--spacing-lg);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
+}
+
+.user-section:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .user-heading {
-    margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+    margin: 0;
     color: var(--color-brand-primary-light);
     font-size: var(--font-size-lg);
-    border-bottom: var(--border-width) solid var(--border-color);
-    padding-bottom: var(--spacing-xs);
+    padding: var(--spacing-md);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: var(--color-bg-elevated);
+    border-bottom: var(--border-width) solid var(--border-color);
+    transition: background-color var(--transition-fast);
+}
+
+.user-heading:hover {
+    background-color: var(--color-bg-tertiary);
 }
 
 .user-heading .toggle-icon {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     transition: transform 0.3s ease;
+    color: var(--color-brand-primary);
 }
 
 .user-structures-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: var(--spacing-md);
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    padding: var(--spacing-md);
+    max-height: 2000px;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
     overflow: hidden;
 }
 
@@ -201,6 +220,7 @@
     max-height: 0;
     opacity: 0;
     margin: 0;
+    padding: 0;
     pointer-events: none;
 }
 

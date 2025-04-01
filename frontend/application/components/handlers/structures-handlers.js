@@ -47,12 +47,12 @@ function updateStructuresList(structures) {
         userHeading.className = 'user-heading';
         userHeading.textContent = username;
         // Add an expand/collapse icon
-        userHeading.innerHTML = `${username} <span class="toggle-icon">▼</span>`;
+        userHeading.innerHTML = `${username} <span class="toggle-icon">▶</span>`;
         userSection.appendChild(userHeading);
         
         // Create a container for this user's structures
         const userStructuresContainer = document.createElement('div');
-        userStructuresContainer.className = 'user-structures-container';
+        userStructuresContainer.className = 'user-structures-container collapsed';
         userSection.appendChild(userStructuresContainer);
         
         // Add event listener to toggle visibility

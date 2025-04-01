@@ -6,6 +6,21 @@
 import appState from './state.js';
 import { showNotification, showError, formatDate } from './ui.js';
 import * as api from './api.js';
+import LoadingAnimation from '../../animation/loading-animation.js';
+
+// Initialize our loading animation
+const johtoLoadingAnimation = new LoadingAnimation({
+    colors: ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#7B1FA2'],
+    particleCount: 150,
+    showText: true,
+    text: 'Downloading Johto data...',
+    showPercentage: false,
+    speed: 1.2,
+    pulseSpeed: 0.8
+});
+
+// Initialize the animation once on import
+johtoLoadingAnimation.init();
 
 /**
  * Initialize all event handlers
@@ -747,10 +762,34 @@ function setupJohtoButtonHandler() {
     const johtoButton = document.querySelector('.johto-btn');
     johtoButton?.addEventListener('click', async () => {
         try {
+            // Disable button and show basic button loading state
             johtoButton.disabled = true;
             johtoButton.textContent = 'Loading...';
             
+            // Show our beautiful loading animation
+            johtoLoadingAnimation.show();
+            
+            // Simulate progress updates (since we don't have actual progress data)
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15; // Random progress increments
+                if (progress > 100) progress = 100;
+                johtoLoadingAnimation.updateProgress(progress);
+            }, 600);
+            
             const response = await api.loadJohtoData();
+            
+            // Clear the progress interval
+            clearInterval(progressInterval);
+            
+            // Complete the progress to 100%
+            johtoLoadingAnimation.updateProgress(100);
+            
+            // Small delay to show 100% completion before hiding
+            await new Promise(resolve => setTimeout(resolve, 400));
+            
+            // Hide the loading animation
+            johtoLoadingAnimation.hide();
             
             if (response.status === 'success') {
                 showNotification('Johto data downloaded successfully', 'success');
@@ -758,8 +797,11 @@ function setupJohtoButtonHandler() {
                 throw new Error(response.message || 'Failed to download Johto data');
             }
         } catch (error) {
+            // Hide the loading animation in case of error
+            johtoLoadingAnimation.hide();
             showError('Error downloading Johto data', error);
         } finally {
+            // Reset button state
             johtoButton.disabled = false;
             johtoButton.textContent = 'Johto';
         }

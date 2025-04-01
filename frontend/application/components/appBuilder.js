@@ -64,7 +64,7 @@ function createTabContent() {
     structuresContent.id = 'structures-content';
     structuresContent.className = `tab-content ${appState.activeTab === 'structures' ? 'active' : ''}`;
     structuresContent.innerHTML = `
-        <div class="section large">
+        <div class="section small">
             <div id="structures-list" class="structures-list">
                 <p>Loading structures from johto.online...</p>
             </div>

@@ -1,45 +1,9 @@
 import os
 import time
+import json
+from uuid import uuid4
+from backend.common_utils import load_user_data, save_user_data, get_user_data_file_path
 import backend.database_handler as database_handler
-
-def get_user_data_file_path(user_id):
-    """
-    Get the path to a user's data.json file
-    
-    Args:
-        user_id: The user ID
-        
-    Returns:
-        Path to the user's data.json file
-    """
-    return os.path.join("data", "users", user_id, "data.json")
-
-def load_user_data(user_id):
-    """
-    Load a user's data from their data.json file
-    
-    Args:
-        user_id: The user ID
-        
-    Returns:
-        User data dictionary or empty dict if not found
-    """
-    user_data_path = get_user_data_file_path(user_id)
-    return database_handler.read_json_file(user_data_path) or {}
-
-def save_user_data(user_id, user_data):
-    """
-    Save a user's data to their data.json file
-    
-    Args:
-        user_id: The user ID
-        user_data: The user data to save
-        
-    Returns:
-        True if successful, False on error
-    """
-    user_data_path = get_user_data_file_path(user_id)
-    return database_handler.write_json_file(user_data_path, user_data)
 
 def create_user_data_directory(user_id, username, email):
     """

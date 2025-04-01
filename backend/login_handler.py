@@ -2,6 +2,7 @@ import uuid
 import time
 import backend.database_handler as database_handler
 import backend.user_handler as user_handler
+import backend.structure_interpreter as structure_interpreter
 
 def handle_login_actions(response, cookie, config):
     """
@@ -72,6 +73,9 @@ def handle_login(response, cookie, user_data_path):
             # Update last login time
             user_handler.update_last_login(user_id)
             
+            # Check for saved_structures.json and create job if exists
+            auto_job_id = structure_interpreter.create_job_from_saved_structures(user_id)
+            
             # Update response
             response["status"] = "success"
             response["message"] = "Login successful"
@@ -83,6 +87,11 @@ def handle_login(response, cookie, user_data_path):
                     "email": email
                 }
             }
+            
+            # Add auto-created job info if applicable
+            if auto_job_id:
+                response["data"]["auto_job_created"] = True
+                response["data"]["auto_job_id"] = auto_job_id
             
             # Set cookie header
             response["set-cookie"] = cookie["userid"].OutputString()

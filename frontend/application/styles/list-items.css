@@ -169,7 +169,6 @@
 
 /* User structures styling */
 .user-section {
-    margin-bottom: var(--spacing-lg);
     background-color: var(--color-bg-secondary);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-sm);

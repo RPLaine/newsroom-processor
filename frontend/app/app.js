@@ -34,7 +34,7 @@ async function createApp(data, appContainer, fetchData) {
             <h1>GameGen2</h1>
             <div class="user-info">
                 <span class="user-name">${data.userdata?.profile?.username || 'User'}</span>
-                <button id="logout-btn" class="btn btn-small">Logout</button>
+                <button id="logout-btn" class="btn btn-small btn-primary">Logout</button>
             </div>
         </header>
         <nav class="app-nav">

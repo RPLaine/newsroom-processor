@@ -1,5 +1,5 @@
 import AppContainer from './app-container/app-container.js';
-import App from './app/app.js';
+import App from './application/app.js';
 import Login from './login/login.js';
 import { fetchData } from './utils.js';
 

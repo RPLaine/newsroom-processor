@@ -5,7 +5,7 @@
 @import "./app-container/app-container.css";
 @import "./animation/animation.css";
 @import "./login/login.css";
-@import "./app/app.css";
+@import "./application/app.css";
 
 /* Base Reset */
 *, *::before, *::after {

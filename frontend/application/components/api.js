@@ -41,7 +41,7 @@ export async function sendRequest(requestData) {
  * @returns {Promise<Object>} Jobs list response
  */
 export async function getJobs() {
-    return await sendRequest({ action: 'getJobs' });
+    return await sendRequest({ action: 'get_jobs' });
 }
 
 /**
@@ -52,7 +52,7 @@ export async function getJobs() {
  */
 export async function createJob(jobData) {
     return await sendRequest({ 
-        action: 'createJob',
+        action: 'create_job',
         ...jobData
     });
 }
@@ -65,7 +65,7 @@ export async function createJob(jobData) {
  */
 export async function deleteJob(jobId) {
     return await sendRequest({ 
-        action: 'deleteJob',
+        action: 'delete_job',
         job_id: jobId
     });
 }
@@ -79,7 +79,7 @@ export async function deleteJob(jobId) {
  */
 export async function searchWeb(query, jobId) {
     return await sendRequest({
-        action: 'searchWeb',
+        action: 'search_web',
         query,
         job_id: jobId
     });
@@ -94,7 +94,7 @@ export async function searchWeb(query, jobId) {
  */
 export async function processRSS(url, jobId) {
     return await sendRequest({
-        action: 'readRSS',
+        action: 'read_rss',
         rss_url: url,
         job_id: jobId
     });
@@ -110,7 +110,7 @@ export async function processRSS(url, jobId) {
  */
 export async function processFile(fileName, fileContent, jobId) {
     return await sendRequest({
-        action: 'loadFile',
+        action: 'load_file',
         file_name: fileName,
         file_content: fileContent,
         job_id: jobId
@@ -126,7 +126,7 @@ export async function processFile(fileName, fileContent, jobId) {
  */
 export async function processPrompt(prompt, jobId) {
     return await sendRequest({
-        action: 'processData',
+        action: 'process_data',
         job_id: jobId,
         processing_type: 'prompt',
         prompt
@@ -141,7 +141,7 @@ export async function processPrompt(prompt, jobId) {
  */
 export async function runAutoRefinement(jobId) {
     return await sendRequest({
-        action: 'processData',
+        action: 'process_data',
         job_id: jobId,
         processing_type: 'refine'
     });
@@ -155,7 +155,7 @@ export async function runAutoRefinement(jobId) {
  */
 export async function generateReflection(jobId) {
     return await sendRequest({
-        action: 'processData',
+        action: 'process_data',
         job_id: jobId,
         processing_type: 'reflect'
     });
@@ -171,7 +171,7 @@ export async function generateReflection(jobId) {
  */
 export async function saveOutput(fileName, content, jobId) {
     return await sendRequest({
-        action: 'saveOutput',
+        action: 'save_output',
         job_id: jobId,
         file_name: fileName,
         content

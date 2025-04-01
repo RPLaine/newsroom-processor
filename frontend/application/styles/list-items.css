@@ -1,18 +1,21 @@
 .jobs-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
 }
 
 .job-card {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--border-radius-md);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     transition: all var(--transition-normal);
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .job-card::before {
@@ -43,7 +46,7 @@
 }
 
 .job-meta {
-    margin: var(--spacing-md) 0;
+    margin-top: var(--spacing-sm);
     font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
     display: flex;
@@ -57,10 +60,15 @@
     gap: var(--spacing-xs);
 }
 
+.job-content {
+    flex: 1;
+}
+
 .job-actions {
     display: flex;
+    flex-direction: row;
     gap: var(--spacing-sm);
-    margin-top: var(--spacing-md);
+    margin-left: var(--spacing-md);
 }
 
 .input-item {

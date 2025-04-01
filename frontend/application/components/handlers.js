@@ -115,9 +115,11 @@ function updateJobsList(jobs) {
         const createdDate = job.created_at ? formatDate(new Date(job.created_at * 1000)) : 'Unknown';
         
         jobElement.innerHTML = `
-            <h3>${job.name || 'Untitled Job'}</h3>
-            <div class="job-meta">
-                <span>Created: ${createdDate}</span>
+            <div class="job-content">
+                <h3>${job.name || 'Untitled Job'}</h3>
+                <div class="job-meta">
+                    <span>Created: ${createdDate}</span>
+                </div>
             </div>
             <div class="job-actions">
                 <button class="btn select-job-btn primary">Select</button>

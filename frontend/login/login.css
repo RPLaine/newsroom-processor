@@ -1,6 +1,5 @@
 /* Login page styles */
 .login-container {
-    max-width: 480px;
     margin: var(--spacing-2xl) auto;
     padding: var(--spacing-xl);
     background-color: var(--color-bg-secondary);
@@ -14,6 +13,10 @@
     margin-bottom: var(--spacing-xl);
     color: var(--color-brand-primary-light);
     font-weight: var(--font-weight-semibold);
+}
+
+input {
+    min-width: 420px;
 }
 
 .tabs {

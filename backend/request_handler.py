@@ -5,7 +5,7 @@ import backend.file_handler as file_handler
 import backend.html_constructor as html_constructor
 import backend.login_handler as login_handler
 import backend.user_handler as user_handler
-import backend.app_handler as app_handler
+import backend.application_handler as application_handler
 
 def create_request_handler(server, config):
     class RequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -46,7 +46,7 @@ def create_request_handler(server, config):
                 if response["request"]["action"] in ["login", "register", "logout"]:
                     response = login_handler.handle_login_actions(response, cookie, self.config)
                 else:
-                    response = app_handler.handle_application_actions(response, cookie, self.config)
+                    response = application_handler.handle_application_actions(response, cookie, self.config)
                     
             self.send_json_response(response, cookie)
             return

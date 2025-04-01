@@ -7,22 +7,22 @@ import appState from './state.js';
 import { switchTab } from './ui.js';
 
 /**
- * Create the main application container
+ * Create the application UI components and add them to the provided container
  * 
- * @returns {HTMLElement} The application container
+ * @param {HTMLElement} container - The container to add UI components to (optional)
+ * @returns {HTMLElement} The container with UI components
  */
-export function createAppContainer() {
-    const container = document.createElement('div');
-    container.id = 'app-container';
-    container.className = 'app-container';
+export function createApplicationUI(container) {
+    // Use the provided container or create a new div
+    const appContainer = container || document.createElement('div');
     
-    // Add app components
-    container.appendChild(createHeader());
-    container.appendChild(createTabs());
-    container.appendChild(createTabContent());
-    container.appendChild(createNotifications());
+    // Add app components directly to the container
+    appContainer.appendChild(createHeader());
+    appContainer.appendChild(createTabs());
+    appContainer.appendChild(createTabContent());
+    appContainer.appendChild(createNotifications());
     
-    return container;
+    return appContainer;
 }
 
 /**

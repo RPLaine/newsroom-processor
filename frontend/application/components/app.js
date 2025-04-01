@@ -7,7 +7,7 @@
  * 3. Process - Interact with AI assistant
  * 4. Outputs - View and create output files
  */
-import { createAppContainer } from './appBuilder.js';
+import { createApplicationUI } from './appBuilder.js';
 import { initEventHandlers } from './handlers.js';
 import appState from './state.js';
 
@@ -24,9 +24,8 @@ export async function createApp(data, container) {
     // Clear container
     container.innerHTML = '';
     
-    // Create UI
-    const appContainer = createAppContainer();
-    container.appendChild(appContainer);
+    // Add UI components directly to the app-container
+    createApplicationUI(container);
     
     // Initialize event handlers
     initEventHandlers();

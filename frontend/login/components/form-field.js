@@ -1,4 +1,4 @@
-export function createFormField(type, id, label, placeholder = '') {
+export function createFormField(type, id, label, placeholder = '', autocomplete = '') {
     const fieldContainer = document.createElement('div');
     fieldContainer.className = 'form-field';
     
@@ -12,6 +12,10 @@ export function createFormField(type, id, label, placeholder = '') {
     input.name = id;
     input.placeholder = placeholder;
     input.required = true;
+    
+    if (autocomplete) {
+        input.autocomplete = autocomplete;
+    }
     
     fieldContainer.appendChild(labelElement);
     fieldContainer.appendChild(input);

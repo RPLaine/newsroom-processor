@@ -12,8 +12,8 @@ function setupLoginForm(FetchData) {
     loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
         
         if (!email || !password) {
             showError('Please fill in all fields');
@@ -46,10 +46,10 @@ function setupRegisterForm(FetchData) {
     registerForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
+        const name = document.getElementById('register-name').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('register-confirm-password').value;
         
         if (!name || !email || !password || !confirmPassword) {
             showError('Please fill in all fields');

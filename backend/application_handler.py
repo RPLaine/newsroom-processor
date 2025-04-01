@@ -1,4 +1,4 @@
-def handle_application_actions(response: dict, config: dict) -> dict:
+def handle_application_actions(response: dict) -> dict:
     if 'action' not in response['request']:
         response['status'] = 'error'
         response['message'] = 'No action specified'

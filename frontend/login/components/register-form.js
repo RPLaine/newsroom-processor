@@ -5,10 +5,10 @@ export function createRegisterForm() {
     form.id = 'register-form';
     form.className = 'auth-form';
     
-    const nameField = createFormField('text', 'name', 'Full Name', 'Enter your full name');
-    const emailField = createFormField('email', 'email', 'Email Address', 'Enter your email');
-    const passwordField = createFormField('password', 'password', 'Password', 'Create a password');
-    const confirmPasswordField = createFormField('password', 'confirm-password', 'Confirm Password', 'Confirm your password');
+    const nameField = createFormField('text', 'register-name', 'Username', 'Enter your username', 'name');
+    const emailField = createFormField('email', 'register-email', 'Email Address', 'Enter your email', 'email');
+    const passwordField = createFormField('password', 'register-password', 'Password', 'Create a password', 'new-password');
+    const confirmPasswordField = createFormField('password', 'register-confirm-password', 'Confirm Password', 'Confirm your password', 'new-password');
     
     form.appendChild(nameField);
     form.appendChild(emailField);

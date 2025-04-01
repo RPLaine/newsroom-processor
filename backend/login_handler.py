@@ -129,7 +129,7 @@ def handle_register(response, cookie, user_data_path):
     
     return response
 
-def handle_logout(response, cookie):
+def handle_logout(response, cookie, config):
     if "userid" in cookie:
         cookie["userid"] = ""
         cookie["userid"]["path"] = "/"

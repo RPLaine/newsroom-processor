@@ -45,7 +45,7 @@ def create_request_handler(server, config):
                 if response["request"]["action"] in ["login", "register", "logout"]:
                     response = login_handler.handle_login_actions(response, cookie, self.config)
                 else:
-                    response = application_handler.handle_application_actions(response, cookie, self.config)
+                    response = application_handler.handle_application_actions(response)
                     
             self.send_json_response(response, cookie)
             return

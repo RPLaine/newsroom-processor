@@ -2,7 +2,6 @@
     background-color: var(--color-bg-primary);
     overflow-y: auto;
     width: 100%;
-    padding: var(--spacing-sm);
 }
 
 .tab-content {
@@ -12,10 +11,11 @@
 
 .tab-content.active {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: var(--spacing-md);
     width: 100%;
     max-width: 1800px;
+    padding: var(--spacing-md);
     margin: 0 auto;
 }
 
@@ -28,6 +28,27 @@
     height: fit-content;
 }
 
+/* Make sections more responsive with flex-basis instead of grid-column */
+.section.small {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.section.medium {
+    flex: 1 1 380px;
+    min-width: 0;
+}
+
+.section.large {
+    flex: 1 1 580px;
+    min-width: 0;
+}
+
+.section.full-width {
+    flex: 1 1 100%;
+    grid-column: 1 / -1;
+}
+
 .section h2 {
     margin-top: 0;
     margin-bottom: var(--spacing-md);
@@ -38,52 +59,15 @@
     border-bottom: var(--border-width) solid var(--border-color);
 }
 
-.section.small {
-    grid-column: span 1;
-}
-
-.section.medium {
-    grid-column: span 1;
-}
-
-.section.large {
-    grid-column: span 1;
-}
-
-.section.full-width {
-    grid-column: 1 / -1;
-}
-
-@media (min-width: 768px) {
+/* Simplify media queries to be more fluid */
+@media (max-width: 768px) {
     .tab-content.active {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
     }
     
-    .section.medium {
-        grid-column: span 1;
-    }
-    
-    .section.large {
-        grid-column: span 2;
-    }
-}
-
-@media (min-width: 1200px) {
-    .tab-content.active {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .section.medium {
-        grid-column: span 2;
-    }
-    
-    .section.large {
-        grid-column: span 2;
-    }
-}
-
-@media (min-width: 1600px) {
-    .tab-content.active {
-        grid-template-columns: repeat(4, 1fr);
+    .section {
+        margin-bottom: var(--spacing-md);
     }
 }

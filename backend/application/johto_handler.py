@@ -3,7 +3,6 @@ import requests
 import os
 import json
 import re
-from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 def handle_load_johto_data(response: dict) -> dict:
@@ -60,10 +59,7 @@ def process_directory(url: str, local_dir: str):
         print(f"Failed to access {url}: HTTP {response.status_code}")
         return
     
-    # Save the index file
-    index_path = os.path.join(local_dir, "index.html")
-    with open(index_path, 'w', encoding='utf-8') as f:
-        f.write(response.text)
+    # Don't save the index.html file anymore
     
     # Try to parse as JSON to check if it's a directory listing
     try:
@@ -114,6 +110,10 @@ def download_file(url: str, local_path: str):
         local_path: The local path to save the file to
     """
     try:
+        # Skip if this is not a JSON file
+        if not url.endswith('.json'):
+            return
+            
         print(f"Downloading {url} to {local_path}")
         response = requests.get(url)
         

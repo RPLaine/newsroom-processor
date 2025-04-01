@@ -1,4 +1,3 @@
-import backend.application.jobs_handler as jobs_handler
 import backend.application.johto_handler as johto_handler
 
 def handle_application_actions(response: dict) -> dict:
@@ -15,15 +14,7 @@ def handle_application_actions(response: dict) -> dict:
         response['message'] = 'Not authenticated'
         return response
     
-    # Job-related actions
-    if action == 'get_jobs':
-        return jobs_handler.handle_get_jobs(response, user_id)
-    elif action == 'create_job':
-        return jobs_handler.handle_create_job(response, user_id)
-    elif action == 'delete_job':
-        return jobs_handler.handle_delete_job(response, user_id)
-    # Johto data
-    elif action == 'load_johto_data':
+    if action == 'load_johto_data':
         return johto_handler.handle_load_johto_data(response)
     
     response['status'] = 'error'

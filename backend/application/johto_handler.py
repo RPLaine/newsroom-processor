@@ -26,8 +26,27 @@ def handle_load_johto_data(response: dict) -> dict:
             response['message'] = f'Error fetching files from Johto: {str(fetch_error)}'
             return response
         
-        response['status'] = 'success'
-        response['message'] = 'Johto data downloaded successfully'
+        # Collect and save structures data
+        try:
+            structures_data = collect_structures()
+            
+            # Ensure the data directory exists
+            file_handler.ensure_directory("data")
+            
+            # Save the structures data to data/structures.json
+            structures_path = os.path.join("data", "structures.json")
+            with open(structures_path, 'w', encoding='utf-8') as f:
+                json.dump(structures_data, f, indent=4)
+                
+            print(f"Saved structures data to {structures_path}")
+            
+            response['status'] = 'success'
+            response['message'] = 'Johto data downloaded and processed successfully'
+        except Exception as process_error:
+            response['status'] = 'error'
+            response['message'] = f'Error processing Johto data: {str(process_error)}'
+            return response
+            
         return response
         
     except Exception as e:
@@ -129,3 +148,57 @@ def download_file(url: str, local_path: str):
             print(f"Failed to download {url}: HTTP {response.status_code}")
     except Exception as e:
         print(f"Error downloading {url}: {str(e)}")
+
+def collect_structures() -> dict:
+    """
+    Collect structures from the downloaded Johto data
+    
+    Returns:
+        A dictionary where:
+        - Keys are user IDs from data/johto/users.json
+        - Values are dictionaries containing:
+            - 'username': The username associated with the user ID
+            - 'structures': The structures from the user's folder in data/johto/users/
+    """
+    result = {}
+    johto_dir = os.path.join("data", "johto")
+    users_file_path = os.path.join(johto_dir, "users.json")
+    
+    # Load the users.json file to get user IDs and usernames
+    try:
+        with open(users_file_path, 'r', encoding='utf-8') as f:
+            users_data = json.load(f)
+            
+        # Create the result dictionary structure
+        for user in users_data.get('users', []):
+            user_id = user.get('id')
+            username = user.get('username')
+            
+            if user_id and username:
+                user_structures = {}
+                user_dir = os.path.join(johto_dir, "users", user_id)
+                
+                # Check if the user directory exists
+                if os.path.exists(user_dir):
+                    # Collect all JSON files from the user's directory
+                    for root, dirs, files in os.walk(user_dir):
+                        for file in files:
+                            if file.endswith('.json'):
+                                file_path = os.path.join(root, file)
+                                try:
+                                    with open(file_path, 'r', encoding='utf-8') as f:
+                                        file_data = json.load(f)
+                                        user_structures[file] = file_data
+                                except json.JSONDecodeError as e:
+                                    print(f"Error decoding JSON from {file_path}: {str(e)}")
+                
+                # Add the user to the result dictionary
+                result[user_id] = {
+                    'username': username,
+                    'structures': user_structures
+                }
+    
+    except Exception as e:
+        print(f"Error loading users from {users_file_path}: {str(e)}")
+    
+    return result

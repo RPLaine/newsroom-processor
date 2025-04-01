@@ -1,7 +1,6 @@
 import uuid
 import time
 import backend.file_handler as file_handler
-import backend.user_handler as user_handler
 import backend.structure_interpreter as structure_interpreter
 
 def handle_login_actions(response, cookie, config):
@@ -43,7 +42,7 @@ def handle_login(response, cookie, user_data_path):
             cookie["userid"]["path"] = "/"
             cookie["userid"]["max-age"] = 86400
             
-            user_handler.update_last_login(user_id)
+            file_handler.update_last_login(user_id)
             
             auto_job_id = structure_interpreter.create_job_from_saved_structures(user_id)
             
@@ -102,7 +101,7 @@ def handle_register(response, cookie, user_data_path):
         "created_at": int(time.time())
     }
     
-    if not user_handler.create_user_data_directory(user_id, username, email):
+    if not file_handler.create_user_data_directory(user_id, username, email):
         response["status"] = "error"
         response["message"] = "Failed to create user data"
         return response

@@ -4,7 +4,6 @@ from http.cookies import SimpleCookie
 import backend.file_handler as file_handler
 import backend.html_constructor as html_constructor
 import backend.login_handler as login_handler
-import backend.user_handler as user_handler
 import backend.application_handler as application_handler
 
 def create_request_handler(server, config):
@@ -40,7 +39,7 @@ def create_request_handler(server, config):
             if 'userid' in cookie and file_handler.is_user_id_valid(cookie['userid'].value, config["user_data_path"]):
                 user_id = cookie['userid'].value
                 response["userid"] = user_id
-                response["userdata"] = user_handler.load_user_data(user_id)
+                response["userdata"] = file_handler.load_user_data(user_id)
 
             if 'action' in response["request"]:
                 if response["request"]["action"] in ["login", "register", "logout"]:

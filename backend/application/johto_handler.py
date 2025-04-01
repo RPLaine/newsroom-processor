@@ -126,20 +126,20 @@ def collect_structures() -> dict:
             username = user.get('username')
             
             if user_id and username:
-                user_structures = {}
                 user_dir = os.path.join(johto_dir, "users", user_id)
+                structures_file = os.path.join(user_dir, "saved_structures.json")
                 
-                if os.path.exists(user_dir):
-                    for root, dirs, files in os.walk(user_dir):
-                        for file in files:
-                            if file.endswith('.json'):
-                                file_path = os.path.join(root, file)
-                                try:
-                                    with open(file_path, 'r', encoding='utf-8') as f:
-                                        file_data = json.load(f)
-                                        user_structures[file] = file_data
-                                except json.JSONDecodeError as e:
-                                    print(f"Error decoding JSON from {file_path}: {str(e)}")
+                if os.path.exists(structures_file):
+                    try:
+                        with open(structures_file, 'r', encoding='utf-8') as f:
+                            structures_data = json.load(f)
+                            # Only get the "structures" key from the saved_structures.json file
+                            user_structures = structures_data.get("structures", {})
+                    except json.JSONDecodeError as e:
+                        print(f"Error decoding JSON from {structures_file}: {str(e)}")
+                        user_structures = {}
+                else:
+                    user_structures = {}
                 
                 result[user_id] = {
                     'username': username,

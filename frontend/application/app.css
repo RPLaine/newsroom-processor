@@ -4,10 +4,6 @@
 
 /* Application Container */
 .app-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
 }
 
@@ -90,9 +86,6 @@
 
 /* Tab content */
 .tab-content-container {
-    flex: 1;
-    padding: var(--spacing-xl);
-    overflow-y: auto;
     background-color: var(--color-bg-primary);
 }
 

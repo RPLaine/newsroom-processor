@@ -6,6 +6,8 @@
     background-color: var(--color-bg-secondary);
     box-shadow: var(--shadow-lg);
     overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Let's also make sure the body and html have no margins/padding */
@@ -16,6 +18,20 @@ html, body {
     width: 100%;
     overflow: hidden;
     user-select: none; /* Prevent text selection by default */
+}
+
+/* Tab content container should take up available space */
+.tab-content-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-content {
+    flex: 1;
+    overflow: auto;
+    padding: var(--spacing-md);
 }
 
 /* User info styling in header */

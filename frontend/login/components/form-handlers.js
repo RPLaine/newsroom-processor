@@ -23,8 +23,10 @@ function setupLoginForm(FetchData) {
         try {
             const response = await FetchData({
                 action: 'login',
-                email,
-                password
+                data: {
+                    email,
+                    password
+                }
             });
             
             if (response.status === 'success') {
@@ -64,9 +66,11 @@ function setupRegisterForm(FetchData) {
         try {
             const response = await FetchData({
                 action: 'register',
-                name,
-                email,
-                password
+                data: {
+                    name,
+                    email,
+                    password
+                }
             });
             
             if (response.status === 'success') {

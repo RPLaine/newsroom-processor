@@ -60,7 +60,8 @@ def create_request_handler(server, config):
         def send_json_response(self, response_data, cookie):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
-            self.send_header('Set-Cookie', cookie["userid"].OutputString())
+            if 'userid' in cookie:
+                self.send_header('Set-Cookie', cookie["userid"].OutputString())
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps(response_data).encode('utf-8'))

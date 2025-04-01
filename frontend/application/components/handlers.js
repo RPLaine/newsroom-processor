@@ -178,6 +178,12 @@ function selectJob(job) {
     updateInputsList(job.inputs || []);
     updateConversationArea(job.conversation || []);
     updateOutputsList(job.outputs || []);
+    
+    // Automatically switch to the Inputs tab
+    const inputsTab = document.getElementById('inputs-tab');
+    if (inputsTab) {
+        inputsTab.click();
+    }
 }
 
 /**

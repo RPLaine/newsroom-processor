@@ -136,7 +136,7 @@ function getOrCreateMessageElement(id, className) {
     if (!element) {
         element = document.createElement('div');
         element.id = id;
-        element.className = `message ${className}`;
+        element.className = className + '-message';
         element.style.display = 'none';
         
         const formContainer = document.querySelector('.form-container');

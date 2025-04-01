@@ -1,6 +1,6 @@
 export function createFormField(type, id, label, placeholder = '', autocomplete = '') {
     const fieldContainer = document.createElement('div');
-    fieldContainer.className = 'form-field';
+    fieldContainer.className = 'form-group';
     
     const labelElement = document.createElement('label');
     labelElement.htmlFor = id;

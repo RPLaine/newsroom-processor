@@ -13,7 +13,7 @@ export function createLoginForm() {
     
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
-    submitButton.className = 'auth-button';
+    submitButton.className = 'btn-primary';
     submitButton.textContent = 'Sign In';
     
     form.appendChild(submitButton);

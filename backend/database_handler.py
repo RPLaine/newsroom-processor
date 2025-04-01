@@ -56,4 +56,8 @@ def is_user_id_valid(user_id, user_data_path):
         True if valid, False otherwise
     """
     user_data = read_json_file(user_data_path)
+    if user_data is False:  # File doesn't exist
+        # Create an empty user data file
+        write_json_file(user_data_path, {})
+        return False
     return user_id in user_data

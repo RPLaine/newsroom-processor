@@ -15,10 +15,13 @@ async function initializeApp() {
     };
 
     data = await fetchData(request_data);
+    console.log('data', data);
 
     if (data.userid == undefined) {
+        console.log('Login required');
         data = await Login.createLogin(data, appContainer, fetchData);
     } else {
+        console.log('Login successful');
         data = await App.createApp(data, appContainer, fetchData);
     }
 }

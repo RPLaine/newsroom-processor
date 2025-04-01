@@ -72,6 +72,13 @@
     box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.25);
 }
 
+/* Add error field styling for form validation */
+.form-group input.error-field {
+    border-color: #f44336;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.25);
+}
+
 .btn-primary {
     width: 100%;
     padding: 0.8rem;
@@ -119,5 +126,21 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Add shake animation for error field */
+@keyframes shake {
+    10%, 90% {
+        transform: translateX(-1px);
+    }
+    20%, 80% {
+        transform: translateX(2px);
+    }
+    30%, 50%, 70% {
+        transform: translateX(-3px);
+    }
+    40%, 60% {
+        transform: translateX(3px);
     }
 }

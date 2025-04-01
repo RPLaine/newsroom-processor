@@ -1,7 +1,5 @@
-import json
 import uuid
 import time
-import os
 import backend.database_handler as database_handler
 import backend.user_handler as user_handler
 from http.cookies import SimpleCookie
@@ -127,8 +125,25 @@ def handle_register(response, cookie, user_data_path):
     
     # Save to main user database
     if database_handler.write_json_file(user_data_path, users):
+        # Set cookie to automatically log in the user
+        cookie["userid"] = user_id
+        cookie["userid"]["path"] = "/"
+        cookie["userid"]["max-age"] = 86400  # 24 hours
+        
+        # Update response with success and user data
         response["status"] = "success"
         response["message"] = "Registration successful"
+        response["userid"] = user_id
+        response["data"] = {
+            "user": {
+                "id": user_id,
+                "username": username,
+                "email": email
+            }
+        }
+        
+        # Set cookie header
+        response["set-cookie"] = cookie["userid"].OutputString()
     else:
         response["status"] = "error"
         response["message"] = "Failed to register user"

@@ -36,24 +36,22 @@ def create_request_handler(server, config):
                 response["userdata"] = user_handler.get_user_data(user_id)
             elif response["request"]["action"] == "login":
                 response = login_handler.handle_login(response, cookie, self.config["user_data_path"])
-                self.send_json_response(response)
+                self.send_json_response(response, cookie)
                 return
             elif response["request"]["action"] == "register":
                 response = login_handler.handle_register(response, cookie, self.config["user_data_path"])
-                self.send_json_response(response)
+                self.send_json_response(response, cookie)
                 return
             elif response["request"]["action"] == "logout":
                 response = login_handler.handle_logout(response, cookie, self.config["user_data_path"])
-                self.send_json_response(response)
+                self.send_json_response(response, cookie)
                 return
             else:
                 response["userid"] = None
-                response["status"] = "error"
-                response["message"] = "Invalid action or user not authenticated"
-                self.send_json_response(response)
+                self.send_json_response(response, cookie)
                 return
 
-            self.send_json_response(response)
+            self.send_json_response(response, cookie)
             return
         
         def load_request_dictionary(self):
@@ -68,9 +66,11 @@ def create_request_handler(server, config):
             except Exception as e:
                 return {"error": str(e)}
             
-        def send_json_response(self, response_data):
+        def send_json_response(self, response_data, cookie):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
+            self.send_header('Set-Cookie', cookie["userid"].OutputString())
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps(response_data).encode('utf-8'))
 

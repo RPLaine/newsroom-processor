@@ -3,16 +3,14 @@
  */
 import * as api from '../api.js';
 import { appState, showNotification, showError, addMessageToConversation, removeMessage } from './common.js';
+import { registerFormHandler, registerButtonHandler } from '../ui.js';
 
 /**
  * Setup event handlers for Process tab
  */
 export function setupProcessTabHandlers() {
-    // Prompt form
-    const promptForm = document.getElementById('prompt-form');
-    promptForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
+    // Register form handler for prompt form
+    registerFormHandler('prompt-form', async (event, form) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;
@@ -54,9 +52,8 @@ export function setupProcessTabHandlers() {
         }
     });
     
-    // Auto-refine button
-    const refineBtn = document.getElementById('refine-btn');
-    refineBtn?.addEventListener('click', async () => {
+    // Register button handler for auto-refine button
+    registerButtonHandler('refine-btn', async (event, button) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;
@@ -90,9 +87,8 @@ export function setupProcessTabHandlers() {
         }
     });
     
-    // Self-reflect button
-    const reflectBtn = document.getElementById('reflect-btn');
-    reflectBtn?.addEventListener('click', async () => {
+    // Register button handler for self-reflect button
+    registerButtonHandler('reflect-btn', async (event, button) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;

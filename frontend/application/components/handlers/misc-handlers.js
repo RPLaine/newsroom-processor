@@ -3,13 +3,14 @@
  */
 import * as api from '../api.js';
 import { showNotification, showError, getLoadingAnimation } from './common.js';
+import { registerButtonHandler } from '../ui.js';
 
 /**
  * Setup logout handler
  */
 export function setupLogoutHandler() {
-    const logoutButton = document.querySelector('.logout-btn');
-    logoutButton?.addEventListener('click', async () => {
+    // Register centralized handler for logout button
+    registerButtonHandler('logout-btn', async (event, button) => {
         try {
             await api.logout();
         } catch (error) {
@@ -22,12 +23,12 @@ export function setupLogoutHandler() {
  * Setup Johto button handler
  */
 export function setupJohtoButtonHandler() {
-    const johtoButton = document.querySelector('.johto-btn');
-    johtoButton?.addEventListener('click', async () => {
+    // Register centralized handler for Johto button
+    registerButtonHandler('johto-btn', async (event, button) => {
         try {
             // Disable button and show basic button loading state
-            johtoButton.disabled = true;
-            johtoButton.textContent = 'Loading...';
+            button.disabled = true;
+            button.textContent = 'Loading...';
             
             // Get and show our beautiful loading animation
             const johtoLoadingAnimation = getLoadingAnimation();
@@ -66,8 +67,8 @@ export function setupJohtoButtonHandler() {
             showError('Error downloading Johto data', error);
         } finally {
             // Reset button state
-            johtoButton.disabled = false;
-            johtoButton.textContent = 'Johto';
+            button.disabled = false;
+            button.textContent = 'Johto';
         }
     });
 }

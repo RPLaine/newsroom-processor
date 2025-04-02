@@ -1,15 +1,14 @@
 import * as api from '../api.js';
 import { appState, showNotification, showError, formatDate } from './common.js';
+import { registerFormHandler } from '../ui.js';
 
 export function setupInputsTabHandlers() {
     document.getElementById('inputs-tab')?.addEventListener('click', () => {
         updateStructureInfo();
     });
     
-    const webSearchForm = document.getElementById('web-search-form');
-    webSearchForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
+    // Register form handler for web search form
+    registerFormHandler('web-search-form', async (event, form) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;
@@ -41,10 +40,8 @@ export function setupInputsTabHandlers() {
         }
     });
     
-    const rssForm = document.getElementById('rss-form');
-    rssForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
+    // Register form handler for RSS form
+    registerFormHandler('rss-form', async (event, form) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;
@@ -76,10 +73,8 @@ export function setupInputsTabHandlers() {
         }
     });
     
-    const fileForm = document.getElementById('file-form');
-    fileForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
+    // Register form handler for file upload form
+    registerFormHandler('file-form', async (event, form) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;

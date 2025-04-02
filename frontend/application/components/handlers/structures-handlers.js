@@ -1,5 +1,5 @@
 import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
-import { switchTab } from '../ui.js';
+import { switchTab, registerButtonHandler } from '../ui.js';
 import { updateStructureInfo } from './inputs-handlers.js';
 
 export function setupStructuresTabHandlers() {
@@ -13,6 +13,14 @@ export function setupStructuresTabHandlers() {
         if (appState.structures) {
             updateStructuresList(appState.structures);
         }
+    });
+    
+    // Register centralized button handler for structure selection
+    registerButtonHandler('select-structure-btn', (event, button) => {
+        const structureCard = button.closest('.structure-card');
+        if (!structureCard || !structureCard.dataset.item) return;
+        
+        selectStructure(JSON.parse(structureCard.dataset.item));
     });
 }
 
@@ -65,10 +73,21 @@ function updateStructuresList(structures) {
             
             const structureElement = document.createElement('div');
             structureElement.className = 'structure-card';
-            structureElement.dataset.structureId = fileName;
+            
+            // Store structure data as a JSON string in a data attribute
+            const structureData = {
+                id: fileName,
+                name: structure.name || fileName.replace('.json', ''),
+                userId: userId,
+                username: username,
+                ...structure
+            };
+            structureElement.dataset.item = JSON.stringify(structureData);
             
             let nodeCount = 0;
             let connectionCount = 0;
+            
+            // ... existing code for counting nodes and connections ...
             
             if (structure.structure && structure.structure.nodes) {
                 if (Array.isArray(structure.structure.nodes)) {
@@ -109,24 +128,13 @@ function updateStructuresList(structures) {
                     </div>
                 </div>
                 <div class="structure-actions">
-                    <button class="btn select-structure-btn primary">Select</button>
+                    <button class="btn select-structure-btn primary" data-button-type="select-structure-btn">Select</button>
                 </div>
             `;
             
             userStructuresContainer.appendChild(structureElement);
             
-            const selectBtn = structureElement.querySelector('.select-structure-btn');
-            if (selectBtn) {
-                selectBtn.addEventListener('click', () => {
-                    selectStructure({
-                        id: fileName,
-                        name: structureName,
-                        userId: userId,
-                        username: username,
-                        ...structure
-                    });
-                });
-            }
+            // Remove individual click handler - handled by the centralized system now
         });
     });
 }

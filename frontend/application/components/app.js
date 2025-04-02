@@ -2,7 +2,7 @@ import { initEventHandlers } from './handlers/index.js';
 import { createApplicationUI } from './appBuilder.js';
 import * as api from './api.js';
 import appState from './state.js';
-import { initCollapsibleSections } from './ui.js';
+import { initCollapsibleSections, initButtonHandlers, initFormHandlers } from './ui.js';
 import { initAnimationSystem } from '../../animation/animation.js';
 
 export async function createApp(data, container) {
@@ -18,6 +18,8 @@ export async function createApp(data, container) {
     setTimeout(() => {
         initCollapsibleSections();
         initAnimationSystem();
+        initButtonHandlers();
+        initFormHandlers();
     }, 0);
     
     appState.userData = data;

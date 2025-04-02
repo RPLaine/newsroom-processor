@@ -5,6 +5,12 @@
  */
 import appState from './state.js';
 
+// Store handlers for button clicks and form submissions
+const actionHandlers = {
+    buttons: {},
+    forms: {}
+};
+
 /**
  * Show notification to user
  * 
@@ -153,4 +159,99 @@ export function createCollapsibleSection(title, htmlContent, startCollapsed = tr
     // The document-level event delegation will handle clicks
     
     return section;
+}
+
+/**
+ * Initialize button click handlers using event delegation
+ * Sets up a document-level listener for handling all button clicks
+ */
+export function initButtonHandlers() {
+    // Remove existing listener if it exists
+    document.removeEventListener('click', handleButtonClick);
+    
+    // Add a single document-level event listener
+    document.addEventListener('click', handleButtonClick);
+    
+    console.log('Button handlers initialized with event delegation');
+}
+
+/**
+ * Handle click events for buttons using event delegation
+ * @param {Event} event - The click event
+ */
+function handleButtonClick(event) {
+    // Find the closest button element to the click target
+    const button = event.target.closest('button');
+    if (!button) return;
+    
+    // Get the button type from data-button-type attribute or class
+    const buttonType = button.dataset.buttonType || 
+                      Array.from(button.classList)
+                      .find(cls => actionHandlers.buttons[cls]);
+    
+    // If we have a handler for this button type, execute it
+    if (buttonType && actionHandlers.buttons[buttonType]) {
+        // For buttons with data-id, pass the id to the handler
+        const dataId = button.dataset.id;
+        const dataItem = button.closest('[data-item]')?.dataset.item;
+        
+        actionHandlers.buttons[buttonType](event, button, {
+            id: dataId,
+            item: dataItem ? JSON.parse(dataItem) : null
+        });
+    }
+}
+
+/**
+ * Register a button click handler
+ * @param {string} buttonType - The button type (class name or data-button-type)
+ * @param {Function} handler - The handler function to call when the button is clicked
+ */
+export function registerButtonHandler(buttonType, handler) {
+    actionHandlers.buttons[buttonType] = handler;
+}
+
+/**
+ * Initialize form submission handlers using event delegation
+ * Sets up a document-level listener for handling all form submissions
+ */
+export function initFormHandlers() {
+    // Remove existing listener if it exists
+    document.removeEventListener('submit', handleFormSubmit, true);
+    
+    // Add a single document-level event listener with capture phase
+    document.addEventListener('submit', handleFormSubmit, true);
+    
+    console.log('Form handlers initialized with event delegation');
+}
+
+/**
+ * Handle submit events for forms using event delegation
+ * @param {Event} event - The submit event
+ */
+function handleFormSubmit(event) {
+    // Find the form element
+    const form = event.target.closest('form');
+    if (!form) return;
+    
+    // Get the form type from data-form-type attribute or id
+    const formType = form.dataset.formType || form.id;
+    
+    // If we have a handler for this form type, execute it
+    if (formType && actionHandlers.forms[formType]) {
+        // Prevent default form submission
+        event.preventDefault();
+        
+        // Call the registered handler
+        actionHandlers.forms[formType](event, form);
+    }
+}
+
+/**
+ * Register a form submission handler
+ * @param {string} formType - The form type (id or data-form-type)
+ * @param {Function} handler - The handler function to call when the form is submitted
+ */
+export function registerFormHandler(formType, handler) {
+    actionHandlers.forms[formType] = handler;
 }

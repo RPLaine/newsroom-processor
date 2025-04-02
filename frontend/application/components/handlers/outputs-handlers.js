@@ -3,16 +3,14 @@
  */
 import * as api from '../api.js';
 import { appState, showNotification, showError, formatDate } from './common.js';
+import { registerFormHandler, registerButtonHandler } from '../ui.js';
 
 /**
  * Setup event handlers for Outputs tab
  */
 export function setupOutputsTabHandlers() {
-    // Create output form
-    const outputForm = document.getElementById('create-output-form');
-    outputForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
+    // Register form handler for output creation form
+    registerFormHandler('create-output-form', async (event, form) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;
@@ -57,6 +55,21 @@ export function setupOutputsTabHandlers() {
             showError('Error saving output', error);
         }
     });
+    
+    // Register button handlers for view and edit buttons
+    registerButtonHandler('view-output-btn', (event, button) => {
+        const outputItem = button.closest('.output-item');
+        if (!outputItem || !outputItem.dataset.item) return;
+        
+        viewOutput(JSON.parse(outputItem.dataset.item));
+    });
+    
+    registerButtonHandler('edit-output-btn', (event, button) => {
+        const outputItem = button.closest('.output-item');
+        if (!outputItem || !outputItem.dataset.item) return;
+        
+        editOutput(JSON.parse(outputItem.dataset.item));
+    });
 }
 
 /**
@@ -99,24 +112,10 @@ export function updateOutputsList(outputs) {
             </div>
         `;
         
+        // Store output data in dataset for later retrieval
+        outputElement.dataset.item = JSON.stringify(output);
+        
         outputsList.appendChild(outputElement);
-    });
-    
-    // Add event listeners to output buttons
-    document.querySelectorAll('.view-output-btn').forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-            if (outputs[index]) {
-                viewOutput(outputs[index]);
-            }
-        });
-    });
-    
-    document.querySelectorAll('.edit-output-btn').forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-            if (outputs[index]) {
-                editOutput(outputs[index]);
-            }
-        });
     });
 }
 

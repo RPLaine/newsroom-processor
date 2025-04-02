@@ -5,21 +5,29 @@
     width: 100%;
 }
 
-.structure-card {
+/* Common card styling for structure elements */
+.structure-card, 
+.structure-data-item {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--border-radius-md);
     padding: var(--spacing-md);
     transition: all var(--transition-normal);
-    cursor: pointer;
     position: relative;
     overflow: hidden;
+}
+
+/* Card-specific styles */
+.structure-card {
+    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.structure-card::before {
+/* Left accent border for both cards */
+.structure-card::before,
+.structure-data-item::before {
     content: '';
     position: absolute;
     top: 0;
@@ -30,22 +38,32 @@
     opacity: 0.5;
 }
 
-.structure-card:hover {
+/* Hover effects for both elements */
+.structure-card:hover,
+.structure-data-item:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
 
-.structure-card:hover::before {
+.structure-card:hover::before,
+.structure-data-item:hover::before {
     opacity: 1;
 }
 
-.structure-card h3 {
+/* Headings in both card types */
+.structure-card h3,
+.structure-data-header {
     margin-top: 0;
     margin-bottom: var(--spacing-sm);
     color: var(--color-text-primary);
     font-weight: var(--font-weight-semibold);
 }
 
+.structure-data-header {
+    font-size: var(--font-size-sm);
+}
+
+/* Meta information styling */
 .structure-meta {
     margin-top: var(--spacing-sm);
     font-size: var(--font-size-xs);
@@ -72,6 +90,21 @@
     margin-left: var(--spacing-md);
 }
 
+/* Structure data content */
+.structure-data-content {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+.structure-data-content > div {
+    margin-bottom: var(--spacing-xs);
+}
+
+.structure-data-content > div:last-child {
+    margin-bottom: 0;
+}
+
+/* Input items */
 .input-item {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
@@ -322,42 +355,18 @@
     pointer-events: none;
 }
 
+/* Structure data grid layout */
 .structure-data-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: var(--spacing-md);
 }
 
-.structure-data-item {
-    background-color: var(--color-bg-tertiary);
-    border-radius: var(--border-radius-sm);
-    padding: var(--spacing-md);
-    transition: all var(--transition-fast);
-}
-
-.structure-data-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-.structure-data-header {
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    margin-bottom: var(--spacing-sm);
-    font-size: var(--font-size-sm);
-}
-
-.structure-data-content {
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-xs);
-}
-
-.structure-data-content > div {
-    margin-bottom: var(--spacing-xs);
-}
-
-.structure-data-content > div:last-child {
-    margin-bottom: 0;
+/* Override for structure-data-item when in a grid */
+.structure-data-grid .structure-data-item {
+    background-color: var(--color-bg-secondary);
+    display: flex;
+    flex-direction: column;
 }
 
 @media (max-width: 768px) {

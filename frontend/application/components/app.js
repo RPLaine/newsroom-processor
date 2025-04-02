@@ -1,7 +1,8 @@
+import { initEventHandlers } from './handlers/index.js';
 import { createApplicationUI } from './appBuilder.js';
-import { initEventHandlers } from './handlers.js';
-import appState from './state.js';
 import * as api from './api.js';
+import appState from './state.js';
+import { initCollapsibleSections } from './ui.js';
 
 export async function createApp(data, container) {
     console.log('Initializing app with data:', data);
@@ -11,6 +12,9 @@ export async function createApp(data, container) {
     
     createApplicationUI(container);
     initEventHandlers();
+    
+    // Initialize collapsible sections 
+    initCollapsibleSections();
     
     appState.userData = data;
     
@@ -45,6 +49,4 @@ export async function createApp(data, container) {
             loadingAnimation.hide();
         }
     }
-    
-    return data;
 }

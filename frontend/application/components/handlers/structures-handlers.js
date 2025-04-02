@@ -48,16 +48,16 @@ function updateStructuresList(structures) {
     
     usersWithStructures.forEach(({ userId, username, userStructures }) => {
         const userSection = document.createElement('div');
-        userSection.className = 'user-section';
+        userSection.className = 'collapsible-section';
         structuresList.appendChild(userSection);
         
         const userHeading = document.createElement('h3');
-        userHeading.className = 'user-heading';
+        userHeading.className = 'collapsible-heading';
         userHeading.innerHTML = `${username} (${Object.keys(userStructures).length}) <span class="toggle-icon">▶</span>`;
         userSection.appendChild(userHeading);
         
         const userStructuresContainer = document.createElement('div');
-        userStructuresContainer.className = 'user-structures-container collapsed';
+        userStructuresContainer.className = 'collapsible-content collapsed';
         userSection.appendChild(userStructuresContainer);
         
         userHeading.addEventListener('click', () => {

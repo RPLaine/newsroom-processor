@@ -1,13 +1,14 @@
 .structures-list {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
     width: 100%;
 }
 
 /* Common card styling for structure elements */
 .structure-card, 
-.structure-data-item {
+.structure-data-item,
+.input-item,
+.output-item {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--border-radius-md);
@@ -17,17 +18,11 @@
     overflow: hidden;
 }
 
-/* Card-specific styles */
-.structure-card {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Left accent border for both cards */
+/* Left accent border for cards */
 .structure-card::before,
-.structure-data-item::before {
+.structure-data-item::before,
+.input-item::before,
+.output-item::before {
     content: '';
     position: absolute;
     top: 0;
@@ -38,29 +33,98 @@
     opacity: 0.5;
 }
 
-/* Hover effects for both elements */
+/* Hover effects for elements */
 .structure-card:hover,
-.structure-data-item:hover {
+.structure-data-item:hover,
+.input-item:hover,
+.output-item:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
 
 .structure-card:hover::before,
-.structure-data-item:hover::before {
+.structure-data-item:hover::before,
+.input-item:hover::before,
+.output-item:hover::before {
     opacity: 1;
 }
 
-/* Headings in both card types */
+/* Card-specific styles */
+.structure-card {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Headings in card types */
 .structure-card h3,
-.structure-data-header {
+.structure-data-header,
+.input-item h3,
+.output-item h3 {
     margin-top: 0;
     margin-bottom: var(--spacing-sm);
     color: var(--color-text-primary);
     font-weight: var(--font-weight-semibold);
 }
 
-.structure-data-header {
-    font-size: var(--font-size-sm);
+/* General collapsible section styles */
+.collapsible-section {
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
+    margin-top: var(--spacing-sm);
+}
+
+.collapsible-section:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.collapsible-heading {
+    margin: 0;
+    color: var(--color-brand-primary-light);
+    font-size: var(--font-size-md);
+    padding: var(--spacing-md);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-bg-elevated);
+    border-bottom: var(--border-width) solid var(--border-color);
+    transition: background-color var(--transition-fast);
+}
+
+.collapsible-heading:hover {
+    background-color: var(--color-bg-tertiary);
+}
+
+.collapsible-heading .toggle-icon {
+    font-size: var(--font-size-md);
+    transition: transform 0.3s ease;
+    color: var(--color-brand-primary);
+}
+
+.collapsible-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    max-height: 2000px;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
 }
 
 /* Meta information styling */
@@ -118,14 +182,6 @@
     box-shadow: var(--shadow-sm);
 }
 
-.input-item h3 {
-    margin-top: 0;
-    margin-bottom: var(--spacing-md);
-    font-size: var(--font-size-md);
-    color: var(--color-text-primary);
-    font-weight: var(--font-weight-semibold);
-}
-
 .input-content {
     margin-bottom: var(--spacing-md);
     background-color: var(--color-bg-tertiary);
@@ -164,13 +220,6 @@
     box-shadow: var(--shadow-sm);
 }
 
-.output-item h3 {
-    margin-top: 0;
-    margin-bottom: var(--spacing-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-}
-
 .output-preview {
     background-color: var(--color-bg-tertiary);
     border-radius: var(--border-radius-sm);
@@ -195,25 +244,15 @@
     color: var(--color-text-secondary);
 }
 
-@media (max-width: 768px) {
-    /* Remove grid template columns override since we're using flex now */
-    .structures-list {
-        gap: var(--spacing-sm);
-    }
-}
-
 /* User structures styling */
 .user-section {
-    background-color: var(--color-bg-secondary);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: all var(--transition-normal);
-    border: 1px solid var(--border-color);
-}
-
-.user-section:hover {
-    box-shadow: var(--shadow-md);
+    /* Update to use the collapsible-section for consistency */
+    background-color: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+    overflow: inherit;
+    transition: inherit;
+    border: inherit;
 }
 
 .user-heading {
@@ -287,86 +326,51 @@
     font-weight: var(--font-weight-semibold);
 }
 
+/* 
+ * Clean up old structure-section styles that are now replaced by collapsible-section 
+ * But keep the specific overrides that are needed
+ */
 .structure-section {
-    background-color: var(--color-bg-secondary);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: all var(--transition-normal);
-    border: 1px solid var(--border-color);
     margin-top: var(--spacing-lg);
 }
 
-.structure-section:hover {
-    box-shadow: var(--shadow-md);
+.user-section {
+    /* Update to use the collapsible-section for consistency */
+    background-color: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+    overflow: inherit;
+    transition: inherit;
+    border: inherit;
 }
 
+/* Transition all collapsible sections to use the new generalized styles */
+.user-heading,
 .structure-section-heading {
-    margin: 0;
-    color: var(--color-brand-primary-light);
     font-size: var(--font-size-lg);
-    padding: var(--spacing-md);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--color-bg-elevated);
-    border-bottom: var(--border-width) solid var(--border-color);
-    transition: background-color var(--transition-fast);
 }
 
-.structure-section-heading:hover {
-    background-color: var(--color-bg-tertiary);
-}
-
-.structure-section-heading .toggle-icon {
-    font-size: var(--font-size-md);
-    transition: transform 0.3s ease;
-    color: var(--color-brand-primary);
-}
-
+.user-structures-container,
 .structure-section-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    max-height: 2000px;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
-    overflow: hidden;
-    width: 100%;
-    box-sizing: border-box;
+    /* Use all the properties from collapsible-content */
+    grid-template-columns: inherit;
+    gap: inherit;
+    padding: inherit;
+    max-height: inherit;
+    transition: inherit;
+    overflow: inherit;
+    width: inherit;
+    box-sizing: inherit;
 }
 
-.structure-section-content.collapsed {
-    max-height: 0;
-    opacity: 0;
-    margin: 0;
-    padding: 0;
-    pointer-events: none;
+/* Modify the grid layout specifically for user-structures-container */
+.user-structures-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-/* Structure data grid layout */
-.structure-data-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: var(--spacing-md);
-}
-
-/* Override for structure-data-item when in a grid */
-.structure-data-grid .structure-data-item {
-    background-color: var(--color-bg-secondary);
-    display: flex;
-    flex-direction: column;
-}
-
+/* Media query overrides */
 @media (max-width: 768px) {
-    .structure-data-grid {
+    .collapsible-content {
         grid-template-columns: 1fr;
-    }
-    
-    .structure-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-xs);
     }
 }

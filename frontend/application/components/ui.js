@@ -89,3 +89,56 @@ export function switchTab(tabId) {
     
     console.log(`Switched to tab: ${tabId}`);
 }
+
+/**
+ * Initialize collapsible sections in the application
+ * Sets up all elements with collapsible-heading class to toggle their associated content
+ */
+export function initCollapsibleSections() {
+    document.querySelectorAll('.collapsible-heading').forEach(heading => {
+        heading.addEventListener('click', () => {
+            const content = heading.nextElementSibling;
+            if (content && content.classList.contains('collapsible-content')) {
+                content.classList.toggle('collapsed');
+                
+                const toggleIcon = heading.querySelector('.toggle-icon');
+                if (toggleIcon) {
+                    toggleIcon.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+                }
+            }
+        });
+    });
+}
+
+/**
+ * Create a collapsible section element with the specified title and content
+ * @param {string} title - The section title
+ * @param {string} htmlContent - HTML content for the collapsible section
+ * @param {boolean} startCollapsed - Whether section should start collapsed (default: true)
+ * @returns {HTMLElement} - The created section element
+ */
+export function createCollapsibleSection(title, htmlContent, startCollapsed = true) {
+    const section = document.createElement('div');
+    section.className = 'collapsible-section';
+    
+    const heading = document.createElement('h4');
+    heading.className = 'collapsible-heading';
+    heading.innerHTML = `${title} <span class="toggle-icon">${startCollapsed ? '▶' : '▼'}</span>`;
+    
+    const content = document.createElement('div');
+    content.className = `collapsible-content ${startCollapsed ? 'collapsed' : ''}`;
+    content.innerHTML = htmlContent;
+    
+    section.appendChild(heading);
+    section.appendChild(content);
+    
+    heading.addEventListener('click', () => {
+        content.classList.toggle('collapsed');
+        const toggleIcon = heading.querySelector('.toggle-icon');
+        if (toggleIcon) {
+            toggleIcon.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+        }
+    });
+    
+    return section;
+}

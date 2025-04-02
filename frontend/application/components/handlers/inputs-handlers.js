@@ -245,11 +245,11 @@ export function updateStructureInfo() {
     
     if (nodeCount > 0) {
         structureDetailsHTML += `
-            <div class="structure-section">
-                <h4 class="structure-section-heading">
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
                     Nodes <span class="toggle-icon">▶</span>
                 </h4>
-                <div class="structure-section-content collapsed">
+                <div class="collapsible-content collapsed">
         `;
         
         let nodesObject = null;
@@ -299,11 +299,11 @@ export function updateStructureInfo() {
     // Add connections section if available
     if (connectionCount > 0) {
         structureDetailsHTML += `
-            <div class="structure-section">
-                <h4 class="structure-section-heading">
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
                     Connections <span class="toggle-icon">▶</span>
                 </h4>
-                <div class="structure-section-content collapsed">
+                <div class="collapsible-content collapsed">
         `;
         
         let connectionsObject = null;
@@ -353,7 +353,7 @@ export function updateStructureInfo() {
     structureInfoContainer.innerHTML = structureDetailsHTML;
     
     // Add event handlers for toggle sections
-    document.querySelectorAll('.structure-section-heading').forEach(heading => {
+    document.querySelectorAll('.collapsible-heading').forEach(heading => {
         heading.addEventListener('click', () => {
             const content = heading.nextElementSibling;
             content.classList.toggle('collapsed');

@@ -275,15 +275,18 @@ export function updateStructureInfo() {
         
         if (nodesObject) {
             for (const [nodeId, node] of Object.entries(nodesObject)) {
+                const nodeName = node.configuration?.header || node.title || node.name || nodeId;
                 const nodeType = node.type || 'Unknown';
-                const nodeTitle = node.title || node.name || nodeId;
+                const displayId = node.id || nodeId;
                 
                 structureDetailsHTML += `
-                    <div class="structure-data-item">
-                        <div class="structure-data-header">${nodeTitle}</div>
-                        <div class="structure-data-content">
-                            <div>Type: ${nodeType}</div>
-                            <div>ID: ${nodeId}</div>
+                    <div class="structure-card">
+                        <div class="structure-content">
+                            <h3>${nodeName}</h3>
+                            <div class="structure-data-content">
+                                <div>Type: ${nodeType}</div>
+                                <div>ID: ${displayId}</div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -331,13 +334,18 @@ export function updateStructureInfo() {
             for (const [connectionId, connection] of Object.entries(connectionsObject)) {
                 const fromId = connection.from || connection.source || 'Unknown';
                 const toId = connection.to || connection.target || 'Unknown';
+                const connectionName = connection.name || connection.type || `Connection ${connectionId}`;
+                const displayId = connection.id || connectionId;
                 
                 structureDetailsHTML += `
-                    <div class="structure-data-item">
-                        <div class="structure-data-header">Connection ${connectionId}</div>
-                        <div class="structure-data-content">
-                            <div>From: ${fromId}</div>
-                            <div>To: ${toId}</div>
+                    <div class="structure-card">
+                        <div class="structure-content">
+                            <h3>${connectionName}</h3>
+                            <div class="structure-data-content">
+                                <div>From: ${fromId}</div>
+                                <div>To: ${toId}</div>
+                                <div>ID: ${displayId}</div>
+                            </div>
                         </div>
                     </div>
                 `;

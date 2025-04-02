@@ -359,17 +359,4 @@ export function updateStructureInfo() {
     }
     
     structureInfoContainer.innerHTML = structureDetailsHTML;
-    
-    // Add event handlers for toggle sections
-    document.querySelectorAll('.collapsible-heading').forEach(heading => {
-        heading.addEventListener('click', () => {
-            const content = heading.nextElementSibling;
-            content.classList.toggle('collapsed');
-            
-            const toggleIcon = heading.querySelector('.toggle-icon');
-            if (toggleIcon) {
-                toggleIcon.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
-            }
-        });
-    });
 }

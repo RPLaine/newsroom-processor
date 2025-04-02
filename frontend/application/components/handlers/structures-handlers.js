@@ -60,14 +60,6 @@ function updateStructuresList(structures) {
         userStructuresContainer.className = 'collapsible-content collapsed';
         userSection.appendChild(userStructuresContainer);
         
-        userHeading.addEventListener('click', () => {
-            userStructuresContainer.classList.toggle('collapsed');
-            const toggleIcon = userHeading.querySelector('.toggle-icon');
-            if (toggleIcon) {
-                toggleIcon.textContent = userStructuresContainer.classList.contains('collapsed') ? '▶' : '▼';
-            }
-        });
-        
         Object.keys(userStructures).forEach(fileName => {
             const structure = userStructures[fileName];
             

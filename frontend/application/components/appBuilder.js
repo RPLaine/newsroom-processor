@@ -82,35 +82,50 @@ function createTabContent() {
                 <p class="empty-state">No structure selected. Please select a structure from the Structures tab.</p>
             </div>
         </div>
-        <div class="section small">
-            <h2>Add Web Search</h2>
-            <form id="web-search-form" class="form">
-                <div class="form-group">
-                    <label for="search-query">Search Query</label>
-                    <input type="text" id="search-query" required>
+        <div class="section full-width">
+            <h2>Tools</h2>
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
+                    Add Web Search <span class="toggle-icon">▶</span>
+                </h4>
+                <div class="collapsible-content collapsed">
+                    <form id="web-search-form" class="form">
+                        <div class="form-group">
+                            <label for="search-query">Search Query</label>
+                            <input type="text" id="search-query" required>
+                        </div>
+                        <button type="submit" class="btn primary">Search Web</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn primary">Search Web</button>
-            </form>
-        </div>
-        <div class="section small">
-            <h2>Add RSS Feed</h2>
-            <form id="rss-form" class="form">
-                <div class="form-group">
-                    <label for="rss-url">RSS URL</label>
-                    <input type="url" id="rss-url" required>
+            </div>
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
+                    Add RSS Feed <span class="toggle-icon">▶</span>
+                </h4>
+                <div class="collapsible-content collapsed">
+                    <form id="rss-form" class="form">
+                        <div class="form-group">
+                            <label for="rss-url">RSS URL</label>
+                            <input type="url" id="rss-url" required>
+                        </div>
+                        <button type="submit" class="btn primary">Process RSS</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn primary">Process RSS</button>
-            </form>
-        </div>
-        <div class="section small">
-            <h2>Upload File</h2>
-            <form id="file-form" class="form">
-                <div class="form-group">
-                    <label for="file-input">Select File</label>
-                    <input type="file" id="file-input" required>
+            </div>
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
+                    Upload File <span class="toggle-icon">▶</span>
+                </h4>
+                <div class="collapsible-content collapsed">
+                    <form id="file-form" class="form">
+                        <div class="form-group">
+                            <label for="file-input">Select File</label>
+                            <input type="file" id="file-input" required>
+                        </div>
+                        <button type="submit" class="btn primary">Upload File</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn primary">Upload File</button>
-            </form>
+            </div>
         </div>
         <div class="section full-width">
             <h2>Current Inputs</h2>

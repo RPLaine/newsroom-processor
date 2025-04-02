@@ -13,8 +13,10 @@ export async function createApp(data, container) {
     createApplicationUI(container);
     initEventHandlers();
     
-    // Initialize collapsible sections 
-    initCollapsibleSections();
+    // Initialize collapsible sections after DOM is fully created
+    setTimeout(() => {
+        initCollapsibleSections();
+    }, 0);
     
     appState.userData = data;
     

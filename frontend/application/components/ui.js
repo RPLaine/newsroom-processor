@@ -87,27 +87,44 @@ export function switchTab(tabId) {
     document.getElementById(`${tabId}-tab`)?.classList.add('active');
     document.getElementById(`${tabId}-content`)?.classList.add('active');
     
+    // Reinitialize collapsible sections after tab switch
+    initCollapsibleSections();
+    
     console.log(`Switched to tab: ${tabId}`);
 }
 
 /**
- * Initialize collapsible sections in the application
- * Sets up all elements with collapsible-heading class to toggle their associated content
+ * Initialize collapsible sections in the application using event delegation
+ * Sets up a single document-level listener that handles all collapsible sections
  */
 export function initCollapsibleSections() {
-    document.querySelectorAll('.collapsible-heading').forEach(heading => {
-        heading.addEventListener('click', () => {
-            const content = heading.nextElementSibling;
-            if (content && content.classList.contains('collapsible-content')) {
-                content.classList.toggle('collapsed');
-                
-                const toggleIcon = heading.querySelector('.toggle-icon');
-                if (toggleIcon) {
-                    toggleIcon.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
-                }
-            }
-        });
-    });
+    // Remove existing listener if it exists (for reinitializations)
+    document.removeEventListener('click', handleCollapsibleHeadingClick);
+    
+    // Add a single document-level event listener
+    document.addEventListener('click', handleCollapsibleHeadingClick);
+    
+    console.log('Collapsible sections initialized with event delegation');
+}
+
+/**
+ * Handle click events for collapsible headings
+ * @param {Event} event - The click event
+ */
+function handleCollapsibleHeadingClick(event) {
+    // Check if clicked element or its parent is a collapsible heading
+    const heading = event.target.closest('.collapsible-heading');
+    if (!heading) return;
+    
+    const content = heading.nextElementSibling;
+    if (content && content.classList.contains('collapsible-content')) {
+        content.classList.toggle('collapsed');
+        
+        const toggleIcon = heading.querySelector('.toggle-icon');
+        if (toggleIcon) {
+            toggleIcon.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+        }
+    }
 }
 
 /**
@@ -132,13 +149,8 @@ export function createCollapsibleSection(title, htmlContent, startCollapsed = tr
     section.appendChild(heading);
     section.appendChild(content);
     
-    heading.addEventListener('click', () => {
-        content.classList.toggle('collapsed');
-        const toggleIcon = heading.querySelector('.toggle-icon');
-        if (toggleIcon) {
-            toggleIcon.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
-        }
-    });
+    // No need to attach event listener here anymore
+    // The document-level event delegation will handle clicks
     
     return section;
 }

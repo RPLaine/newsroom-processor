@@ -87,12 +87,26 @@
 
 .tab-content-container {
     background-color: var(--color-bg-primary);
-    overflow-y: auto;
+    overflow: hidden; /* Changed to prevent double scrollbars */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .tab-content {
     display: none;
     animation: fadeIn var(--transition-normal);
+    height: 100%;
+}
+
+.tab-content.active {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: var(--spacing-md);
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .section {

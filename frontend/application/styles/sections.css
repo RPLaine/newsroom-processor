@@ -2,6 +2,9 @@
     background-color: var(--color-bg-primary);
     overflow-y: auto;
     width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .tab-content {
@@ -10,13 +13,17 @@
 }
 
 .tab-content.active {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
     gap: var(--spacing-md);
     width: 100%;
     max-width: 1800px;
     padding: var(--spacing-md);
     margin: 0 auto;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .section {
@@ -28,25 +35,25 @@
     height: fit-content;
 }
 
-/* Make sections more responsive with flex-basis instead of grid-column */
+/* Make sections more responsive with flex properties */
 .section.small {
-    flex: 1 1 280px;
-    min-width: 0;
+    flex: 0 1 250px;
+    margin: 0;
 }
 
 .section.medium {
-    flex: 1 1 380px;
-    min-width: 0;
+    flex: 0 1 350px;
+    margin: 0;
 }
 
 .section.large {
-    flex: 1 1 580px;
-    min-width: 0;
+    flex: 0 1 500px;
+    margin: 0;
 }
 
 .section.full-width {
     flex: 1 1 100%;
-    grid-column: 1 / -1;
+    width: 100%;
 }
 
 .section h2 {
@@ -62,12 +69,54 @@
 /* Simplify media queries to be more fluid */
 @media (max-width: 768px) {
     .tab-content.active {
-        display: flex;
         flex-direction: column;
+        align-items: stretch;
         gap: var(--spacing-md);
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
     
     .section {
         padding: var(--spacing-md);
+        width: 100%;
+        flex: 0 0 auto; /* Prevent sections from growing to full height */
+        margin-bottom: var(--spacing-md); /* Ensure vertical flow */
+    }
+    
+    .section.small,
+    .section.medium,
+    .section.large {
+        flex: 0 0 auto;
+        width: 100%;
+        min-height: fit-content;
+    }
+    
+    .structure-info-container {
+        overflow-x: auto;
+    }
+    
+    .structure-meta {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-content.active {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-sm);
+    }
+    
+    .section {
+        padding: var(--spacing-sm);
+    }
+    
+    .section h2 {
+        font-size: calc(var(--font-size-md) + 0.1rem);
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .structure-data-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
     }
 }

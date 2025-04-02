@@ -1,11 +1,10 @@
 #app-container {
     width: 100%;
     max-width: 1200px;
-    max-width: 1200px;
     height: 100vh;
     margin: 0 auto;
     background-color: var(--color-bg-secondary);
-    overflow: auto;
+    overflow: hidden; /* Changed from auto to hidden to prevent double scrollbars */
     display: flex;
     flex-direction: column;
 }
@@ -29,14 +28,15 @@ html, body {
 
 .tab-content-container {
     flex: 1;
-    overflow: auto;
+    overflow: hidden; /* Changed from auto to hidden to prevent double scrollbars */
     display: flex;
     flex-direction: column;
 }
 
 .tab-content {
     flex: 1;
-    overflow: auto;
+    overflow-y: auto; /* Only tab-content should scroll vertically */
+    overflow-x: hidden;
     padding: var(--spacing-md);
 }
 

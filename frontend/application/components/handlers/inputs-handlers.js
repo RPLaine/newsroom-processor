@@ -1,10 +1,18 @@
 import * as api from '../api.js';
 import { appState, showNotification, showError, formatDate } from './common.js';
-import { registerFormHandler } from '../ui.js';
+import { registerFormHandler, registerButtonHandler } from '../ui.js';
 
 export function setupInputsTabHandlers() {
     document.getElementById('inputs-tab')?.addEventListener('click', () => {
         updateStructureInfo();
+    });
+    
+    // Register button handler for node selection
+    registerButtonHandler('select-node-btn', (event, button) => {
+        const structureCard = button.closest('.structure-card');
+        if (!structureCard || !structureCard.dataset.node) return;
+        
+        selectNode(JSON.parse(structureCard.dataset.node));
     });
     
     // Register form handler for web search form
@@ -187,8 +195,16 @@ export function getInputTypeLabel(type) {
 export function updateStructureInfo() {
     const structureInfoContainer = document.getElementById('selected-structure-info');
     const inputsList = document.getElementById('inputs-list');
+    const nodeToolsContainer = document.getElementById('node-tools-container');
     
     if (!structureInfoContainer || !inputsList) return;
+    
+    // Clear selected node when structure changes
+    appState.currentNode = null;
+    document.getElementById('selected-node-info').innerHTML = '<p class="empty-state">No node selected. Please select a node from the list.</p>';
+    if (nodeToolsContainer) {
+        nodeToolsContainer.style.display = 'none';
+    }
     
     // Handle empty state for both containers
     if (!appState.currentStructure) {
@@ -281,13 +297,16 @@ export function updateStructureInfo() {
                 const displayId = node.id || nodeId;
                 
                 structureDetailsHTML += `
-                    <div class="structure-card">
+                    <div class="structure-card" data-node='${JSON.stringify(node)}'>
                         <div class="structure-content">
                             <h3>${nodeName}</h3>
                             <div class="structure-data-content">
                                 <div>Type: ${nodeType}</div>
                                 <div>ID: ${displayId}</div>
                             </div>
+                        </div>
+                        <div class="structure-actions">
+                            <button class="btn select-node-btn primary" data-button-type="select-node-btn">Select</button>
                         </div>
                     </div>
                 `;
@@ -410,5 +429,151 @@ export function updateStructureInfo() {
         inputsList.innerHTML = toolsHTML;
     } else {
         inputsList.innerHTML = '<p class="empty-state">No tools configured in this structure. Tools can include RSS feed, file input, or automation settings.</p>';
+    }
+}
+
+// Function to handle node selection
+function selectNode(node) {
+    appState.currentNode = node;
+    showNotification(`Selected node: ${node.configuration?.header || node.title || node.name || node.id || 'Unnamed Node'}`, 'success');
+    updateSelectedNodeInfo();
+}
+
+// Function to update the selected node information
+function updateSelectedNodeInfo() {
+    const selectedNodeContainer = document.getElementById('selected-node-info');
+    const nodeToolsContainer = document.getElementById('node-tools-container');
+    
+    if (!selectedNodeContainer || !nodeToolsContainer) return;
+    
+    // Hide tools container if no node is selected
+    if (!appState.currentNode) {
+        selectedNodeContainer.innerHTML = '<p class="empty-state">No node selected. Please select a node from the list.</p>';
+        nodeToolsContainer.style.display = 'none';
+        return;
+    }
+    
+    const node = appState.currentNode;
+    const nodeName = node.configuration?.header || node.title || node.name || node.id || 'Unnamed Node';
+    const nodeType = node.type || 'Unknown';
+    const nodeId = node.id || 'Unknown';
+    
+    let nodeDetailsHTML = `
+        <div class="structure-header">
+            <h3>${nodeName}</h3>
+            <div class="structure-meta">
+                <span class="structure-meta-item">Type: ${nodeType}</span>
+                <span class="structure-meta-item">ID: ${nodeId}</span>
+            </div>
+        </div>
+    `;
+    
+    // Display node configuration if available
+    if (node.configuration) {
+        nodeDetailsHTML += `
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
+                    Configuration <span class="toggle-icon">▶</span>
+                </h4>
+                <div class="collapsible-content collapsed">
+                    <div class="structure-data-content">
+        `;
+        
+        // Add configuration details
+        if (node.configuration.prompt) {
+            nodeDetailsHTML += `<div><strong>Prompt:</strong> ${node.configuration.prompt}</div>`;
+        }
+        
+        if (node.configuration.settings) {
+            nodeDetailsHTML += `<div><strong>Settings:</strong></div>`;
+            const settings = node.configuration.settings;
+            
+            for (const [key, value] of Object.entries(settings)) {
+                nodeDetailsHTML += `<div>• ${key}: ${value}</div>`;
+            }
+        }
+        
+        if (node.configuration.parameters) {
+            nodeDetailsHTML += `<div><strong>Parameters:</strong></div>`;
+            const parameters = node.configuration.parameters;
+            
+            for (const [key, value] of Object.entries(parameters)) {
+                nodeDetailsHTML += `<div>• ${key}: ${value}</div>`;
+            }
+        }
+        
+        nodeDetailsHTML += `
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Display node data if available
+    if (node.data) {
+        nodeDetailsHTML += `
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
+                    Data <span class="toggle-icon">▶</span>
+                </h4>
+                <div class="collapsible-content collapsed">
+                    <div class="structure-data-content">
+        `;
+        
+        for (const [key, value] of Object.entries(node.data)) {
+            nodeDetailsHTML += `<div><strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}</div>`;
+        }
+        
+        nodeDetailsHTML += `
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Update the selected node container
+    selectedNodeContainer.innerHTML = nodeDetailsHTML;
+    
+    // Show the node tools container since we have a selected node
+    nodeToolsContainer.style.display = 'block';
+    
+    // Update the available actions based on node type and configuration
+    const inputsList = document.getElementById('inputs-list');
+    if (inputsList) {
+        const hasSettings = node.configuration && node.configuration.settings;
+        const settings = hasSettings ? node.configuration.settings : {};
+        
+        // Check if node has any supported tool settings
+        const hasTools = hasSettings && (
+            settings.use_rss_feed || 
+            settings.use_file_input || 
+            settings.allow_automation || 
+            settings.require_human_review
+        );
+        
+        if (hasTools) {
+            let actionsHTML = `
+                <div class="input-item">
+                    <h3>${nodeName} Tools</h3>
+                    <div class="input-content">
+                        <strong>Available Tools:</strong><br>
+                        ${settings.use_rss_feed ? '• RSS Feed<br>' : ''}
+                        ${settings.use_file_input ? '• File Input<br>' : ''}
+                        ${settings.allow_automation ? '• Automation<br>' : ''}
+                        ${settings.require_human_review ? '• Human Review Required<br>' : ''}
+                    </div>
+                    <div class="input-meta">Node ID: ${nodeId}</div>
+                </div>
+            `;
+            
+            inputsList.innerHTML = actionsHTML;
+        } else {
+            inputsList.innerHTML = '<p class="empty-state">This node does not have any configured tools or actions, but you can still use the available tools below.</p>';
+        }
+        
+        // Always show all tool sections when a node is selected, regardless of node configuration
+        document.querySelectorAll('#node-tools-container .collapsible-section').forEach(section => {
+            section.style.display = 'block';
+        });
     }
 }

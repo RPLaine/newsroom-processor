@@ -265,20 +265,30 @@
 }
 
 .structure-section {
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
     margin-top: var(--spacing-lg);
 }
 
+.structure-section:hover {
+    box-shadow: var(--shadow-md);
+}
+
 .structure-section-heading {
-    margin: 0 0 var(--spacing-md) 0;
-    color: var(--color-text-primary);
-    font-weight: var(--font-weight-medium);
+    margin: 0;
+    color: var(--color-brand-primary-light);
+    font-size: var(--font-size-lg);
+    padding: var(--spacing-md);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: var(--color-bg-elevated);
-    padding: var(--spacing-sm);
-    border-radius: var(--border-radius-sm);
+    border-bottom: var(--border-width) solid var(--border-color);
     transition: background-color var(--transition-fast);
 }
 
@@ -296,6 +306,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: var(--spacing-md);
+    padding: var(--spacing-md);
     max-height: 2000px;
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
     overflow: hidden;

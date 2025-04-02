@@ -247,9 +247,9 @@ export function updateStructureInfo() {
         structureDetailsHTML += `
             <div class="structure-section">
                 <h4 class="structure-section-heading">
-                    Nodes <span class="toggle-icon">▼</span>
+                    Nodes <span class="toggle-icon">▶</span>
                 </h4>
-                <div class="structure-section-content">
+                <div class="structure-section-content collapsed">
         `;
         
         let nodesObject = null;
@@ -301,9 +301,9 @@ export function updateStructureInfo() {
         structureDetailsHTML += `
             <div class="structure-section">
                 <h4 class="structure-section-heading">
-                    Connections <span class="toggle-icon">▼</span>
+                    Connections <span class="toggle-icon">▶</span>
                 </h4>
-                <div class="structure-section-content">
+                <div class="structure-section-content collapsed">
         `;
         
         let connectionsObject = null;

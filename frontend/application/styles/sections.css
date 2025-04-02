@@ -1,31 +1,9 @@
-.tab-content-container {
-    background-color: var(--color-bg-primary);
-    overflow-y: auto;
-    width: 100%;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+/* 
+ * Tab content containers and tab styles have been moved to base.css
+ * This file now focuses solely on section styling
+ */
 
-.tab-content {
-    display: none;
-    animation: fadeIn var(--transition-normal);
-}
-
-.tab-content.active {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: var(--spacing-md);
-    width: 100%;
-    max-width: 1800px;
-    padding: var(--spacing-md);
-    margin: 0 auto;
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
+/* Section container styling */
 .section {
     background-color: var(--color-bg-secondary);
     border-radius: var(--border-radius-lg);
@@ -66,16 +44,18 @@
     border-bottom: var(--border-width) solid var(--border-color);
 }
 
-/* Simplify media queries to be more fluid */
+/* Card styles */
+.card {
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    border: var(--border-width) solid rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive styling */
 @media (max-width: 768px) {
-    .tab-content.active {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--spacing-md);
-        flex-wrap: nowrap;
-        overflow-x: auto;
-    }
-    
     .section {
         padding: var(--spacing-md);
         width: 100%;
@@ -98,14 +78,13 @@
     .structure-meta {
         flex-wrap: wrap;
     }
+    
+    .card {
+        padding: var(--spacing-md);
+    }
 }
 
 @media (max-width: 480px) {
-    .tab-content.active {
-        padding: var(--spacing-sm);
-        gap: var(--spacing-sm);
-    }
-    
     .section {
         padding: var(--spacing-sm);
     }
@@ -118,5 +97,9 @@
     .structure-data-grid {
         grid-template-columns: 1fr;
         gap: var(--spacing-sm);
+    }
+    
+    .card {
+        padding: var(--spacing-sm);
     }
 }

@@ -156,31 +156,10 @@ input {
     user-select: text;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes shake {
-    10%, 90% {
-        transform: translateX(-1px);
-    }
-    20%, 80% {
-        transform: translateX(2px);
-    }
-    30%, 50%, 70% {
-        transform: translateX(-3px);
-    }
-    40%, 60% {
-        transform: translateX(3px);
-    }
-}
+/* 
+ * Animation keyframes now imported from animations.css
+ * fadeIn and shake animations are defined there
+ */
 
 /* Responsive styles */
 @media (max-width: 768px) {

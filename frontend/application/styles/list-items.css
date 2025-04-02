@@ -265,17 +265,7 @@
     margin-top: 0;
 }
 
-/* Empty state messaging */
-.empty-state {
-    text-align: center;
-    padding: var(--spacing-lg);
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-md);
-    border: 2px dashed var(--border-color);
-    border-radius: var(--border-radius-md);
-    margin: var(--spacing-md) 0;
-    background-color: var(--color-bg-tertiary);
-}
+/* Empty state moved to base.css */
 
 .structure-details {
     background-color: var(--color-bg-secondary);

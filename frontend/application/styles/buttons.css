@@ -1,3 +1,4 @@
+/* Base button styling */
 .btn {
     padding: var(--spacing-md) var(--spacing-lg);
     border-radius: var(--border-radius-sm);
@@ -23,13 +24,24 @@
     box-shadow: none;
 }
 
-.btn.primary {
+/* Button variations */
+.btn.primary,
+.btn-primary {
     background-color: var(--color-brand-primary-dark);
     color: white;
 }
 
-.btn.primary:hover {
+.btn.primary:hover,
+.btn-primary:hover {
     background-color: var(--color-brand-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn.primary:active,
+.btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn.secondary {
@@ -51,23 +63,63 @@
     background-color: #d32f2f;
 }
 
-.btn:disabled {
+/* Button states */
+.btn:disabled,
+.btn-primary:disabled,
+.btn.primary:disabled {
     background-color: var(--color-bg-interactive);
     color: var(--color-text-disabled);
     cursor: not-allowed;
     pointer-events: none;
     transform: none;
     box-shadow: none;
+    opacity: 0.7;
 }
 
+/* Button that takes full width */
+.btn.full-width,
+.btn-primary.full-width {
+    width: 100%;
+}
+
+/* Button groups */
 .button-group {
     display: flex;
     gap: var(--spacing-md);
 }
 
+/* Responsive styles */
 @media (max-width: 768px) {
     .button-group {
         flex-direction: column;
         gap: var(--spacing-sm);
     }
+    
+    .btn,
+    .btn-primary {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* Special buttons */
+.johto-btn,
+.logout-btn {
+    background: var(--color-bg-elevated);
+    border: var(--border-width) solid var(--color-brand-primary-dark);
+    color: var(--color-text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-fast);
+}
+
+.johto-btn:hover,
+.logout-btn:hover {
+    background-color: var(--color-brand-primary-dark);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
 }

@@ -1,3 +1,4 @@
+/* Base form styling */
 .form {
     display: flex;
     flex-direction: column;
@@ -5,20 +6,25 @@
     max-width: 100%; /* Ensure form doesn't exceed container */
 }
 
+/* Form groups - consistent spacing and layout */
 .form-group {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
     width: 100%;
     box-sizing: border-box; /* Ensure padding is included in width calculation */
+    margin-bottom: var(--spacing-md);
 }
 
 .form-group label {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
+    display: block;
+    margin-bottom: var(--spacing-xs);
 }
 
+/* Consistent form control styling */
 .form-group input, 
 .form-group textarea,
 .form-group select {
@@ -33,16 +39,28 @@
     width: 100%;
     box-sizing: border-box; /* Critical fix - ensures padding and border are included in width */
     max-width: 100%; /* Prevents overflow on zoom */
+    user-select: text;
 }
 
+/* Focus states */
 .form-group input:focus, 
 .form-group textarea:focus,
 .form-group select:focus {
-    border-color: var(--color-brand-primary);
+    border-color: var(--color-brand-primary-light);
     outline: none;
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
 }
 
+/* Error states */
+.form-group input.error-field,
+.form-group textarea.error-field,
+.form-group select.error-field {
+    border-color: var(--color-error);
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.25);
+}
+
+/* Message specific styles */
 .message-input-container {
     display: flex;
     gap: var(--spacing-md);
@@ -67,6 +85,21 @@
     border-color: var(--color-brand-primary);
     outline: none;
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
+}
+
+/* Feedback messages */
+.error-message {
+    color: var(--color-error);
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    user-select: text;
+}
+
+.success-message {
+    color: var(--color-success);
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    user-select: text;
 }
 
 /* Responsive styles for form elements */

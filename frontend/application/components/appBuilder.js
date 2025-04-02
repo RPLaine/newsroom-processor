@@ -128,7 +128,7 @@ function createTabContent() {
             </div>
         </div>
         <div class="section full-width">
-            <h2>Current Inputs</h2>
+            <h2>Current Tools</h2>
             <div id="inputs-list" class="inputs-list"></div>
         </div>
     `;

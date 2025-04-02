@@ -129,7 +129,7 @@ export function updateInputsList(inputs) {
     if (!inputsList) return;
     
     if (!inputs || inputs.length === 0) {
-        inputsList.innerHTML = '<p>No inputs added yet.</p>';
+        inputsList.innerHTML = '<p class="empty-state">No tools have been used. Please use one of the tools above to add content to your project.</p>';
         return;
     }
     
@@ -186,15 +186,20 @@ export function getInputTypeLabel(type) {
 
 export function updateStructureInfo() {
     const structureInfoContainer = document.getElementById('selected-structure-info');
-    if (!structureInfoContainer) return;
+    const inputsList = document.getElementById('inputs-list');
     
+    if (!structureInfoContainer || !inputsList) return;
+    
+    // Handle empty state for both containers
     if (!appState.currentStructure) {
         structureInfoContainer.innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab.</p>';
+        inputsList.innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab.</p>';
         return;
     }
     
     const structure = appState.currentStructure;
     
+    // Extract node and connection counts
     let nodeCount = 0;
     let connectionCount = 0;
     
@@ -226,6 +231,7 @@ export function updateStructureInfo() {
         }
     }
     
+    // Structure info HTML generation
     let structureDetailsHTML = `
         <div class="structure-header">
             <h3>${structure.name || 'Unnamed Structure'}</h3>
@@ -353,5 +359,56 @@ export function updateStructureInfo() {
         `;
     }
     
+    // Update the structure info container
     structureInfoContainer.innerHTML = structureDetailsHTML;
+    
+    // Now handle the tools display in the inputs-list
+    let hasTools = false;
+    let toolsHTML = '';
+    
+    // Get all nodes with settings
+    let nodesWithTools = [];
+    if (structure.structure && structure.structure.nodes) {
+        const nodes = Array.isArray(structure.structure.nodes) 
+            ? structure.structure.nodes 
+            : Object.values(structure.structure.nodes);
+            
+        nodesWithTools = nodes.filter(node => 
+            node.configuration && 
+            node.configuration.settings && 
+            (node.configuration.settings.use_rss_feed || 
+             node.configuration.settings.use_file_input || 
+             node.configuration.settings.allow_automation)
+        );
+    }
+    
+    if (nodesWithTools.length > 0) {
+        hasTools = true;
+        
+        nodesWithTools.forEach(node => {
+            const nodeName = node.configuration?.header || node.title || node.name || node.id || 'Unnamed Node';
+            const settings = node.configuration.settings;
+            
+            toolsHTML += `
+                <div class="input-item">
+                    <h3>${nodeName}</h3>
+                    <div class="input-content">
+                        <strong>Tools:</strong><br>
+                        ${settings.use_rss_feed ? '• RSS Feed<br>' : ''}
+                        ${settings.use_file_input ? '• File Input<br>' : ''}
+                        ${settings.allow_automation ? '• Automation<br>' : ''}
+                        ${settings.require_human_review ? '• Human Review Required<br>' : ''}
+                    </div>
+                    <div class="input-meta">Node ID: ${node.id || 'Unknown'}</div>
+                </div>
+            `;
+        });
+    }
+    
+    // Update the inputs-list container
+    if (hasTools) {
+        inputsList.innerHTML = toolsHTML;
+    } else {
+        inputsList.innerHTML = '<p class="empty-state">No tools configured in this structure. Tools can include RSS feed, file input, or automation settings.</p>';
+    }
 }

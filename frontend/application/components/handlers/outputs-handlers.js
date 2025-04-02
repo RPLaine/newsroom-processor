@@ -9,50 +9,37 @@ import { registerFormHandler, registerButtonHandler } from '../ui.js';
  * Setup event handlers for Outputs tab
  */
 export function setupOutputsTabHandlers() {
-    // Register form handler for output creation form
-    registerFormHandler('create-output-form', async (event, form) => {
+    // Load outputs when tab is clicked
+    document.getElementById('outputs-tab')?.addEventListener('click', () => {
+        if (appState.currentJob) {
+            updateOutputsList(appState.currentJob.outputs);
+        }
+    });
+    
+    // Register refresh button handler
+    registerButtonHandler('refresh-outputs-btn', async (event, button) => {
         if (!appState.currentJob) {
             showError('Please select a job first');
             return;
         }
         
         try {
-            const fileName = document.getElementById('output-name').value;
-            const content = document.getElementById('output-content').value;
-            
-            if (!fileName) {
-                showError('File name is required');
-                return;
-            }
-            
-            if (!content) {
-                showError('Content is required');
-                return;
-            }
-            
-            const response = await api.saveOutput(
-                fileName,
-                content,
-                appState.currentJob.id
-            );
+            // Fetch latest job data
+            const response = await api.getJob(appState.currentJob.id);
             
             if (response.status === 'success' && response.data) {
-                showNotification('Output saved successfully', 'success');
-                
                 // Update current job
                 appState.currentJob = response.data.job;
                 
                 // Update outputs list
                 updateOutputsList(appState.currentJob.outputs);
                 
-                // Clear form
-                document.getElementById('output-name').value = '';
-                document.getElementById('output-content').value = '';
+                showNotification('Files refreshed', 'success');
             } else {
-                throw new Error(response.message || 'Save failed');
+                throw new Error(response.message || 'Refresh failed');
             }
         } catch (error) {
-            showError('Error saving output', error);
+            showError('Error refreshing files', error);
         }
     });
     
@@ -82,7 +69,7 @@ export function updateOutputsList(outputs) {
     if (!outputsList) return;
     
     if (!outputs || outputs.length === 0) {
-        outputsList.innerHTML = '<p>No outputs saved yet.</p>';
+        outputsList.innerHTML = '<p class="empty-state">No files available. Files will appear here after processing your structure.</p>';
         return;
     }
     
@@ -125,8 +112,9 @@ export function updateOutputsList(outputs) {
  * @param {Object} output - Output data
  */
 function viewOutput(output) {
-    document.getElementById('output-name').value = output.file_name || '';
-    document.getElementById('output-content').value = output.content || '';
+    // Create modal or use existing view to display the output
+    // Since we removed the create output form, we need to handle viewing differently
+    alert(`${output.file_name}\n\n${output.content}`);
 }
 
 /**
@@ -135,6 +123,6 @@ function viewOutput(output) {
  * @param {Object} output - Output data
  */
 function editOutput(output) {
-    // Same functionality as view currently
+    // For now, just view the output
     viewOutput(output);
 }

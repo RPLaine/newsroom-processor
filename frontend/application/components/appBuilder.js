@@ -162,21 +162,13 @@ function createTabContent() {
     outputsContent.className = `tab-content ${appState.activeTab === 'outputs' ? 'active' : ''}`;
     outputsContent.innerHTML = `
         <div class="section medium">
-            <h2>Create Output</h2>
-            <form id="create-output-form" class="form">
-                <div class="form-group">
-                    <label for="output-name">File Name</label>
-                    <input type="text" id="output-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="output-content">Content</label>
-                    <textarea id="output-content" rows="8" required></textarea>
-                </div>
-                <button type="submit" class="btn primary">Save Output</button>
-            </form>
+            <h2>Actions</h2>
+            <div class="button-group">
+                <button id="refresh-outputs-btn" class="btn">Refresh</button>
+            </div>
         </div>
         <div class="section full-width">
-            <h2>Saved Outputs</h2>
+            <h2>Files</h2>
             <div id="outputs-list" class="outputs-list"></div>
         </div>
     `;

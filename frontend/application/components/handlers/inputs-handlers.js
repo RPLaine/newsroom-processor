@@ -246,8 +246,10 @@ export function updateStructureInfo() {
     if (nodeCount > 0) {
         structureDetailsHTML += `
             <div class="structure-section">
-                <h4>Nodes</h4>
-                <div class="structure-data-grid">
+                <h4 class="structure-section-heading">
+                    Nodes <span class="toggle-icon">▼</span>
+                </h4>
+                <div class="structure-section-content">
         `;
         
         let nodesObject = null;
@@ -294,5 +296,72 @@ export function updateStructureInfo() {
         `;
     }
     
+    // Add connections section if available
+    if (connectionCount > 0) {
+        structureDetailsHTML += `
+            <div class="structure-section">
+                <h4 class="structure-section-heading">
+                    Connections <span class="toggle-icon">▼</span>
+                </h4>
+                <div class="structure-section-content">
+        `;
+        
+        let connectionsObject = null;
+        if (structure.structure && structure.structure.connections) {
+            if (Array.isArray(structure.structure.connections)) {
+                connectionsObject = {};
+                structure.structure.connections.forEach((connection, index) => {
+                    connectionsObject[`connection_${index}`] = connection;
+                });
+            } else {
+                connectionsObject = structure.structure.connections;
+            }
+        } else if (structure.connections) {
+            if (Array.isArray(structure.connections)) {
+                connectionsObject = {};
+                structure.connections.forEach((connection, index) => {
+                    connectionsObject[`connection_${index}`] = connection;
+                });
+            } else {
+                connectionsObject = structure.connections;
+            }
+        }
+        
+        if (connectionsObject) {
+            for (const [connectionId, connection] of Object.entries(connectionsObject)) {
+                const fromId = connection.from || connection.source || 'Unknown';
+                const toId = connection.to || connection.target || 'Unknown';
+                
+                structureDetailsHTML += `
+                    <div class="structure-data-item">
+                        <div class="structure-data-header">Connection ${connectionId}</div>
+                        <div class="structure-data-content">
+                            <div>From: ${fromId}</div>
+                            <div>To: ${toId}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        structureDetailsHTML += `
+                </div>
+            </div>
+        `;
+    }
+    
     structureInfoContainer.innerHTML = structureDetailsHTML;
+    
+    // Add event handlers for toggle sections
+    document.querySelectorAll('.structure-section-heading').forEach(heading => {
+        heading.addEventListener('click', () => {
+            const content = heading.nextElementSibling;
+            content.classList.toggle('collapsed');
+            
+            const toggleIcon = heading.querySelector('.toggle-icon');
+            if (toggleIcon) {
+                toggleIcon.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+            }
+        });
+    });
 }

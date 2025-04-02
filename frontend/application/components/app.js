@@ -4,8 +4,9 @@ import appState from './state.js';
 import * as api from './api.js';
 
 export async function createApp(data, container) {
-    const loadingAnimation = window.johtoLoadingAnimation;
+    console.log('Initializing app with data:', data);
     
+    const loadingAnimation = window.johtoLoadingAnimation;
     container.innerHTML = '';
     
     createApplicationUI(container);
@@ -18,9 +19,17 @@ export async function createApp(data, container) {
         
         if (response.status === 'success') {
             if (response.data && response.data.structures) {
-                console.log('Full structures data:', response.data.structures);
+                console.log('Structures: ', response.data.structures);
+                appState.structures = response.data.structures;
+                
+                if (appState.activeTab === 'structures') {
+                    const event = new CustomEvent('johto-data-loaded');
+                    document.dispatchEvent(event);
+                }
+            } else {
+                console.warn('No structures data found in response:', response);
             }
-
+            
             if (loadingAnimation) {
                 loadingAnimation.hide();
             }
@@ -31,7 +40,7 @@ export async function createApp(data, container) {
             }
         }
     } catch (error) {
-        console.error('Error automatically loading Johto data:', error);
+        console.error('Error loading Johto data:', error);
         if (loadingAnimation) {
             loadingAnimation.hide();
         }

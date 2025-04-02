@@ -3,6 +3,7 @@ import { createApplicationUI } from './appBuilder.js';
 import * as api from './api.js';
 import appState from './state.js';
 import { initCollapsibleSections } from './ui.js';
+import { initAnimationSystem } from '../../animation/animation.js';
 
 export async function createApp(data, container) {
     console.log('Initializing app with data:', data);
@@ -13,9 +14,10 @@ export async function createApp(data, container) {
     createApplicationUI(container);
     initEventHandlers();
     
-    // Initialize collapsible sections after DOM is fully created
+    // Initialize UI systems after DOM is fully created
     setTimeout(() => {
         initCollapsibleSections();
+        initAnimationSystem();
     }, 0);
     
     appState.userData = data;

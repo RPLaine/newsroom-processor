@@ -145,24 +145,13 @@ function createTabContent() {
     processContent.className = `tab-content ${appState.activeTab === 'process' ? 'active' : ''}`;
     processContent.innerHTML = `
         <div class="section medium">
-            <h2>Prompt AI Assistant</h2>
-            <form id="prompt-form" class="form">
-                <div class="form-group">
-                    <label for="user-prompt">Enter Prompt</label>
-                    <textarea id="user-prompt" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="btn primary">Send Prompt</button>
-            </form>
-        </div>
-        <div class="section medium">
-            <h2>Automated Processing</h2>
+            <h2>Actions</h2>
             <div class="button-group">
-                <button id="refine-btn" class="btn">Auto-Refine Inputs</button>
-                <button id="reflect-btn" class="btn">Generate Self-Reflection</button>
+                <button id="refine-btn" class="btn">Start</button>
             </div>
         </div>
         <div class="section full-width">
-            <h2>Conversation</h2>
+            <h2>Console</h2>
             <div id="conversation-area" class="conversation-area"></div>
         </div>
     `;

@@ -436,6 +436,16 @@ export function updateStructureInfo() {
 function selectNode(node) {
     appState.currentNode = node;
     showNotification(`Selected node: ${node.configuration?.header || node.title || node.name || node.id || 'Unnamed Node'}`, 'success');
+    
+    // Ensure all collapsible sections are collapsed when a node is selected
+    document.querySelectorAll('.collapsible-content').forEach(content => {
+        content.classList.add('collapsed');
+        const toggleIcon = content.previousElementSibling?.querySelector('.toggle-icon');
+        if (toggleIcon) {
+            toggleIcon.textContent = '▶';
+        }
+    });
+    
     updateSelectedNodeInfo();
 }
 

@@ -1,19 +1,11 @@
-/**
- * Inputs tab event handlers
- */
 import * as api from '../api.js';
 import { appState, showNotification, showError, formatDate } from './common.js';
 
-/**
- * Setup event handlers for Inputs tab
- */
 export function setupInputsTabHandlers() {
-    // Update structure info when switching to inputs tab
     document.getElementById('inputs-tab')?.addEventListener('click', () => {
         updateStructureInfo();
     });
     
-    // Web search form
     const webSearchForm = document.getElementById('web-search-form');
     webSearchForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -36,13 +28,10 @@ export function setupInputsTabHandlers() {
             if (response.status === 'success' && response.data) {
                 showNotification('Web search completed', 'success');
                 
-                // Update current job
                 appState.currentJob = response.data.job;
                 
-                // Update inputs list
                 updateInputsList(appState.currentJob.inputs);
                 
-                // Clear form
                 document.getElementById('search-query').value = '';
             } else {
                 throw new Error(response.message || 'Web search failed');
@@ -52,7 +41,6 @@ export function setupInputsTabHandlers() {
         }
     });
     
-    // RSS form
     const rssForm = document.getElementById('rss-form');
     rssForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -75,13 +63,10 @@ export function setupInputsTabHandlers() {
             if (response.status === 'success' && response.data) {
                 showNotification('RSS feed processed', 'success');
                 
-                // Update current job
                 appState.currentJob = response.data.job;
                 
-                // Update inputs list
                 updateInputsList(appState.currentJob.inputs);
                 
-                // Clear form
                 document.getElementById('rss-url').value = '';
             } else {
                 throw new Error(response.message || 'RSS processing failed');
@@ -91,7 +76,6 @@ export function setupInputsTabHandlers() {
         }
     });
     
-    // File upload form
     const fileForm = document.getElementById('file-form');
     fileForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -111,7 +95,6 @@ export function setupInputsTabHandlers() {
             
             const file = fileInput.files[0];
             
-            // Read file content
             const reader = new FileReader();
             reader.onload = async (event) => {
                 try {
@@ -126,13 +109,10 @@ export function setupInputsTabHandlers() {
                     if (response.status === 'success' && response.data) {
                         showNotification('File uploaded successfully', 'success');
                         
-                        // Update current job
                         appState.currentJob = response.data.job;
                         
-                        // Update inputs list
                         updateInputsList(appState.currentJob.inputs);
                         
-                        // Clear form
                         fileInput.value = '';
                     } else {
                         throw new Error(response.message || 'File upload failed');
@@ -149,11 +129,6 @@ export function setupInputsTabHandlers() {
     });
 }
 
-/**
- * Update inputs list in UI
- * 
- * @param {Array} inputs - Inputs data
- */
 export function updateInputsList(inputs) {
     const inputsList = document.getElementById('inputs-list');
     if (!inputsList) return;
@@ -169,7 +144,6 @@ export function updateInputsList(inputs) {
         const inputElement = document.createElement('div');
         inputElement.className = 'input-item';
         
-        // Format date
         const date = input.timestamp ? formatDate(new Date(input.timestamp * 1000)) : 'Unknown';
         
         let contentPreview = '';
@@ -206,12 +180,6 @@ export function updateInputsList(inputs) {
     });
 }
 
-/**
- * Get display label for input type
- * 
- * @param {string} type - Input type
- * @returns {string} Display label
- */
 export function getInputTypeLabel(type) {
     switch (type) {
         case 'web_search': return 'Web Search';
@@ -221,9 +189,6 @@ export function getInputTypeLabel(type) {
     }
 }
 
-/**
- * Update structure information in the Inputs tab
- */
 export function updateStructureInfo() {
     const structureInfoContainer = document.getElementById('selected-structure-info');
     if (!structureInfoContainer) return;
@@ -235,19 +200,37 @@ export function updateStructureInfo() {
     
     const structure = appState.currentStructure;
     
-    // Calculate node and connection counts
     let nodeCount = 0;
     let connectionCount = 0;
     
-    if (structure.nodes && typeof structure.nodes === 'object') {
-        nodeCount = Object.keys(structure.nodes).length;
+    if (structure.structure && structure.structure.nodes) {
+        if (Array.isArray(structure.structure.nodes)) {
+            nodeCount = structure.structure.nodes.length;
+        } else if (typeof structure.structure.nodes === 'object') {
+            nodeCount = Object.keys(structure.structure.nodes).length;
+        }
+    } else if (structure.nodes) {
+        if (Array.isArray(structure.nodes)) {
+            nodeCount = structure.nodes.length;
+        } else if (typeof structure.nodes === 'object') {
+            nodeCount = Object.keys(structure.nodes).length;
+        }
     }
     
-    if (structure.connections && typeof structure.connections === 'object') {
-        connectionCount = Object.keys(structure.connections).length;
+    if (structure.structure && structure.structure.connections) {
+        if (Array.isArray(structure.structure.connections)) {
+            connectionCount = structure.structure.connections.length;
+        } else if (typeof structure.structure.connections === 'object') {
+            connectionCount = Object.keys(structure.structure.connections).length;
+        }
+    } else if (structure.connections) {
+        if (Array.isArray(structure.connections)) {
+            connectionCount = structure.connections.length;
+        } else if (typeof structure.connections === 'object') {
+            connectionCount = Object.keys(structure.connections).length;
+        }
     }
     
-    // Create detailed HTML for the structure
     let structureDetailsHTML = `
         <div class="structure-header">
             <h3>${structure.name || 'Unnamed Structure'}</h3>
@@ -260,7 +243,6 @@ export function updateStructureInfo() {
         </div>
     `;
     
-    // Add node information if available
     if (nodeCount > 0) {
         structureDetailsHTML += `
             <div class="structure-section">
@@ -268,19 +250,42 @@ export function updateStructureInfo() {
                 <div class="structure-data-grid">
         `;
         
-        for (const [nodeId, node] of Object.entries(structure.nodes)) {
-            const nodeType = node.type || 'Unknown';
-            const nodeTitle = node.title || node.name || nodeId;
-            
-            structureDetailsHTML += `
-                <div class="structure-data-item">
-                    <div class="structure-data-header">${nodeTitle}</div>
-                    <div class="structure-data-content">
-                        <div>Type: ${nodeType}</div>
-                        <div>ID: ${nodeId}</div>
+        let nodesObject = null;
+        if (structure.structure && structure.structure.nodes) {
+            if (Array.isArray(structure.structure.nodes)) {
+                nodesObject = {};
+                structure.structure.nodes.forEach((node, index) => {
+                    nodesObject[`node_${index}`] = node;
+                });
+            } else {
+                nodesObject = structure.structure.nodes;
+            }
+        } else if (structure.nodes) {
+            if (Array.isArray(structure.nodes)) {
+                nodesObject = {};
+                structure.nodes.forEach((node, index) => {
+                    nodesObject[`node_${index}`] = node;
+                });
+            } else {
+                nodesObject = structure.nodes;
+            }
+        }
+        
+        if (nodesObject) {
+            for (const [nodeId, node] of Object.entries(nodesObject)) {
+                const nodeType = node.type || 'Unknown';
+                const nodeTitle = node.title || node.name || nodeId;
+                
+                structureDetailsHTML += `
+                    <div class="structure-data-item">
+                        <div class="structure-data-header">${nodeTitle}</div>
+                        <div class="structure-data-content">
+                            <div>Type: ${nodeType}</div>
+                            <div>ID: ${nodeId}</div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
         
         structureDetailsHTML += `
@@ -289,6 +294,5 @@ export function updateStructureInfo() {
         `;
     }
     
-    // Update the container with the HTML
     structureInfoContainer.innerHTML = structureDetailsHTML;
 }

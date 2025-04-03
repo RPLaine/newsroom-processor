@@ -28,24 +28,6 @@ export async function sendRequest(requestData) {
     }
 }
 
-export async function getJobs() {
-    return await sendRequest({ action: 'get_jobs' });
-}
-
-export async function createJob(name) {
-    return await sendRequest({ 
-        action: 'create_job',
-        name
-    });
-}
-
-export async function deleteJob(jobId) {
-    return await sendRequest({ 
-        action: 'delete_job',
-        job_id: jobId
-    });
-}
-
 export async function searchWeb(query, jobId) {
     return await sendRequest({
         action: 'search_web',
@@ -68,23 +50,6 @@ export async function processFile(fileName, fileContent, jobId) {
         file_name: fileName,
         file_content: fileContent,
         job_id: jobId
-    });
-}
-
-export async function processPrompt(prompt) {
-    return await sendRequest({
-        action: 'process_data',
-        processing_type: 'prompt',
-        prompt
-    });
-}
-
-export async function saveOutput(fileName, content, jobId) {
-    return await sendRequest({
-        action: 'save_output',
-        job_id: jobId,
-        file_name: fileName,
-        content
     });
 }
 

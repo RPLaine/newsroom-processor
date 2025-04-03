@@ -26,11 +26,9 @@ function mainProcess() {
         findNode('start')
     ];
     
-    // Process initial functions
     for (const result of initialJobFunctions) {
         if (result === null) {
-            appState.isProcessing = false;
-            console.log('-----> Process ended early: job returned null');
+            endMainProcess('Failed at initial functions.');
             return;
         }
         job(result);
@@ -39,7 +37,6 @@ function mainProcess() {
     // Process node functions until one returns null
     let result;
     do {
-        // Process each step in sequence
         const jobFunctions = [
             findConnections(),
             chooseNextNode(),
@@ -47,19 +44,65 @@ function mainProcess() {
             executeNode()
         ];
         
-        // Execute each function in sequence, stop if any returns null
         for (result of jobFunctions) {
             if (result === null) break;
             job(result);
         }
     } while (result !== null);
 
-    // Checkpoint
-    console.log('AppState checkpoint', appState);
+    endMainProcess('Completed successfully.');
+}
 
-    // End processing state
+// TODO:
+// 1. Backend: create the 'chooseNextNode' action.
+// 2. Frontend: create the executeNode() function.
+// 3. Backend: create the 'executeNode' action.
+
+function chooseNextNode() {
+    // If current node connections are empty, end the process
+    if (!appState.currentNode || !appState.currentNode.connections) {
+        console.error('No current node or connections available.');
+        return null;
+    }
+    // Check if there are any outgoing connections
+    const goingToConnections = appState.currentNode.connections.goingTo;
+    if (!goingToConnections || goingToConnections.length === 0) {
+        console.log('No outgoing connections found. Process complete.');
+        return null;
+    } else if (goingToConnections.length == 1) {
+        // If there's only one connection, select it
+        appState.nextNodeID = goingToConnections[0];
+    } else {
+        // If there are multiple connections, use sendRequest to ask for the next node
+        // requestBody should contain current node prompt and prompts for each connected node
+        // for the AI to understand the context and make a decision
+        const requestBody = {
+            action: 'chooseNextNode',
+            currentNode: appState.currentNode,
+            connections: goingToConnections.map(id => appState.currentStructure.structure.nodes.find(n => n.id === id))
+        };
+        console.log('Request body for choosing next node:', requestBody);
+        sendRequest(requestBody).then(response => {
+            if (response && response.nextNodeID) {
+                appState.nextNodeID = response.nextNodeID;
+                console.log('Next node selected:', appState.nextNodeID);
+            } else {
+                console.error('Failed to select next node. No response or invalid response received.');
+            }
+        }).catch(error => {
+            console.error('Error while choosing next node:', error);
+        });
+    }
+    return createJobEntry('Next node selected', {
+        nextNodeID: appState.nextNodeID,
+        availableConnections: goingToConnections
+    });
+}
+
+function endMainProcess(message) {
+    console.log('-----> Main process ended: ' + message);
+    console.log('AppState', appState);
     appState.isProcessing = false;
-    console.log('-----> Process main function ended');
 }
 
 function job(f) {

@@ -4,14 +4,56 @@ import { registerButtonHandler } from '../ui.js';
 
 function processMain() {
     console.log('Process main function called');
-    console.log(appState);
+    appState.isProcessing = true;
+    appState.jobs = [];
+    appState.currentNode = null;
+
+    const appStateJson = JSON.stringify(appState, null, 2);
+    console.log('AppState JSON', appStateJson);
+
+    // create an appState section
+    collapsibleSection('AppState', appStateJson);
+}
+
+// Function to create a collapsible section in the workflow area
+function collapsibleSection(heading, content) {
+    // get the workflow container element
+    const workflowContainer = document.getElementById('workflow-container');
+
+    // create a collapsible section in the workflow area
+    const sectionCollapsible = document.createElement('div');
+    sectionCollapsible.className = 'section-collapsible';
+
+    // create the heading
+    const headingElement = document.createElement('h4');
+    headingElement.className = 'collapsible-heading';
+    headingElement.innerHTML = heading;
+
+    // create the toggle icon
+    const toggleIcon = document.createElement('span');
+    toggleIcon.className = 'toggle-icon';
+    toggleIcon.innerHTML = '►';
+
+    // create the content
+    const contentElement = document.createElement('div');
+    contentElement.className = 'collapsible-content collapsed';
+    contentElement.innerHTML = content;
+
+    // add the toggle icon to the heading
+    headingElement.appendChild(toggleIcon);
+
+    // append the heading and content to the section collapsible
+    sectionCollapsible.appendChild(headingElement);
+    sectionCollapsible.appendChild(contentElement);
+
+    // append the section collapsible to the workflow container
+    workflowContainer.appendChild(sectionCollapsible);
 }
 
 export function resetProcessTab() {
     const workflowContainer = document.getElementById('workflow-container');
     if (workflowContainer) {
         workflowContainer.innerHTML = '';
-        appState.messages = [];
         
         if (!appState.currentStructure) {
             workflowContainer.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</div>';

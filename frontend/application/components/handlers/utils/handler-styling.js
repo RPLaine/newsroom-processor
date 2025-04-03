@@ -28,7 +28,7 @@ export function collapsibleSection(heading, content) {
     // create the toggle icon
     const toggleIcon = document.createElement('span');
     toggleIcon.className = 'toggle-icon';
-    toggleIcon.innerHTML = '►';
+    toggleIcon.innerHTML = '▶';
 
     // create the content
     const contentElement = document.createElement('div');

@@ -3,7 +3,7 @@
  */
 import * as api from '../api.js';
 import appState from '../../components/state.js';
-import { showNotification, showError, formatDate, registerFormHandler, registerButtonHandler } from '../../components/ui.js';
+import { showError, formatDate, registerFormHandler, registerButtonHandler } from '../../components/ui.js';
 
 /**
  * Setup event handlers for Outputs tab
@@ -34,7 +34,7 @@ export function setupOutputsTabHandlers() {
                 // Update outputs list
                 updateOutputsList(appState.currentJob.outputs);
                 
-                showNotification('Files refreshed', 'success');
+                console.log('Files refreshed');
             } else {
                 throw new Error(response.message || 'Refresh failed');
             }

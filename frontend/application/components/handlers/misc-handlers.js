@@ -2,7 +2,7 @@
  * Miscellaneous handlers for logout and Johto functionality
  */
 import * as api from '../api.js';
-import { showNotification, showError } from '../../components/ui.js';
+import { showError } from '../../components/ui.js';
 import { registerButtonHandler } from '../ui.js';
 import LoadingAnimation from '../../../animation/loading-animation.js';
 
@@ -76,7 +76,7 @@ export function setupJohtoButtonHandler() {
             johtoLoadingAnimation.hide();
             
             if (response.status === 'success') {
-                showNotification('Johto data downloaded successfully', 'success');
+                console.log('Johto data downloaded successfully');
             } else {
                 throw new Error(response.message || 'Failed to download Johto data');
             }

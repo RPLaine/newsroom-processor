@@ -1,11 +1,10 @@
 import appState from '../../components/state.js';
-import { showNotification, showError, switchTab, registerButtonHandler } from '../../components/ui.js';
+import { showError, switchTab, registerButtonHandler } from '../../components/ui.js';
 import LoadingAnimation from '../../../animation/loading-animation.js';
 import { updateStructureInfo } from './inputs-handlers.js';
 import { resetProcessTab } from './process-handlers.js';
 import * as api from '../api.js';
 
-// Create and get the loading animation
 let johtoLoadingAnimation;
 function getLoadingAnimation() {
     if (!johtoLoadingAnimation) {
@@ -36,7 +35,6 @@ export function setupStructuresTabHandlers() {
         }
     });
     
-    // Register centralized button handler for structure selection
     registerButtonHandler('select-structure-btn', (event, button) => {
         const structureCard = button.closest('.structure-card');
         if (!structureCard || !structureCard.dataset.item) return;
@@ -44,27 +42,23 @@ export function setupStructuresTabHandlers() {
         selectStructure(JSON.parse(structureCard.dataset.item));
     });
     
-    // Register refresh button handler
     registerButtonHandler('refresh-structures-btn', async () => {
         try {
-            // Show loading animation
             const loadingAnimation = getLoadingAnimation();
             loadingAnimation.show();
             
-            // Fetch fresh data from API
             const response = await api.loadJohtoData();
             
             if (response.status === 'success' && response.data && response.data.structures) {
                 appState.structures = response.data.structures;
                 updateStructuresList(appState.structures);
-                showNotification('Structures refreshed successfully', 'success');
+                console.log('Structures refreshed successfully');
             } else {
                 throw new Error(response.message || 'Failed to refresh structures');
             }
         } catch (error) {
             showError('Error refreshing structures', error);
         } finally {
-            // Hide loading animation
             const loadingAnimation = getLoadingAnimation();
             loadingAnimation.hide();
         }
@@ -121,7 +115,6 @@ function updateStructuresList(structures) {
             const structureElement = document.createElement('div');
             structureElement.className = 'structure-card';
             
-            // Store structure data as a JSON string in a data attribute
             const structureData = {
                 id: fileName,
                 name: structure.name || fileName.replace('.json', ''),
@@ -133,9 +126,7 @@ function updateStructuresList(structures) {
             
             let nodeCount = 0;
             let connectionCount = 0;
-            
-            // ... existing code for counting nodes and connections ...
-            
+                        
             if (structure.structure && structure.structure.nodes) {
                 if (Array.isArray(structure.structure.nodes)) {
                     nodeCount = structure.structure.nodes.length;
@@ -180,17 +171,14 @@ function updateStructuresList(structures) {
             `;
             
             userStructuresContainer.appendChild(structureElement);
-            
-            // Remove individual click handler - handled by the centralized system now
         });
     });
 }
 
 function selectStructure(structure) {
     appState.currentStructure = structure;
-    showNotification(`Selected structure: ${structure.name}`, 'success');
+    console.log(`Selected structure: ${structure.name}`);
     
-    // Reset the Process tab when a new structure is selected
     resetProcessTab();
     
     switchTab('inputs');

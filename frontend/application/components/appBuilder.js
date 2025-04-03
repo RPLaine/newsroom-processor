@@ -7,7 +7,6 @@ export function createApplicationUI(container) {
     appContainer.appendChild(createHeader());
     appContainer.appendChild(createTabs());
     appContainer.appendChild(createTabContent());
-    appContainer.appendChild(createNotifications());
     
     return appContainer;
 }
@@ -65,7 +64,6 @@ function createTabContent() {
     structuresContent.className = `tab-content ${appState.activeTab === 'structures' ? 'active' : ''}`;
     structuresContent.innerHTML = `
         <div class="section full-width">
-            <h2>Actions</h2>
             <div class="button-group">
                 <button id="refresh-structures-btn" class="btn" data-button-type="refresh-structures-btn">Refresh</button>
             </div>
@@ -138,7 +136,6 @@ function createTabContent() {
                     </div>
                 </div>
                 <div id="node-actions-container">
-                    <h3>Available Actions</h3>
                     <div id="inputs-list" class="inputs-list"></div>
                 </div>
             </div>
@@ -150,8 +147,7 @@ function createTabContent() {
     processContent.id = 'process-content';
     processContent.className = `tab-content ${appState.activeTab === 'process' ? 'active' : ''}`;
     processContent.innerHTML = `
-        <div class="section medium">
-            <h2>Actions</h2>
+        <div class="section full-width">
             <div class="button-group">
                 <button id="start-process-btn" class="btn start-process-btn" data-button-type="start-process-btn">Start</button>
             </div>
@@ -171,8 +167,7 @@ function createTabContent() {
     outputsContent.id = 'outputs-content';
     outputsContent.className = `tab-content ${appState.activeTab === 'outputs' ? 'active' : ''}`;
     outputsContent.innerHTML = `
-        <div class="section medium">
-            <h2>Actions</h2>
+        <div class="section full-width">
             <div class="button-group">
                 <button id="refresh-outputs-btn" class="btn">Refresh</button>
             </div>
@@ -187,11 +182,4 @@ function createTabContent() {
     contentContainer.appendChild(outputsContent);
     
     return contentContainer;
-}
-
-function createNotifications() {
-    const notificationsContainer = document.createElement('div');
-    notificationsContainer.id = 'notification-container';
-    notificationsContainer.className = 'notification-container';
-    return notificationsContainer;
 }

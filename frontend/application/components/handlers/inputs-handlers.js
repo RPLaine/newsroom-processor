@@ -1,6 +1,6 @@
 import * as api from '../api.js';
 import appState from '../../components/state.js';
-import { showNotification, showError, formatDate, registerFormHandler, registerButtonHandler } from '../../components/ui.js';
+import { showError, formatDate, registerFormHandler, registerButtonHandler } from '../../components/ui.js';
 
 export function setupInputsTabHandlers() {
     document.getElementById('inputs-tab')?.addEventListener('click', () => {
@@ -37,7 +37,7 @@ export function setupInputsTabHandlers() {
             });
             
             if (response.status === 'success') {
-                showNotification('Web search completed', 'success');
+                console.log('Web search completed');
                 document.getElementById('search-query').value = '';
             } else {
                 throw new Error(response.message || 'Web search failed');
@@ -69,7 +69,7 @@ export function setupInputsTabHandlers() {
             });
             
             if (response.status === 'success') {
-                showNotification('RSS feed processed', 'success');
+                console.log('RSS feed processed');
                 document.getElementById('rss-url').value = '';
             } else {
                 throw new Error(response.message || 'RSS processing failed');
@@ -109,7 +109,7 @@ export function setupInputsTabHandlers() {
                     });
                     
                     if (response.status === 'success') {
-                        showNotification('File uploaded successfully', 'success');
+                        console.log('File uploaded successfully');
                         fileInput.value = '';
                     } else {
                         throw new Error(response.message || 'File upload failed');
@@ -429,7 +429,7 @@ export function updateStructureInfo() {
 // Function to handle node selection
 function selectNode(node) {
     appState.currentNode = node;
-    showNotification(`Selected node: ${node.configuration?.header || node.title || node.name || node.id || 'Unnamed Node'}`, 'success');
+    console.log(`Selected node: ${node.configuration?.header || node.title || node.name || node.id || 'Unnamed Node'}`);
     
     // Ensure all collapsible sections are collapsed when a node is selected
     document.querySelectorAll('.collapsible-content').forEach(content => {

@@ -5,7 +5,7 @@ import * as handlerStyling from './utils/handler-styling.js'
 
 function processMain() {
     // Start processing state
-    console.log('Process main function called');
+    console.log('-----> Process main function called');
     appState.isProcessing = true;
     console.log('AppState JSON', appState);
 
@@ -20,11 +20,11 @@ function processMain() {
     appState.jobs.push(findConnections(appState.currentNode));
 
     // Checkpoint
-    console.log('AppState', appState);
+    console.log('AppState checkpoint', appState);
 
     // End processing state
     appState.isProcessing = false;
-    console.log('Process main function ended');
+    console.log('-----> Process main function ended');
 }
 
 function findConnections(node) {
@@ -102,7 +102,7 @@ export function setupProcessTabHandlers() {
 function refreshWorkflowView(jobs) {
     const workflowContainer = document.getElementById('workflow-container');
     if (workflowContainer) {
-        workflowContainer.innerHTML = ''; // Clear previous content
+        workflowContainer.innerHTML = '';
 
         if (jobs.length === 0) {
             showEmptyStateMessage('No jobs available. Please start a process to see the workflow.');
@@ -110,11 +110,8 @@ function refreshWorkflowView(jobs) {
         }
 
         jobs.forEach(job => {
-            const jobElement = createJobElement(job);
-            workflowContainer.appendChild(jobElement);
+            handlerStyling.collapsibleSection(job.name, job.content);
         });
-
-        // Use the global collapsible sections handler
         initCollapsibleSections();
     }
 }
@@ -124,20 +121,4 @@ function showEmptyStateMessage(message) {
     if (workflowArea) {
         workflowArea.innerHTML = '<div class="empty-state">' + message + '</div>';
     }
-}
-
-function setupCollapsibleSections() {
-    const collapsibleHeadings = document.querySelectorAll('.collapsible-heading');
-    collapsibleHeadings.forEach(heading => {
-        heading.addEventListener('click', () => {
-            const content = heading.nextElementSibling;
-            if (content) {
-                content.classList.toggle('collapsed');
-                const icon = heading.querySelector('.toggle-icon');
-                if (icon) {
-                    icon.textContent = content.classList.contains('collapsed') ? '►' : '▼';
-                }
-            }
-        });
-    });
 }

@@ -47,13 +47,25 @@ export function addMessageToConversation(role, content) {
     if (!conversationArea) return null;
     
     const messageId = `msg-${Date.now()}`;
-    const messageElement = document.createElement('div');
-    messageElement.className = `message ${role}`;
-    messageElement.id = messageId;
     
-    messageElement.innerHTML = `<p>${content}</p>`;
+    // Create collapsible section for the message
+    const sectionElement = document.createElement('div');
+    sectionElement.className = 'collapsible-section';
+    sectionElement.id = messageId;
     
-    conversationArea.appendChild(messageElement);
+    // Use role as the heading with first letter capitalized
+    const roleName = role.charAt(0).toUpperCase() + role.slice(1);
+    
+    sectionElement.innerHTML = `
+        <h4 class="collapsible-heading">
+            ${roleName} <span class="toggle-icon">▶</span>
+        </h4>
+        <div class="collapsible-content">
+            <p>${content}</p>
+        </div>
+    `;
+    
+    conversationArea.appendChild(sectionElement);
     
     // Store message in appState conversation history
     appState.conversation.push({

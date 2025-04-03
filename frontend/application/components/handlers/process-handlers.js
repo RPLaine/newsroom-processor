@@ -211,7 +211,16 @@ export function updateConversationArea(conversation) {
     if (!conversationArea) return;
     
     if (!conversation || conversation.length === 0) {
-        conversationArea.innerHTML = '<p class="message system">Start a conversation with the AI assistant.</p>';
+        conversationArea.innerHTML = `
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
+                    System <span class="toggle-icon">▶</span>
+                </h4>
+                <div class="collapsible-content">
+                    <p>Start a conversation with the AI assistant.</p>
+                </div>
+            </div>
+        `;
         return;
     }
     

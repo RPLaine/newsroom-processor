@@ -152,7 +152,18 @@ function createTabContent() {
         </div>
         <div class="section full-width">
             <h2>Console</h2>
-            <div id="conversation-area" class="conversation-area"></div>
+            <div id="conversation-container" class="conversation-container">
+                <div id="conversation-area" class="structures-list">
+                    <div class="collapsible-section">
+                        <h4 class="collapsible-heading">
+                            System <span class="toggle-icon">▶</span>
+                        </h4>
+                        <div class="collapsible-content">
+                            <p>Start a conversation with the AI assistant.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
     contentContainer.appendChild(processContent);

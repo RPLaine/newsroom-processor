@@ -2,8 +2,27 @@
  * Miscellaneous handlers for logout and Johto functionality
  */
 import * as api from '../api.js';
-import { showNotification, showError, getLoadingAnimation } from './common.js';
+import { showNotification, showError } from '../../components/ui.js';
 import { registerButtonHandler } from '../ui.js';
+import LoadingAnimation from '../../../animation/loading-animation.js';
+
+// Create Johto loading animation
+let johtoLoadingAnimation;
+function getLoadingAnimation() {
+    if (!johtoLoadingAnimation) {
+        johtoLoadingAnimation = new LoadingAnimation({
+            colors: ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#7B1FA2'],
+            particleCount: 150,
+            showText: true,
+            text: 'Downloading Johto data...',
+            showPercentage: false,
+            speed: 1.2,
+            pulseSpeed: 0.8
+        });
+        johtoLoadingAnimation.init();
+    }
+    return johtoLoadingAnimation;
+}
 
 /**
  * Setup logout handler

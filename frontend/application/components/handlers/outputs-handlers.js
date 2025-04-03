@@ -2,8 +2,8 @@
  * Outputs tab event handlers
  */
 import * as api from '../api.js';
-import { appState, showNotification, showError, formatDate } from './common.js';
-import { registerFormHandler, registerButtonHandler } from '../ui.js';
+import appState from '../../components/state.js';
+import { showNotification, showError, formatDate, registerFormHandler, registerButtonHandler } from '../../components/ui.js';
 
 /**
  * Setup event handlers for Outputs tab

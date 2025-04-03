@@ -1,6 +1,6 @@
 import * as api from '../api.js';
-import { appState, showNotification, showError, formatDate } from './common.js';
-import { registerFormHandler, registerButtonHandler } from '../ui.js';
+import appState from '../../components/state.js';
+import { showNotification, showError, formatDate, registerFormHandler, registerButtonHandler } from '../../components/ui.js';
 
 export function setupInputsTabHandlers() {
     document.getElementById('inputs-tab')?.addEventListener('click', () => {

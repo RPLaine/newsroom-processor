@@ -1,7 +1,26 @@
-import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
-import { switchTab, registerButtonHandler } from '../ui.js';
+import appState from '../../components/state.js';
+import { showNotification, showError, switchTab, registerButtonHandler } from '../../components/ui.js';
+import LoadingAnimation from '../../../animation/loading-animation.js';
 import { updateStructureInfo } from './inputs-handlers.js';
 import { resetProcessTab } from './process-handlers.js';
+
+// Create and get the loading animation
+let johtoLoadingAnimation;
+function getLoadingAnimation() {
+    if (!johtoLoadingAnimation) {
+        johtoLoadingAnimation = new LoadingAnimation({
+            colors: ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#7B1FA2'],
+            particleCount: 150,
+            showText: true,
+            text: 'Downloading Johto data...',
+            showPercentage: false,
+            speed: 1.2,
+            pulseSpeed: 0.8
+        });
+        johtoLoadingAnimation.init();
+    }
+    return johtoLoadingAnimation;
+}
 
 export function setupStructuresTabHandlers() {
     document.addEventListener('johto-data-loaded', () => {

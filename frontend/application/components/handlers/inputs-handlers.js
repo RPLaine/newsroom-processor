@@ -131,7 +131,7 @@ export function updateInputsList(inputs) {
     if (!inputsList) return;
     
     if (!inputs || inputs.length === 0) {
-        inputsList.innerHTML = '<p class="empty-state">No tools have been used. Please use one of the tools above to add content to your project.</p>';
+        inputsList.innerHTML = '<div class="empty-state">No tools have been used. Please use one of the tools above to add content to your project.</div>';
         return;
     }
     
@@ -195,15 +195,15 @@ export function updateStructureInfo() {
     
     // Clear selected node when structure changes
     appState.currentNode = null;
-    document.getElementById('selected-node-info').innerHTML = '<p class="empty-state">No node selected. Please select a node from the list.</p>';
+    document.getElementById('selected-node-info').innerHTML = '<div class="empty-state">No node selected. Please select a node from the list.</div>';
     if (nodeToolsContainer) {
         nodeToolsContainer.style.display = 'none';
     }
     
     // Handle empty state for both containers
     if (!appState.currentStructure) {
-        structureInfoContainer.innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab.</p>';
-        inputsList.innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab.</p>';
+        structureInfoContainer.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab.</div>';
+        inputsList.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab.</div>';
         return;
     }
     
@@ -422,7 +422,7 @@ export function updateStructureInfo() {
     if (hasTools) {
         inputsList.innerHTML = toolsHTML;
     } else {
-        inputsList.innerHTML = '<p class="empty-state">No tools configured in this structure. Tools can include RSS feed, file input, or automation settings.</p>';
+        inputsList.innerHTML = '<div class="empty-state">No tools configured in this structure. Tools can include RSS feed, file input, or automation settings.</div>';
     }
 }
 
@@ -452,7 +452,7 @@ function updateSelectedNodeInfo() {
     
     // Hide tools container if no node is selected
     if (!appState.currentNode) {
-        selectedNodeContainer.innerHTML = '<p class="empty-state">No node selected. Please select a node from the list.</p>';
+        selectedNodeContainer.innerHTML = '<div class="empty-state">No node selected. Please select a node from the list.</div>';
         nodeToolsContainer.style.display = 'none';
         return;
     }
@@ -572,7 +572,7 @@ function updateSelectedNodeInfo() {
             
             inputsList.innerHTML = actionsHTML;
         } else {
-            inputsList.innerHTML = '<p class="empty-state">This node does not have any configured tools or actions, but you can still use the available tools below.</p>';
+            inputsList.innerHTML = '<div class="empty-state">This node does not have any configured tools or actions, but you can still use the available tools below.</div>';
         }
         
         // Always show all tool sections when a node is selected, regardless of node configuration

@@ -17,6 +17,12 @@ export function resetProcessTab() {
 }
 
 export function setupProcessTabHandlers() {
+    // Show empty state when clicking the Process tab
+    document.getElementById('process-tab')?.addEventListener('click', () => {
+        // Update conversation area with current messages (also handles empty state)
+        updateConversationArea(appState.messages);
+    });
+
     registerButtonHandler('start-process-btn', async () => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
@@ -36,7 +42,7 @@ export function setupProcessTabHandlers() {
     registerFormHandler('prompt-form', async (event, form) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
-            document.getElementById('messages-area').innerHTML = '<div class="empty-state">No structure selected. Please select a structure first.</div>';
+            document.getElementById('messages-area').innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab first.</div>';
             return;
         }
         
@@ -73,21 +79,17 @@ export function updateConversationArea(messages) {
     const conversationArea = document.getElementById('messages-area');
     if (!conversationArea) return;
     
-    if (!messages || messages.length === 0) {
-        conversationArea.innerHTML = `
-            <div class="collapsible-section">
-                <h4 class="collapsible-heading">
-                    System: Start a conversation <span class="toggle-icon">▶</span>
-                </h4>
-                <div class="collapsible-content collapsed">
-                    <p>Start a conversation with the AI assistant.</p>
-                    <div class="message-metadata">
-                        <span class="message-timestamp">${new Date().toLocaleString()}</span>
-                        <span class="message-role">System</span>
-                    </div>
-                </div>
-            </div>
-        `;
+    // Check if there's no structure selected or no messages
+    if (!appState.currentStructure || !messages || messages.length === 0) {
+        let emptyStateMessage = '';
+        
+        if (!appState.currentStructure) {
+            emptyStateMessage = 'No structure selected. Please select a structure from the Structures tab before starting a process.';
+        } else {
+            emptyStateMessage = 'No messages yet. Click the Start button to begin processing your structure, or type a prompt below to interact with the AI assistant.';
+        }
+        
+        conversationArea.innerHTML = `<div class="empty-state">${emptyStateMessage}</div>`;
         return;
     }
     
@@ -152,6 +154,12 @@ async function startProcessPolling(processId) {
 export function addMessageToConversation(role, content) {
     const conversationArea = document.getElementById('messages-area');
     if (!conversationArea) return null;
+    
+    // Check if there's an empty-state div and remove it before adding a message
+    const emptyStateDiv = conversationArea.querySelector('.empty-state');
+    if (emptyStateDiv) {
+        conversationArea.innerHTML = ''; // Clear the empty state message
+    }
     
     const messageId = `msg-${Date.now()}`;
     const timestamp = new Date();

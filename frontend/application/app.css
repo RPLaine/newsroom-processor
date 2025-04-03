@@ -109,19 +109,6 @@
     overflow-x: hidden;
 }
 
-/* 
-  Section styles have been moved to sections.css 
-  Form styles have been moved to forms.css
-  Button styles have been moved to buttons.css
-  Structure styles have been moved to list-items.css
-  Input, output styles have been moved to list-items.css
-  Notification styles moved to notifications.css
-  Conversation styles have been moved to messaging.css
-  Message styles have been moved to messaging.css
-  Animation keyframes moved to animations.css
-  Empty state styles moved to base.css
-*/
-
 .loading {
     position: relative;
     display: inline-block;

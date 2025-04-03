@@ -20,13 +20,13 @@ function mainProcess() {
     appState.currentNode = null;
     console.log('Jobs after clearing', appState.jobs);
 
-    // Jobs - process each function and stop if null is returned
-    // Initial jobFunctions
-
+    // Jobs - initial setup
     const initialJobFunctions = [
         startProcess(),
         findNode('start')
     ];
+    
+    // Process initial functions
     for (const result of initialJobFunctions) {
         if (result === null) {
             appState.isProcessing = false;
@@ -36,23 +36,23 @@ function mainProcess() {
         job(result);
     }
 
-    // Main job function loop
-
-    const jobFunctions = [
-        findConnections(),
-        chooseNextNode(),
-        findNode(),
-        executeNode()
-    ];
-    
-    for (const result of jobFunctions) {
-        if (result === null) {
-            appState.isProcessing = false;
-            console.log('-----> Process ended early: job returned null');
-            return;
+    // Process node functions until one returns null
+    let result;
+    do {
+        // Process each step in sequence
+        const jobFunctions = [
+            findConnections(),
+            chooseNextNode(),
+            findNode(),
+            executeNode()
+        ];
+        
+        // Execute each function in sequence, stop if any returns null
+        for (result of jobFunctions) {
+            if (result === null) break;
+            job(result);
         }
-        job(result);
-    }
+    } while (result !== null);
 
     // Checkpoint
     console.log('AppState checkpoint', appState);
@@ -164,4 +164,48 @@ function showEmptyStateMessage(message) {
     if (workflowContainer) {
         workflowContainer.innerHTML = '<div class="empty-state">' + message + '</div>';
     }
+}
+
+function chooseNextNode() {
+    if (!appState.currentNode || !appState.currentNode.connections) {
+        console.error('No current node or connections available.');
+        return null;
+    }
+    
+    const goingToConnections = appState.currentNode.connections.goingTo;
+    if (!goingToConnections || goingToConnections.length === 0) {
+        console.log('No outgoing connections found. Process complete.');
+        return null;
+    }
+    
+    // For now, just pick the first connection
+    // This could be enhanced with logic for conditional paths, random selection, etc.
+    appState.nextNodeID = goingToConnections[0];
+    return createJobEntry('Next node selected', { 
+        nextNodeID: appState.nextNodeID,
+        availableConnections: goingToConnections
+    });
+}
+
+function executeNode() {
+    if (!appState.currentNode) {
+        console.error('No current node to execute.');
+        return null;
+    }
+    
+    // Execute node logic based on node type
+    const nodeType = appState.currentNode.type || 'unknown';
+    console.log(`Executing node of type: ${nodeType}`);
+    
+    // This is a placeholder implementation
+    // Add specific logic for different node types here
+    
+    const executionResult = {
+        nodeId: appState.currentNode.id,
+        nodeType: nodeType,
+        executed: true,
+        timestamp: new Date().toISOString()
+    };
+    
+    return createJobEntry('Node executed', executionResult);
 }

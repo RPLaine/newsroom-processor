@@ -1,68 +1,34 @@
 import * as api from '../api.js';
-import { appState, showNotification, showError, addMessageToConversation, removeMessage } from './common.js';
+import { appState, showError, addMessageToConversation, removeMessage } from './common.js';
 import { registerFormHandler, registerButtonHandler } from '../ui.js';
 
-// Function to reset the Process tab when a new structure is selected
 export function resetProcessTab() {
-    // Reset conversation area
     const messagesArea = document.getElementById('messages-area');
     if (messagesArea) {
-        // Only show empty state if no structure is selected
         if (!appState.currentStructure) {
             messagesArea.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</div>';
         } else {
-            // Clear the conversation area for a selected structure
             messagesArea.innerHTML = '';
         }
     }
-    
-    // Reset any ongoing process state
     appState.currentProcessId = null;
     appState.conversation = [];
 }
 
 export function setupProcessTabHandlers() {
-    registerButtonHandler('start-process-btn', async (event, button) => {
+    registerButtonHandler('start-process-btn', async () => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
             document.getElementById('messages-area').innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</div>';
             return;
         }
+          
+        addMessageToConversation('Starting process with structure:', appState.currentStructure.name || 'Unnamed');
+        const response = await api.startProcess(appState.currentStructure);
         
-        try {
-            const requestData = {
-                action: 'start_process',
-                structure_data: appState.currentStructure
-            };
-            
-            addMessageToConversation('system', `Starting process with structure: ${appState.currentStructure.name || 'Unnamed'}`);
-            
-            const loadingId = addMessageToConversation('system', 'Starting process flow...');
-            
-            const response = await api.startProcess(appState.currentStructure);
-            
-            removeMessage(loadingId);
-            
-            if (response.status === 'success' && response.data) {
-                addMessageToConversation('system', 'Process started');
-                
-                if (response.data.current_node) {
-                    addMessageToConversation(
-                        'assistant', 
-                        `Started at node: ${response.data.current_node.name || response.data.current_node.id}`
-                    );
-                }
-                
-                if (response.data.process_id) {
-                    startProcessPolling(response.data.process_id);
-                }
-                
-                showNotification('Process started', 'success');
-            } else {
-                throw new Error(response.message || 'Failed to start process');
-            }
-        } catch (error) {
-            showError('Error starting process', error);
+        if (response.status === 'success' && response.data) {
+            if (response.data.current_node) { addMessageToConversation('Started at node:', response.data.current_node.name || response.data.current_node.id); }
+            if (response.data.process_id) { startProcessPolling(response.data.process_id); }
         }
     });
 

@@ -4,9 +4,27 @@ export function collapsibleSection(heading, content) {
     if (typeof content === 'object') {
         // Format object content as structured HTML instead of plain JSON
         let formattedContent = '<div class="structure-data-content">';
-        for (const [key, value] of Object.entries(content)) {
-            formattedContent += `<div><strong>${key}:</strong> ${value}</div>`;
+        
+        // Helper function to handle nested objects recursively
+        function formatObjectRecursively(obj, indent = 0) {
+            let result = '';
+            const padding = indent > 0 ? `padding-left: ${indent * 15}px;` : '';
+            
+            for (const [key, value] of Object.entries(obj)) {
+                if (value === null) {
+                    result += `<div style="${padding}"><strong>${key}:</strong> null</div>`;
+                } else if (typeof value === 'object') {
+                    result += `<div style="${padding}"><strong>${key}:</strong></div>`;
+                    result += formatObjectRecursively(value, indent + 1);
+                } else {
+                    result += `<div style="${padding}"><strong>${key}:</strong> ${value}</div>`;
+                }
+            }
+            
+            return result;
         }
+        
+        formattedContent += formatObjectRecursively(content);
         formattedContent += '</div>';
         content = formattedContent;
     } else if (typeof content !== 'string') {

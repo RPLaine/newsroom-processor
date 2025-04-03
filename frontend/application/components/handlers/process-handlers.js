@@ -23,8 +23,9 @@ function processMain() {
     // Jobs
     job(startProcess());
     job(findNode('start'));
-    job(findConnections(appState.currentNode));
-    job(findNode(appState.currentNode.connections.goingTo[0]));
+    job(findConnections());
+    job(chooseNextNode())
+    job(findNode());
 
     // Checkpoint
     console.log('AppState checkpoint', appState);
@@ -34,11 +35,11 @@ function processMain() {
     console.log('-----> Process main function ended');
 }
 
-function job(functionName) {
-    appState.jobs.push(functionName);
+function job(f) {
+    appState.jobs.push(f);
 }
 
-function findConnections(node) {
+function findConnections(node = appState.currentNode) {
     let connections = {
         goingTo: appState.currentStructure.structure.connections.filter(c => c.startNode === node.id).map(c => c.endNode),
         comingFrom: appState.currentStructure.structure.connections.filter(c => c.endNode === node.id).map(c => c.startNode)
@@ -47,11 +48,15 @@ function findConnections(node) {
     return createJobEntry('Connections found', connections);
 }
 
-function findNode(node) {
-    if (appState.nodeTypes.includes(node)) {
-        appState.currentNode = appState.currentStructure.structure.nodes.find(n => n.type === node);
+function findNode(nodeTypeOrId = appState.nextNodeID) {
+    if (!nodeTypeOrId) {
+        console.error('Node type or ID is not provided.');
+        return null;
+    }
+    if (appState.nodeTypes.includes(nodeTypeOrId)) {
+        appState.currentNode = appState.currentStructure.structure.nodes.find(n => n.type === nodeTypeOrId);
     } else {
-        appState.currentNode = appState.currentStructure.structure.nodes.find(n => n.id === node);
+        appState.currentNode = appState.currentStructure.structure.nodes.find(n => n.id === nodeTypeOrId);
     }
     if (!appState.currentNode) {
         console.error('Node not found.');

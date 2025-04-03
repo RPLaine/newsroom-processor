@@ -24,6 +24,9 @@ def handle_application_actions(response: dict) -> dict:
     if action == 'get_process_status':
         return process_handler.get_process_status(response['request'])
     
+    if action == 'execute_node':
+        return process_handler.handle_process_request(response['request'])
+    
     if action == 'process_data':
         return process_handler.handle_process_request(response['request'])
     

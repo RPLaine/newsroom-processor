@@ -150,12 +150,16 @@ function createTabContent() {
         <div class="section full-width">
             <div class="button-group">
                 <button id="start-process-btn" class="btn start-process-btn" data-button-type="start-process-btn">Start</button>
+                <button id="execute-node-btn" class="btn execute-node-btn" data-button-type="execute-node-btn">Execute Node</button>
             </div>
         </div>
         <div class="section full-width">
-            <h2>Console</h2>
-            <div id="console-container" class="console-container">
-                <div id="messages-area" class="structures-list">
+            <h2>Workflow</h2>
+            <div id="workflow-container" class="workflow-container">
+                <div id="current-node-display" class="current-node-display">
+                    <p class="empty-state">No active node. Start the process to begin the workflow.</p>
+                </div>
+                <div id="workflow-area" class="workflow-area">
                     <p class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</p>
                 </div>
             </div>

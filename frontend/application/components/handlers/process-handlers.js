@@ -1,23 +1,23 @@
 import * as api from '../api.js';
 import appState from '../../components/state.js';
-import { registerFormHandler, registerButtonHandler } from '../ui.js';
+import { registerButtonHandler } from '../ui.js';
 
 export function resetProcessTab() {
-    const messagesArea = document.getElementById('messages-area');
-    if (messagesArea) {
+    const workflowArea = document.getElementById('workflow-area');
+    if (workflowArea) {
         if (!appState.currentStructure) {
-            messagesArea.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</div>';
+            workflowArea.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</div>';
         } else {
-            messagesArea.innerHTML = '';
+            workflowArea.innerHTML = '';
         }
     }
     appState.currentProcessId = null;
-    appState.messages = [];
+    appState.nodeHistory = [];
 }
 
 export function setupProcessTabHandlers() {
     document.getElementById('process-tab')?.addEventListener('click', () => {
-        refreshProcessMessages(appState.messages);
+        refreshWorkflowView(appState.nodeHistory);
     });
 
     registerButtonHandler('start-process-btn', async () => {
@@ -26,84 +26,116 @@ export function setupProcessTabHandlers() {
             return;
         }
           
-        displayMessage('Starting process with structure', appState.currentStructure.name || 'Unnamed');
+        logNodeTransition('Starting process with structure', appState.currentStructure.name || 'Unnamed');
         const response = await api.startProcess(appState.currentStructure);
         
         if (response.status === 'success' && response.data) {
             if (response.data.current_node) {
                 const nodeName = response.data.current_node.name || response.data.current_node.id;
-                displayMessage('Started at node', nodeName);
+                logNodeTransition('Started at node', nodeName);
+                updateCurrentNodeDisplay(response.data.current_node);
             }
             
             if (response.data.process_id) {
+                appState.currentProcessId = response.data.process_id;
                 monitorProcessStatus(response.data.process_id);
             }
         }
     });
 
-    registerFormHandler('prompt-form', async (event, form) => {
-        if (!appState.currentStructure) {
-            showEmptyStateMessage('No structure selected. Please select a structure from the Structures tab first.');
+    registerButtonHandler('execute-node-btn', async () => {
+        if (!appState.currentProcessId || !appState.currentNode) {
+            showEmptyStateMessage('No active process or current node. Please start a process first.');
             return;
         }
         
         try {
-            const promptInput = document.getElementById('user-prompt');
-            const userMessage = promptInput.value;
+            logNodeTransition('Executing node', appState.currentNode.name || appState.currentNode.id);
             
-            if (!userMessage) {
-                return;
-            }
-            
-            displayMessage(userMessage);
-            promptInput.value = '';
-            
-            const loadingMessageId = displayMessage('Processing...');
-            
-            const response = await api.processPrompt(userMessage);
-            
-            removeMessage(loadingMessageId);
+            const response = await api.executeNode(appState.currentProcessId);
             
             if (response.status === 'success' && response.data) {
-                displayMessage(response.data.assistant_response);
+                if (response.data.next_node) {
+                    updateCurrentNodeDisplay(response.data.next_node);
+                    logNodeTransition('Moved to node', response.data.next_node.name || response.data.next_node.id);
+                }
             } else {
-                throw new Error(response.message || 'Processing failed');
+                throw new Error(response.message || 'Node execution failed');
             }
         } catch (error) {
-            console.error('Error processing prompt:', error);
+            console.error('Error executing node:', error);
         }
     });
 }
 
 function showEmptyStateMessage(message) {
-    const messagesArea = document.getElementById('messages-area');
-    if (messagesArea) {
-        messagesArea.innerHTML = '<div class="empty-state">' + message + '</div>';
+    const workflowArea = document.getElementById('workflow-area');
+    if (workflowArea) {
+        workflowArea.innerHTML = '<div class="empty-state">' + message + '</div>';
     }
 }
 
-export function refreshProcessMessages(messages) {
-    const messagesArea = document.getElementById('messages-area');
-    if (!messagesArea) return;
+export function refreshWorkflowView(nodeHistory) {
+    const workflowArea = document.getElementById('workflow-area');
+    if (!workflowArea) return;
     
-    if (!appState.currentStructure || !messages || messages.length === 0) {
+    if (!appState.currentStructure || !nodeHistory || nodeHistory.length === 0) {
         let emptyStateMessage = !appState.currentStructure
             ? 'No structure selected. Please select a structure from the Structures tab before starting a process.'
-            : 'No messages yet. Click the Start button to begin processing your structure, or type a prompt below to interact with the AI assistant.';
+            : 'No nodes processed yet. Click the Start button to begin executing your workflow structure.';
         
         showEmptyStateMessage(emptyStateMessage);
         return;
     }
     
-    messagesArea.innerHTML = '';
+    workflowArea.innerHTML = '';
     
-    messages.forEach(message => {
-        if (message.content) {
-            displayMessage(message.content);
-        }
+    // Create workflow visualization
+    const workflowContainer = document.createElement('div');
+    workflowContainer.className = 'workflow-container';
+    
+    // Add node history
+    const historyList = document.createElement('div');
+    historyList.className = 'node-history';
+    
+    nodeHistory.forEach(node => {
+        const nodeElement = createNodeElement(node);
+        historyList.appendChild(nodeElement);
     });
     
-    scrollToLatestMessage(messagesArea);
+    workflowContainer.appendChild(historyList);
+    
+    // Add current node display if available
+    if (appState.currentNode) {
+        const currentNodeDisplay = document.createElement('div');
+        currentNodeDisplay.className = 'current-node-display';
+        currentNodeDisplay.innerHTML = `
+            <h3>Current Node: ${appState.currentNode.name || appState.currentNode.id}</h3>
+            <div class="node-details">
+                <div class="node-type">${appState.currentNode.type || 'Unknown type'}</div>
+                ${appState.currentNode.description ? `<div class="node-description">${appState.currentNode.description}</div>` : ''}
+            </div>
+        `;
+        workflowContainer.appendChild(currentNodeDisplay);
+    }
+    
+    workflowArea.appendChild(workflowContainer);
+}
+
+function createNodeElement(node) {
+    const nodeElement = document.createElement('div');
+    nodeElement.className = 'node-item';
+    nodeElement.id = node.id;
+    
+    nodeElement.innerHTML = `
+        <div class="node-header">
+            <span class="node-name">${node.name || node.id}</span>
+            <span class="node-timestamp">${new Date(node.timestamp).toLocaleString()}</span>
+        </div>
+        ${node.details ? `<div class="node-details">${node.details}</div>` : ''}
+    `;
+    
+    return nodeElement;
 }
 
 async function monitorProcessStatus(processId) {
@@ -124,85 +156,87 @@ async function monitorProcessStatus(processId) {
             if (response.status === 'success' && response.data) {
                 if (response.data.current_node) {
                     const node = response.data.current_node;
+                    updateCurrentNodeDisplay(node);
                     const nodeName = node.name || node.id;
-                    displayMessage('Moved to node', nodeName);
+                    logNodeTransition('Moved to node', nodeName);
                 }
                 
                 if (response.data.status === 'completed') {
-                    displayMessage('Process completed!');
+                    logNodeTransition('Process completed!');
                     isRunning = false;
                 }
                 
                 if (response.data.status === 'failed') {
                     const errorMessage = response.data.error || 'Unknown error';
-                    displayMessage('Process failed', errorMessage);
+                    logNodeTransition('Process failed', errorMessage);
                     isRunning = false;
                 }
             } else {
                 throw new Error(response.message || 'Process status check failed');
             }
         } catch (error) {
-            displayMessage('Error checking process status', error.message);
+            logNodeTransition('Error checking process status', error.message);
         }
         
         pollCount++;
     }
     
     if (pollCount >= MAX_POLLS && isRunning) {
-        displayMessage('Process polling timed out. The process might still be running in the background.');
+        logNodeTransition('Process polling timed out. The process might still be running in the background.');
     }
 }
 
-function scrollToLatestMessage(messagesArea) {
-    messagesArea.scrollTop = messagesArea.scrollHeight;
-}
-
-export function displayMessage(content) {
-    const messagesArea = document.getElementById('messages-area');
-    if (!messagesArea) return null;
+function updateCurrentNodeDisplay(node) {
+    appState.currentNode = node;
     
-    const emptyStateDiv = messagesArea.querySelector('.empty-state');
-    if (emptyStateDiv) {
-        messagesArea.innerHTML = '';
-    }
-    
-    const messageId = 'msg-' + Date.now();
-    const timestamp = new Date();
-    
-    const messageElement = document.createElement('div');
-    messageElement.className = 'collapsible-section';
-    messageElement.id = messageId;
-        
-    messageElement.innerHTML = `
-        <h4 class="collapsible-heading">
-            ${content} <span class="toggle-icon">▶</span>
-        </h4>
-        <div class="collapsible-content collapsed">
-            <p>${content}</p>
-            <div class="message-metadata">
-                <span class="message-timestamp">${timestamp.toLocaleString()}</span>
+    // Update UI to highlight current node
+    const currentNodeDisplay = document.querySelector('.current-node-display');
+    if (currentNodeDisplay) {
+        currentNodeDisplay.innerHTML = `
+            <h3>Current Node: ${node.name || node.id}</h3>
+            <div class="node-details">
+                <div class="node-type">${node.type || 'Unknown type'}</div>
+                ${node.description ? `<div class="node-description">${node.description}</div>` : ''}
             </div>
-        </div>
-    `;
+        `;
+    }
     
-    messagesArea.appendChild(messageElement);
-    
-    appState.messages.push({
-        id: messageId,
-        content,
-        timestamp: timestamp.getTime()
+    // Highlight this node in the workflow visualization
+    document.querySelectorAll('.node-item').forEach(el => {
+        el.classList.remove('current');
     });
     
-    scrollToLatestMessage(messagesArea);
-    
-    return messageId;
+    const nodeElement = document.getElementById(node.id);
+    if (nodeElement) {
+        nodeElement.classList.add('current');
+        nodeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 }
 
-export function removeMessage(messageId) {
-    if (!messageId) return;
+export function logNodeTransition(action, detail = '') {
+    const workflowArea = document.getElementById('workflow-area');
+    if (!workflowArea) return null;
     
-    const message = document.getElementById(messageId);
-    if (message) {
-        message.remove();
+    const emptyStateDiv = workflowArea.querySelector('.empty-state');
+    if (emptyStateDiv) {
+        workflowArea.innerHTML = '';
     }
+    
+    const nodeId = 'node-' + Date.now();
+    const timestamp = new Date();
+    
+    // Add to app state
+    const nodeData = {
+        id: nodeId,
+        name: action,
+        details: detail,
+        timestamp: timestamp.getTime()
+    };
+    
+    appState.nodeHistory.push(nodeData);
+    
+    // Update UI
+    refreshWorkflowView(appState.nodeHistory);
+    
+    return nodeId;
 }

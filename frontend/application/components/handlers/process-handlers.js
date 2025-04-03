@@ -28,11 +28,11 @@ export function setupProcessTabHandlers() {
             return;
         }
           
-        addMessageToMessages('Starting process with structure:', appState.currentStructure.name || 'Unnamed');
+        addMessageToMessages('Starting process with structure', appState.currentStructure.name || 'Unnamed');
         const response = await api.startProcess(appState.currentStructure);
         
         if (response.status === 'success' && response.data) {
-            if (response.data.current_node) { addMessageToMessages('Started at node:', response.data.current_node.name || response.data.current_node.id); }
+            if (response.data.current_node) { addMessageToMessages('Started at node', response.data.current_node.name || response.data.current_node.id); }
             if (response.data.process_id) { startProcessPolling(response.data.process_id); }
         }
     });

@@ -53,6 +53,14 @@ export async function processFile(fileName, fileContent, jobId) {
     });
 }
 
+export async function processPrompt(prompt) {
+    return await sendRequest({
+        action: 'process_data',
+        processing_type: 'prompt',
+        prompt
+    });
+}
+
 export async function loadJohtoData() {
     return await sendRequest({
         action: 'load_johto_data'

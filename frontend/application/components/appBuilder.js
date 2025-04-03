@@ -65,6 +65,12 @@ function createTabContent() {
     structuresContent.className = `tab-content ${appState.activeTab === 'structures' ? 'active' : ''}`;
     structuresContent.innerHTML = `
         <div class="section full-width">
+            <h2>Actions</h2>
+            <div class="button-group">
+                <button id="refresh-structures-btn" class="btn" data-button-type="refresh-structures-btn">Refresh</button>
+            </div>
+        </div>
+        <div class="section full-width">
             <div id="structures-list" class="structures-list">
                 <p>Loading structures from johto.online...</p>
             </div>

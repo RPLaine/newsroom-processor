@@ -3,6 +3,7 @@ import { showNotification, showError, switchTab, registerButtonHandler } from '.
 import LoadingAnimation from '../../../animation/loading-animation.js';
 import { updateStructureInfo } from './inputs-handlers.js';
 import { resetProcessTab } from './process-handlers.js';
+import * as api from '../api.js';
 
 // Create and get the loading animation
 let johtoLoadingAnimation;
@@ -41,6 +42,32 @@ export function setupStructuresTabHandlers() {
         if (!structureCard || !structureCard.dataset.item) return;
         
         selectStructure(JSON.parse(structureCard.dataset.item));
+    });
+    
+    // Register refresh button handler
+    registerButtonHandler('refresh-structures-btn', async () => {
+        try {
+            // Show loading animation
+            const loadingAnimation = getLoadingAnimation();
+            loadingAnimation.show();
+            
+            // Fetch fresh data from API
+            const response = await api.loadJohtoData();
+            
+            if (response.status === 'success' && response.data && response.data.structures) {
+                appState.structures = response.data.structures;
+                updateStructuresList(appState.structures);
+                showNotification('Structures refreshed successfully', 'success');
+            } else {
+                throw new Error(response.message || 'Failed to refresh structures');
+            }
+        } catch (error) {
+            showError('Error refreshing structures', error);
+        } finally {
+            // Hide loading animation
+            const loadingAnimation = getLoadingAnimation();
+            loadingAnimation.hide();
+        }
     });
 }
 

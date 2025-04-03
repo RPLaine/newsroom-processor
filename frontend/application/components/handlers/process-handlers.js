@@ -9,15 +9,22 @@ function processMain() {
     appState.isProcessing = true;
     console.log('AppState JSON', appState);
 
+    // Clear the workflow container
+    const workflowContainer = document.getElementById('workflow-container');
+    if (workflowContainer) {
+        workflowContainer.innerHTML = '';
+    }
+
     // Clear previous jobs and current node
     appState.jobs = [];
     appState.currentNode = null;
     console.log('Jobs after clearing', appState.jobs);
 
     // Jobs
-    appState.jobs.push(startProcess());
-    appState.jobs.push(findNode('start'));
-    appState.jobs.push(findConnections(appState.currentNode));
+    job(startProcess());
+    job(findNode('start'));
+    job(findConnections(appState.currentNode));
+    job(findNode(appState.currentNode.connections.goingTo[0]));
 
     // Checkpoint
     console.log('AppState checkpoint', appState);
@@ -25,6 +32,10 @@ function processMain() {
     // End processing state
     appState.isProcessing = false;
     console.log('-----> Process main function ended');
+}
+
+function job(functionName) {
+    appState.jobs.push(functionName);
 }
 
 function findConnections(node) {
@@ -117,8 +128,8 @@ function refreshWorkflowView(jobs) {
 }
 
 function showEmptyStateMessage(message) {
-    const workflowArea = document.getElementById('workflow-area');
-    if (workflowArea) {
-        workflowArea.innerHTML = '<div class="empty-state">' + message + '</div>';
+    const workflowContainer = document.getElementById('workflow-container');
+    if (workflowContainer) {
+        workflowContainer.innerHTML = '<div class="empty-state">' + message + '</div>';
     }
 }

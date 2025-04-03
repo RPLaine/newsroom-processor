@@ -1,6 +1,7 @@
 import { sendRequest } from '../api.js';
 import appState from '../../components/state.js';
-import { registerButtonHandler } from '../ui.js';
+import { registerButtonHandler, showError, initCollapsibleSections } from '../ui.js';
+import * as handlerStyling from './utils/handler-styling.js'
 
 function processMain() {
     console.log('Process main function called');
@@ -8,46 +9,21 @@ function processMain() {
     appState.jobs = [];
     appState.currentNode = null;
 
-    const appStateJson = JSON.stringify(appState, null, 2);
-    console.log('AppState JSON', appStateJson);
+    console.log('AppState JSON', appState);
+
+    // get relevant data from appState
+    const initialDictionary = {
+        "name": appState.currentStructure.name,
+        "designer": appState.currentStructure.username,
+        "nodes": appState.currentStructure.nodes?.length || 0,
+        "connections": appState.currentStructure.connections?.length || 0,
+    }
 
     // create an appState section
-    collapsibleSection('AppState', appStateJson);
-}
-
-// Function to create a collapsible section in the workflow area
-function collapsibleSection(heading, content) {
-    // get the workflow container element
-    const workflowContainer = document.getElementById('workflow-container');
-
-    // create a collapsible section in the workflow area
-    const sectionCollapsible = document.createElement('div');
-    sectionCollapsible.className = 'section-collapsible';
-
-    // create the heading
-    const headingElement = document.createElement('h4');
-    headingElement.className = 'collapsible-heading';
-    headingElement.innerHTML = heading;
-
-    // create the toggle icon
-    const toggleIcon = document.createElement('span');
-    toggleIcon.className = 'toggle-icon';
-    toggleIcon.innerHTML = '►';
-
-    // create the content
-    const contentElement = document.createElement('div');
-    contentElement.className = 'collapsible-content collapsed';
-    contentElement.innerHTML = content;
-
-    // add the toggle icon to the heading
-    headingElement.appendChild(toggleIcon);
-
-    // append the heading and content to the section collapsible
-    sectionCollapsible.appendChild(headingElement);
-    sectionCollapsible.appendChild(contentElement);
-
-    // append the section collapsible to the workflow container
-    workflowContainer.appendChild(sectionCollapsible);
+    handlerStyling.collapsibleSection('Process started', initialDictionary);
+    
+    // Initialize the collapsible sections after adding new content
+    initCollapsibleSections();
 }
 
 export function resetProcessTab() {
@@ -93,23 +69,36 @@ function refreshWorkflowView(jobs) {
             workflowContainer.appendChild(jobElement);
         });
 
-        setupCollapsibleSections();
+        // Use the global collapsible sections handler
+        initCollapsibleSections();
     }
 }
 
 function createJobElement(job) {
     const jobElement = document.createElement('div');
-    jobElement.className = 'section-collapsible';
-    jobElement.innerHTML = `
-        <div class="collapsible-heading">
-            <span class="toggle-icon">►</span> ${job.name || job.id}
-        </div>
-        <div class="collapsible-content collapsed">
-            <p>Status: ${job.status}</p>
-            <p>Start Time: ${job.start_time}</p>
-            <p>End Time: ${job.end_time}</p>
-            <p>Output: ${job.output || 'No output'}</p>
-        </div>`;
+    jobElement.className = 'collapsible-section';
+    
+    const heading = document.createElement('h4');
+    heading.className = 'collapsible-heading';
+    heading.innerHTML = `${job.name || job.id} <span class="toggle-icon">▶</span>`;
+    
+    const content = document.createElement('div');
+    content.className = 'collapsible-content collapsed';
+    
+    // Format job data in a structured way like other sections
+    let jobContent = '<div class="structure-data-content">';
+    jobContent += `<div><strong>Status:</strong> ${job.status}</div>`;
+    jobContent += `<div><strong>Start Time:</strong> ${job.start_time}</div>`;
+    jobContent += `<div><strong>End Time:</strong> ${job.end_time}</div>`;
+    jobContent += `<div><strong>Output:</strong> ${job.output || 'No output'}</div>`;
+    jobContent += '</div>';
+    
+    content.innerHTML = jobContent;
+    
+    jobElement.appendChild(heading);
+    jobElement.appendChild(content);
+    
+    return jobElement;
 }
 
 function showEmptyStateMessage(message) {

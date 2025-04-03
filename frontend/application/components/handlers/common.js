@@ -43,7 +43,7 @@ export function getLoadingAnimation() {
  * @returns {string} Message element ID
  */
 export function addMessageToConversation(role, content) {
-    const conversationArea = document.getElementById('conversation-area');
+    const conversationArea = document.getElementById('messages-area');
     if (!conversationArea) return null;
     
     const messageId = `msg-${Date.now()}`;
@@ -60,7 +60,7 @@ export function addMessageToConversation(role, content) {
         <h4 class="collapsible-heading">
             ${roleName} <span class="toggle-icon">▶</span>
         </h4>
-        <div class="collapsible-content">
+        <div class="collapsible-content collapsed">
             <p>${content}</p>
         </div>
     `;

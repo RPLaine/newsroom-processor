@@ -207,7 +207,7 @@ export function setupProcessTabHandlers() {
  * @param {Array} conversation - Conversation messages
  */
 export function updateConversationArea(conversation) {
-    const conversationArea = document.getElementById('conversation-area');
+    const conversationArea = document.getElementById('messages-area');
     if (!conversationArea) return;
     
     if (!conversation || conversation.length === 0) {
@@ -216,7 +216,7 @@ export function updateConversationArea(conversation) {
                 <h4 class="collapsible-heading">
                     System <span class="toggle-icon">▶</span>
                 </h4>
-                <div class="collapsible-content">
+                <div class="collapsible-content collapsed">
                     <p>Start a conversation with the AI assistant.</p>
                 </div>
             </div>

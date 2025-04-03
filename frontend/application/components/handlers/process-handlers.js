@@ -13,7 +13,7 @@ export function resetProcessTab() {
         }
     }
     appState.currentProcessId = null;
-    appState.conversation = [];
+    appState.messages = [];
 }
 
 export function setupProcessTabHandlers() {
@@ -69,11 +69,11 @@ export function setupProcessTabHandlers() {
     });
 }
 
-export function updateConversationArea(conversation) {
+export function updateConversationArea(messages) {
     const conversationArea = document.getElementById('messages-area');
     if (!conversationArea) return;
     
-    if (!conversation || conversation.length === 0) {
+    if (!messages || messages.length === 0) {
         conversationArea.innerHTML = `
             <div class="collapsible-section">
                 <h4 class="collapsible-heading">
@@ -93,7 +93,7 @@ export function updateConversationArea(conversation) {
     
     conversationArea.innerHTML = '';
     
-    conversation.forEach(message => {
+    messages.forEach(message => {
         if (message.role && message.content) {
             addMessageToConversation(message.role, message.content);
         }
@@ -179,7 +179,7 @@ export function addMessageToConversation(role, content) {
     
     conversationArea.appendChild(sectionElement);
     
-    appState.conversation.push({
+    appState.messages.push({
         id: messageId,
         role,
         content,

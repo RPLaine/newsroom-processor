@@ -1,4 +1,4 @@
-.conversation-area {
+.messages-area {
     background-color: var(--color-bg-secondary);
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--border-radius-md);

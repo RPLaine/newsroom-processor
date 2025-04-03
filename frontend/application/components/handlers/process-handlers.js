@@ -3,7 +3,7 @@ import appState from '../../components/state.js';
 import { registerButtonHandler, initCollapsibleSections } from '../ui.js';
 import * as handlerStyling from './utils/handler-styling.js'
 
-function processMain() {
+function mainProcess() {
     // Start processing state
     console.log('-----> Process main function called');
     appState.isProcessing = true;
@@ -20,12 +20,23 @@ function processMain() {
     appState.currentNode = null;
     console.log('Jobs after clearing', appState.jobs);
 
-    // Jobs
-    job(startProcess());
-    job(findNode('start'));
-    job(findConnections());
-    job(chooseNextNode())
-    job(findNode());
+    // Jobs - process each function and stop if null is returned
+    const jobFunctions = [
+        startProcess(),
+        findNode('start'),
+        findConnections(),
+        chooseNextNode(),
+        findNode()
+    ];
+    
+    for (const result of jobFunctions) {
+        if (result === null) {
+            appState.isProcessing = false;
+            console.log('-----> Process ended early: job returned null');
+            return;
+        }
+        job(result);
+    }
 
     // Checkpoint
     console.log('AppState checkpoint', appState);
@@ -111,7 +122,7 @@ export function setupProcessTabHandlers() {
             return;
         }
 
-        processMain();
+        mainProcess();
     });
 }
 

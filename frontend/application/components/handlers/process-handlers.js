@@ -21,12 +21,28 @@ function mainProcess() {
     console.log('Jobs after clearing', appState.jobs);
 
     // Jobs - process each function and stop if null is returned
-    const jobFunctions = [
+    // Initial jobFunctions
+
+    const initialJobFunctions = [
         startProcess(),
-        findNode('start'),
+        findNode('start')
+    ];
+    for (const result of initialJobFunctions) {
+        if (result === null) {
+            appState.isProcessing = false;
+            console.log('-----> Process ended early: job returned null');
+            return;
+        }
+        job(result);
+    }
+
+    // Main job function loop
+
+    const jobFunctions = [
         findConnections(),
         chooseNextNode(),
-        findNode()
+        findNode(),
+        executeNode()
     ];
     
     for (const result of jobFunctions) {

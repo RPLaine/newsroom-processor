@@ -3,8 +3,7 @@ const appState = {
     currentNode: null,
     activeTab: 'structures',
     isProcessing: false,
-    messages: [],
-    currentProcessId: null
+    jobs: []
 };
 
 export default appState;

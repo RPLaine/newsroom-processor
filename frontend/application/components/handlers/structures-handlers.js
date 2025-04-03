@@ -176,6 +176,11 @@ function updateStructuresList(structures) {
 }
 
 function selectStructure(structure) {
+    // Clear any previous structure data 
+    if (appState.currentStructure && appState.currentStructure.id !== structure.id) {
+        appState.nodeHistory = [];
+    }
+    
     appState.currentStructure = structure;
     console.log(`Selected structure: ${structure.name}`);
     

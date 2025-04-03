@@ -149,9 +149,7 @@ function createTabContent() {
     processContent.innerHTML = `
         <div class="section full-width">
             <div class="button-group">
-                <button id="start-process-btn" class="btn start-process-btn" data-button-type="start-process-btn">Start</button>
-                <button id="execute-node-btn" class="btn execute-node-btn" data-button-type="execute-node-btn">Execute Node</button>
-            </div>
+                <button id="start-process-btn" class="btn start-process-btn" data-button-type="start-process-btn">Start</button>            </div>
         </div>
         <div class="section full-width">
             <h2>Workflow</h2>

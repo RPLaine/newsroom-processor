@@ -1,5 +1,4 @@
 export async function sendRequest(requestData) {
-    console.log('[API] Sending request:', requestData);
     try {
         const response = await fetch('/', {
             method: 'POST',
@@ -10,17 +9,13 @@ export async function sendRequest(requestData) {
             body: JSON.stringify(requestData)
         });
 
-        console.log('[API] Response status:', response.status);
-        
         if (!response.ok) {
             throw new Error(`Server error: ${response.status}`);
         }
 
         const jsonResponse = await response.json();
-        console.log('[API] Response data:', jsonResponse);
         return jsonResponse;
-    } catch (error) {
-        console.error('[API] Request error:', error);
+    } catch (error) {        
         return {
             status: 'error',
             message: error.message
@@ -65,16 +60,6 @@ export async function loadJohtoData() {
     return await sendRequest({
         action: 'load_johto_data'
     });
-}
-
-export async function startProcess(structureData) {
-    console.log('[API] Starting process with structure data:', structureData);
-    const response = await sendRequest({
-        action: 'start_process',
-        structure_data: structureData
-    });
-    console.log('[API] Start process response:', response);
-    return response;
 }
 
 export async function logout() {

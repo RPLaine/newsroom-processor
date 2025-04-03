@@ -3,7 +3,8 @@ const appState = {
     currentNode: null,
     activeTab: 'structures',
     isProcessing: false,
-    jobs: []
+    jobs: [],
+    nodeTypes: ['start', 'process']
 };
 
 export default appState;

@@ -47,3 +47,32 @@ export function collapsibleSection(heading, content) {
     
     return sectionCollapsible;
 }
+
+// Urefined:
+
+export function createJobElement(job) {
+    const jobElement = document.createElement('div');
+    jobElement.className = 'collapsible-section';
+    
+    const heading = document.createElement('h4');
+    heading.className = 'collapsible-heading';
+    heading.innerHTML = `${job.name || job.id} <span class="toggle-icon">▶</span>`;
+    
+    const content = document.createElement('div');
+    content.className = 'collapsible-content collapsed';
+    
+    // Format job data in a structured way like other sections
+    let jobContent = '<div class="structure-data-content">';
+    jobContent += `<div><strong>Status:</strong> ${job.status}</div>`;
+    jobContent += `<div><strong>Start Time:</strong> ${job.start_time}</div>`;
+    jobContent += `<div><strong>End Time:</strong> ${job.end_time}</div>`;
+    jobContent += `<div><strong>Output:</strong> ${job.output || 'No output'}</div>`;
+    jobContent += '</div>';
+    
+    content.innerHTML = jobContent;
+    
+    jobElement.appendChild(heading);
+    jobElement.appendChild(content);
+    
+    return jobElement;
+}

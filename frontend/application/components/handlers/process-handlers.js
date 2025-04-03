@@ -1,29 +1,74 @@
 import { sendRequest } from '../api.js';
 import appState from '../../components/state.js';
-import { registerButtonHandler, showError, initCollapsibleSections } from '../ui.js';
+import { registerButtonHandler, initCollapsibleSections } from '../ui.js';
 import * as handlerStyling from './utils/handler-styling.js'
 
 function processMain() {
+    // Start processing state
     console.log('Process main function called');
     appState.isProcessing = true;
-    appState.jobs = [];
-    appState.currentNode = null;
-
     console.log('AppState JSON', appState);
 
-    // get relevant data from appState
-    const initialDictionary = {
+    // Clear previous jobs and current node
+    appState.jobs = [];
+    appState.currentNode = null;
+    console.log('Jobs after clearing', appState.jobs);
+
+    // Jobs
+    appState.jobs.push(startProcess());
+    appState.jobs.push(findNode('start'));
+    appState.jobs.push(findConnections(appState.currentNode));
+
+    // Checkpoint
+    console.log('AppState', appState);
+
+    // End processing state
+    appState.isProcessing = false;
+    console.log('Process main function ended');
+}
+
+function findConnections(node) {
+    let connections = {
+        goingTo: appState.currentStructure.structure.connections.filter(c => c.startNode === node.id).map(c => c.endNode),
+        comingFrom: appState.currentStructure.structure.connections.filter(c => c.endNode === node.id).map(c => c.startNode)
+    }
+    node.connections = connections;
+    return createJobEntry('Connections found', connections);
+}
+
+function findNode(node) {
+    if (appState.nodeTypes.includes(node)) {
+        appState.currentNode = appState.currentStructure.structure.nodes.find(n => n.type === node);
+    } else {
+        appState.currentNode = appState.currentStructure.structure.nodes.find(n => n.id === node);
+    }
+    if (!appState.currentNode) {
+        console.error('Node not found.');
+        return null;
+    }
+    return createJobEntry('Find node', appState.currentNode);
+}
+
+function startProcess() {
+    let initialDictionary = {
         "name": appState.currentStructure.name,
         "designer": appState.currentStructure.username,
-        "nodes": appState.currentStructure.nodes?.length || 0,
-        "connections": appState.currentStructure.connections?.length || 0,
+        "nodes": appState.currentStructure.structure.nodes?.length || 0,
+        "connections": appState.currentStructure.structure.connections?.length || 0,
     }
+    return createJobEntry('Process started', initialDictionary);
+}
 
-    // create an appState section
-    handlerStyling.collapsibleSection('Process started', initialDictionary);
-    
-    // Initialize the collapsible sections after adding new content
+function createJobEntry(name, content) {
+    let job = {
+        name: name,
+        content: content
+    }
+    console.log(name, job);
+
+    handlerStyling.collapsibleSection(name, content);
     initCollapsibleSections();
+    return job;
 }
 
 export function resetProcessTab() {
@@ -72,33 +117,6 @@ function refreshWorkflowView(jobs) {
         // Use the global collapsible sections handler
         initCollapsibleSections();
     }
-}
-
-function createJobElement(job) {
-    const jobElement = document.createElement('div');
-    jobElement.className = 'collapsible-section';
-    
-    const heading = document.createElement('h4');
-    heading.className = 'collapsible-heading';
-    heading.innerHTML = `${job.name || job.id} <span class="toggle-icon">▶</span>`;
-    
-    const content = document.createElement('div');
-    content.className = 'collapsible-content collapsed';
-    
-    // Format job data in a structured way like other sections
-    let jobContent = '<div class="structure-data-content">';
-    jobContent += `<div><strong>Status:</strong> ${job.status}</div>`;
-    jobContent += `<div><strong>Start Time:</strong> ${job.start_time}</div>`;
-    jobContent += `<div><strong>End Time:</strong> ${job.end_time}</div>`;
-    jobContent += `<div><strong>Output:</strong> ${job.output || 'No output'}</div>`;
-    jobContent += '</div>';
-    
-    content.innerHTML = jobContent;
-    
-    jobElement.appendChild(heading);
-    jobElement.appendChild(content);
-    
-    return jobElement;
 }
 
 function showEmptyStateMessage(message) {

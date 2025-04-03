@@ -2,11 +2,30 @@ import * as api from '../api.js';
 import { appState, showNotification, showError, addMessageToConversation, removeMessage } from './common.js';
 import { registerFormHandler, registerButtonHandler } from '../ui.js';
 
+// Function to reset the Process tab when a new structure is selected
+export function resetProcessTab() {
+    // Reset conversation area
+    const messagesArea = document.getElementById('messages-area');
+    if (messagesArea) {
+        // Only show empty state if no structure is selected
+        if (!appState.currentStructure) {
+            messagesArea.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</div>';
+        } else {
+            // Clear the conversation area for a selected structure
+            messagesArea.innerHTML = '';
+        }
+    }
+    
+    // Reset any ongoing process state
+    appState.currentProcessId = null;
+    appState.conversation = [];
+}
+
 export function setupProcessTabHandlers() {
     registerButtonHandler('start-process-btn', async (event, button) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
-            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</p>';
+            document.getElementById('messages-area').innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</div>';
             return;
         }
         
@@ -50,7 +69,7 @@ export function setupProcessTabHandlers() {
     registerFormHandler('prompt-form', async (event, form) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
-            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure first.</p>';
+            document.getElementById('messages-area').innerHTML = '<div class="empty-state">No structure selected. Please select a structure first.</div>';
             return;
         }
         
@@ -91,10 +110,14 @@ export function updateConversationArea(conversation) {
         conversationArea.innerHTML = `
             <div class="collapsible-section">
                 <h4 class="collapsible-heading">
-                    System <span class="toggle-icon">▶</span>
+                    System: Start a conversation <span class="toggle-icon">▶</span>
                 </h4>
                 <div class="collapsible-content collapsed">
                     <p>Start a conversation with the AI assistant.</p>
+                    <div class="message-metadata">
+                        <span class="message-timestamp">${new Date().toLocaleString()}</span>
+                        <span class="message-role">System</span>
+                    </div>
                 </div>
             </div>
         `;

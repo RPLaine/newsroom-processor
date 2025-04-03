@@ -47,21 +47,29 @@ export function addMessageToConversation(role, content) {
     if (!conversationArea) return null;
     
     const messageId = `msg-${Date.now()}`;
+    const timestamp = new Date();
     
     // Create collapsible section for the message
     const sectionElement = document.createElement('div');
     sectionElement.className = 'collapsible-section';
     sectionElement.id = messageId;
     
-    // Use role as the heading with first letter capitalized
+    // Use role as the heading prefix with first letter capitalized
     const roleName = role.charAt(0).toUpperCase() + role.slice(1);
+    
+    // Get a preview of the content for the header (first 30 chars)
+    const contentPreview = content.length > 30 ? `${content.substring(0, 30)}...` : content;
     
     sectionElement.innerHTML = `
         <h4 class="collapsible-heading">
-            ${roleName} <span class="toggle-icon">▶</span>
+            ${roleName}: ${contentPreview} <span class="toggle-icon">▶</span>
         </h4>
         <div class="collapsible-content collapsed">
             <p>${content}</p>
+            <div class="message-metadata">
+                <span class="message-timestamp">${timestamp.toLocaleString()}</span>
+                <span class="message-role">${roleName}</span>
+            </div>
         </div>
     `;
     
@@ -72,7 +80,7 @@ export function addMessageToConversation(role, content) {
         id: messageId,
         role,
         content,
-        timestamp: Date.now()
+        timestamp: timestamp.getTime()
     });
     
     // Scroll to bottom

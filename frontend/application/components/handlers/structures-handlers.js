@@ -1,6 +1,7 @@
 import { appState, showNotification, showError, getLoadingAnimation } from './common.js';
 import { switchTab, registerButtonHandler } from '../ui.js';
 import { updateStructureInfo } from './inputs-handlers.js';
+import { resetProcessTab } from './process-handlers.js';
 
 export function setupStructuresTabHandlers() {
     document.addEventListener('johto-data-loaded', () => {
@@ -142,6 +143,10 @@ function updateStructuresList(structures) {
 function selectStructure(structure) {
     appState.currentStructure = structure;
     showNotification(`Selected structure: ${structure.name}`, 'success');
+    
+    // Reset the Process tab when a new structure is selected
+    resetProcessTab();
+    
     switchTab('inputs');
     updateStructureInfo();
 }

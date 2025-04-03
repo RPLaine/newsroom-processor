@@ -154,7 +154,7 @@ function createTabContent() {
             <h2>Console</h2>
             <div id="console-container" class="console-container">
                 <div id="messages-area" class="structures-list">
-                    <!-- Empty by default, content will be added by the handlers -->
+                    <p class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</p>
                 </div>
             </div>
         </div>
@@ -173,7 +173,9 @@ function createTabContent() {
         </div>
         <div class="section full-width">
             <h2>Files</h2>
-            <div id="outputs-list" class="outputs-list"></div>
+            <div id="outputs-list" class="outputs-list">
+                <p class="empty-state">No files available. Files will appear here after processing your structure.</p>
+            </div>
         </div>
     `;
     contentContainer.appendChild(outputsContent);

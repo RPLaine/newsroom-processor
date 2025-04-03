@@ -6,6 +6,7 @@ export function setupProcessTabHandlers() {
     registerButtonHandler('start-process-btn', async (event, button) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
+            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before starting a process.</p>';
             return;
         }
         
@@ -67,6 +68,7 @@ export function setupProcessTabHandlers() {
     registerFormHandler('prompt-form', async (event, form) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
+            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before sending prompts.</p>';
             return;
         }
         
@@ -101,6 +103,7 @@ export function setupProcessTabHandlers() {
     registerButtonHandler('refine-btn', async (event, button) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
+            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before refining content.</p>';
             return;
         }
         
@@ -128,6 +131,7 @@ export function setupProcessTabHandlers() {
     registerButtonHandler('reflect-btn', async (event, button) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
+            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before generating self-reflection.</p>';
             return;
         }
         

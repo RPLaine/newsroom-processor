@@ -17,10 +17,8 @@ export function resetProcessTab() {
 }
 
 export function setupProcessTabHandlers() {
-    // Show empty state when clicking the Process tab
     document.getElementById('process-tab')?.addEventListener('click', () => {
-        // Update conversation area with current messages (also handles empty state)
-        updateConversationArea(appState.messages);
+        updateMessagesArea(appState.messages);
     });
 
     registerButtonHandler('start-process-btn', async () => {
@@ -30,11 +28,11 @@ export function setupProcessTabHandlers() {
             return;
         }
           
-        addMessageToConversation('Starting process with structure:', appState.currentStructure.name || 'Unnamed');
+        addMessageToMessages('Starting process with structure:', appState.currentStructure.name || 'Unnamed');
         const response = await api.startProcess(appState.currentStructure);
         
         if (response.status === 'success' && response.data) {
-            if (response.data.current_node) { addMessageToConversation('Started at node:', response.data.current_node.name || response.data.current_node.id); }
+            if (response.data.current_node) { addMessageToMessages('Started at node:', response.data.current_node.name || response.data.current_node.id); }
             if (response.data.process_id) { startProcessPolling(response.data.process_id); }
         }
     });
@@ -54,18 +52,18 @@ export function setupProcessTabHandlers() {
                 return;
             }
             
-            addMessageToConversation('user', prompt);
+            addMessageToMessages('user', prompt);
             
             document.getElementById('user-prompt').value = '';
             
-            const loadingId = addMessageToConversation('system', 'Processing...');
+            const loadingId = addMessageToMessages('system', 'Processing...');
             
             const response = await api.processPrompt(prompt);
             
             removeMessage(loadingId);
             
             if (response.status === 'success' && response.data) {
-                addMessageToConversation('assistant', response.data.assistant_response);
+                addMessageToMessages('assistant', response.data.assistant_response);
             } else {
                 throw new Error(response.message || 'Processing failed');
             }
@@ -75,11 +73,10 @@ export function setupProcessTabHandlers() {
     });
 }
 
-export function updateConversationArea(messages) {
-    const conversationArea = document.getElementById('messages-area');
-    if (!conversationArea) return;
+export function updateMessagesArea(messages) {
+    const messagesArea = document.getElementById('messages-area');
+    if (!messagesArea) return;
     
-    // Check if there's no structure selected or no messages
     if (!appState.currentStructure || !messages || messages.length === 0) {
         let emptyStateMessage = '';
         
@@ -89,19 +86,19 @@ export function updateConversationArea(messages) {
             emptyStateMessage = 'No messages yet. Click the Start button to begin processing your structure, or type a prompt below to interact with the AI assistant.';
         }
         
-        conversationArea.innerHTML = `<div class="empty-state">${emptyStateMessage}</div>`;
+        messagesArea.innerHTML = `<div class="empty-state">${emptyStateMessage}</div>`;
         return;
     }
     
-    conversationArea.innerHTML = '';
+    messagesArea.innerHTML = '';
     
     messages.forEach(message => {
         if (message.role && message.content) {
-            addMessageToConversation(message.role, message.content);
+            addMessageToMessages(message.role, message.content);
         }
     });
     
-    conversationArea.scrollTop = conversationArea.scrollHeight;
+    messagesArea.scrollTop = messagesArea.scrollHeight;
 }
 
 async function startProcessPolling(processId) {
@@ -121,44 +118,43 @@ async function startProcessPolling(processId) {
             if (response.status === 'success' && response.data) {
                 if (response.data.current_node) {
                     const node = response.data.current_node;
-                    addMessageToConversation(
+                    addMessageToMessages(
                         'assistant', 
                         `Moved to node: ${node.name || node.id}`
                     );
                 }
                 
                 if (response.data.status === 'completed') {
-                    addMessageToConversation('system', 'Process completed!');
+                    addMessageToMessages('system', 'Process completed!');
                     isRunning = false;
                 }
                 
                 if (response.data.status === 'failed') {
-                    addMessageToConversation('system', `Process failed: ${response.data.error || 'Unknown error'}`);
+                    addMessageToMessages('system', `Process failed: ${response.data.error || 'Unknown error'}`);
                     isRunning = false;
                 }
             } else {
                 throw new Error(response.message || 'Process status check failed');
             }
         } catch (error) {
-            addMessageToConversation('system', `Error checking process status: ${error.message}`);
+            addMessageToMessages('system', `Error checking process status: ${error.message}`);
         }
         
         pollCount++;
     }
     
     if (pollCount >= MAX_POLLS && isRunning) {
-        addMessageToConversation('system', 'Process polling timed out. The process might still be running in the background.');
+        addMessageToMessages('system', 'Process polling timed out. The process might still be running in the background.');
     }
 }
 
-export function addMessageToConversation(role, content) {
-    const conversationArea = document.getElementById('messages-area');
-    if (!conversationArea) return null;
+export function addMessageToMessages(role, content) {
+    const messagesArea = document.getElementById('messages-area');
+    if (!messagesArea) return null;
     
-    // Check if there's an empty-state div and remove it before adding a message
-    const emptyStateDiv = conversationArea.querySelector('.empty-state');
+    const emptyStateDiv = messagesArea.querySelector('.empty-state');
     if (emptyStateDiv) {
-        conversationArea.innerHTML = ''; // Clear the empty state message
+        messagesArea.innerHTML = '';
     }
     
     const messageId = `msg-${Date.now()}`;
@@ -185,7 +181,7 @@ export function addMessageToConversation(role, content) {
         </div>
     `;
     
-    conversationArea.appendChild(sectionElement);
+    messagesArea.appendChild(sectionElement);
     
     appState.messages.push({
         id: messageId,
@@ -194,7 +190,7 @@ export function addMessageToConversation(role, content) {
         timestamp: timestamp.getTime()
     });
     
-    conversationArea.scrollTop = conversationArea.scrollHeight;
+    messagesArea.scrollTop = messagesArea.scrollHeight;
     
     return messageId;
 }

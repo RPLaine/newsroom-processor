@@ -1,4 +1,5 @@
 export async function sendRequest(requestData) {
+    console.log('[API] Sending request:', requestData);
     try {
         const response = await fetch('/', {
             method: 'POST',
@@ -9,13 +10,17 @@ export async function sendRequest(requestData) {
             body: JSON.stringify(requestData)
         });
 
+        console.log('[API] Response status:', response.status);
+        
         if (!response.ok) {
             throw new Error(`Server error: ${response.status}`);
         }
 
-        return await response.json();
+        const jsonResponse = await response.json();
+        console.log('[API] Response data:', jsonResponse);
+        return jsonResponse;
     } catch (error) {
-        console.error('API request error:', error);
+        console.error('[API] Request error:', error);
         return {
             status: 'error',
             message: error.message
@@ -66,27 +71,24 @@ export async function processFile(fileName, fileContent, jobId) {
     });
 }
 
-export async function processPrompt(prompt, jobId) {
+export async function processPrompt(prompt) {
     return await sendRequest({
         action: 'process_data',
-        job_id: jobId,
         processing_type: 'prompt',
         prompt
     });
 }
 
-export async function runAutoRefinement(jobId) {
+export async function runAutoRefinement() {
     return await sendRequest({
         action: 'process_data',
-        job_id: jobId,
         processing_type: 'refine'
     });
 }
 
-export async function generateReflection(jobId) {
+export async function generateReflection() {
     return await sendRequest({
         action: 'process_data',
-        job_id: jobId,
         processing_type: 'reflect'
     });
 }
@@ -104,6 +106,16 @@ export async function loadJohtoData() {
     return await sendRequest({
         action: 'load_johto_data'
     });
+}
+
+export async function startProcess(structureData) {
+    console.log('[API] Starting process with structure data:', structureData);
+    const response = await sendRequest({
+        action: 'start_process',
+        structure_data: structureData
+    });
+    console.log('[API] Start process response:', response);
+    return response;
 }
 
 export async function logout() {

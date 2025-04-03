@@ -147,7 +147,7 @@ function createTabContent() {
         <div class="section medium">
             <h2>Actions</h2>
             <div class="button-group">
-                <button id="refine-btn" class="btn">Start</button>
+                <button id="start-process-btn" class="btn start-process-btn" data-button-type="start-process-btn">Start</button>
             </div>
         </div>
         <div class="section full-width">

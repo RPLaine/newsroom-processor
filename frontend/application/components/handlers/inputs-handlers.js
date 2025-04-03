@@ -17,8 +17,8 @@ export function setupInputsTabHandlers() {
     
     // Register form handler for web search form
     registerFormHandler('web-search-form', async (event, form) => {
-        if (!appState.currentJob) {
-            showError('Please select a job first');
+        if (!appState.currentStructure) {
+            showError('Please select a structure first');
             return;
         }
         
@@ -30,15 +30,14 @@ export function setupInputsTabHandlers() {
                 return;
             }
             
-            const response = await api.searchWeb(query, appState.currentJob.id);
+            const response = await api.sendRequest({
+                action: 'search_web',
+                query,
+                structure_data: appState.currentStructure
+            });
             
-            if (response.status === 'success' && response.data) {
+            if (response.status === 'success') {
                 showNotification('Web search completed', 'success');
-                
-                appState.currentJob = response.data.job;
-                
-                updateInputsList(appState.currentJob.inputs);
-                
                 document.getElementById('search-query').value = '';
             } else {
                 throw new Error(response.message || 'Web search failed');
@@ -50,8 +49,8 @@ export function setupInputsTabHandlers() {
     
     // Register form handler for RSS form
     registerFormHandler('rss-form', async (event, form) => {
-        if (!appState.currentJob) {
-            showError('Please select a job first');
+        if (!appState.currentStructure) {
+            showError('Please select a structure first');
             return;
         }
         
@@ -63,15 +62,14 @@ export function setupInputsTabHandlers() {
                 return;
             }
             
-            const response = await api.processRSS(url, appState.currentJob.id);
+            const response = await api.sendRequest({
+                action: 'read_rss',
+                rss_url: url,
+                structure_data: appState.currentStructure
+            });
             
-            if (response.status === 'success' && response.data) {
+            if (response.status === 'success') {
                 showNotification('RSS feed processed', 'success');
-                
-                appState.currentJob = response.data.job;
-                
-                updateInputsList(appState.currentJob.inputs);
-                
                 document.getElementById('rss-url').value = '';
             } else {
                 throw new Error(response.message || 'RSS processing failed');
@@ -83,8 +81,8 @@ export function setupInputsTabHandlers() {
     
     // Register form handler for file upload form
     registerFormHandler('file-form', async (event, form) => {
-        if (!appState.currentJob) {
-            showError('Please select a job first');
+        if (!appState.currentStructure) {
+            showError('Please select a structure first');
             return;
         }
         
@@ -103,19 +101,15 @@ export function setupInputsTabHandlers() {
                 try {
                     const fileContent = event.target.result;
                     
-                    const response = await api.processFile(
-                        file.name,
-                        fileContent,
-                        appState.currentJob.id
-                    );
+                    const response = await api.sendRequest({
+                        action: 'load_file',
+                        file_name: file.name,
+                        file_content: fileContent,
+                        structure_data: appState.currentStructure
+                    });
                     
-                    if (response.status === 'success' && response.data) {
+                    if (response.status === 'success') {
                         showNotification('File uploaded successfully', 'success');
-                        
-                        appState.currentJob = response.data.job;
-                        
-                        updateInputsList(appState.currentJob.inputs);
-                        
                         fileInput.value = '';
                     } else {
                         throw new Error(response.message || 'File upload failed');

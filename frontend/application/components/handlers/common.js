@@ -55,6 +55,14 @@ export function addMessageToConversation(role, content) {
     
     conversationArea.appendChild(messageElement);
     
+    // Store message in appState conversation history
+    appState.conversation.push({
+        id: messageId,
+        role,
+        content,
+        timestamp: Date.now()
+    });
+    
     // Scroll to bottom
     conversationArea.scrollTop = conversationArea.scrollHeight;
     

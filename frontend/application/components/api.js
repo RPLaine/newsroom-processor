@@ -79,20 +79,6 @@ export async function processPrompt(prompt) {
     });
 }
 
-export async function runAutoRefinement() {
-    return await sendRequest({
-        action: 'process_data',
-        processing_type: 'refine'
-    });
-}
-
-export async function generateReflection() {
-    return await sendRequest({
-        action: 'process_data',
-        processing_type: 'reflect'
-    });
-}
-
 export async function saveOutput(fileName, content, jobId) {
     return await sendRequest({
         action: 'save_output',

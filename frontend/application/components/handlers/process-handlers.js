@@ -16,34 +16,16 @@ export function setupProcessTabHandlers() {
                 structure_data: appState.currentStructure
             };
             
-            addMessageToConversation('system', `Sending request to backend:`);
-            addMessageToConversation('system', `Header: ${requestData.action}`);
+            addMessageToConversation('system', `Starting process with structure: ${appState.currentStructure.name || 'Unnamed'}`);
             
-            const contentKeys = Object.keys(requestData).filter(key => key !== 'action');
-            let contentMessage = 'Content:';
-            
-            if (contentKeys.length > 0) {
-                contentKeys.forEach(key => {
-                    if (typeof requestData[key] === 'object') {
-                        contentMessage += `\n- ${key}: ${JSON.stringify(requestData[key]).substring(0, 100)}...`;
-                    } else {
-                        contentMessage += `\n- ${key}: ${requestData[key]}`;
-                    }
-                });
-            } else {
-                contentMessage += ' No additional content';
-            }
-            
-            addMessageToConversation('system', contentMessage);
-            
-            const loadingId = addMessageToConversation('system', 'Starting structure process flow...');
+            const loadingId = addMessageToConversation('system', 'Starting process flow...');
             
             const response = await api.startProcess(appState.currentStructure);
             
             removeMessage(loadingId);
             
             if (response.status === 'success' && response.data) {
-                addMessageToConversation('system', 'Process started:');
+                addMessageToConversation('system', 'Process started');
                 
                 if (response.data.current_node) {
                     addMessageToConversation(
@@ -56,7 +38,7 @@ export function setupProcessTabHandlers() {
                     startProcessPolling(response.data.process_id);
                 }
                 
-                showNotification('Process started successfully', 'success');
+                showNotification('Process started', 'success');
             } else {
                 throw new Error(response.message || 'Failed to start process');
             }
@@ -68,7 +50,7 @@ export function setupProcessTabHandlers() {
     registerFormHandler('prompt-form', async (event, form) => {
         if (!appState.currentStructure) {
             showError('Please select a structure first');
-            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before sending prompts.</p>';
+            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure first.</p>';
             return;
         }
         
@@ -84,7 +66,7 @@ export function setupProcessTabHandlers() {
             
             document.getElementById('user-prompt').value = '';
             
-            const loadingId = addMessageToConversation('system', 'Processing your request...');
+            const loadingId = addMessageToConversation('system', 'Processing...');
             
             const response = await api.processPrompt(prompt);
             
@@ -97,62 +79,6 @@ export function setupProcessTabHandlers() {
             }
         } catch (error) {
             showError('Error processing prompt', error);
-        }
-    });
-    
-    registerButtonHandler('refine-btn', async (event, button) => {
-        if (!appState.currentStructure) {
-            showError('Please select a structure first');
-            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before refining content.</p>';
-            return;
-        }
-        
-        try {
-            const loadingId = addMessageToConversation('system', 'Automatically refining inputs...');
-            
-            const response = await api.runAutoRefinement();
-            
-            removeMessage(loadingId);
-            
-            if (response.status === 'success' && response.data) {
-                addMessageToConversation('system', 'Auto-refinement complete:');
-                
-                addMessageToConversation('assistant', response.data.assistant_response);
-                
-                showNotification('Content refined successfully', 'success');
-            } else {
-                throw new Error(response.message || 'Refinement failed');
-            }
-        } catch (error) {
-            showError('Error refining content', error);
-        }
-    });
-    
-    registerButtonHandler('reflect-btn', async (event, button) => {
-        if (!appState.currentStructure) {
-            showError('Please select a structure first');
-            document.getElementById('messages-area').innerHTML = '<p class="empty-state">No structure selected. Please select a structure from the Structures tab before generating self-reflection.</p>';
-            return;
-        }
-        
-        try {
-            const loadingId = addMessageToConversation('system', 'Generating self-reflection...');
-            
-            const response = await api.generateReflection();
-            
-            removeMessage(loadingId);
-            
-            if (response.status === 'success' && response.data) {
-                addMessageToConversation('system', 'Self-reflection:');
-                
-                addMessageToConversation('assistant', response.data.assistant_response);
-                
-                showNotification('Self-reflection generated', 'success');
-            } else {
-                throw new Error(response.message || 'Self-reflection failed');
-            }
-        } catch (error) {
-            showError('Error generating self-reflection', error);
         }
     });
 }

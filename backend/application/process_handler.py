@@ -296,10 +296,6 @@ def schedule_next_node_processing(process_id):
                     process_records['last_updated'] = int(time.time())
                     file_handler.save_data(process_file, process_records)
             
-            for node in nodes:
-                if node.get('id') == current_node_id:
-                    message = f"Process ended at node: {node.get('name', node['id'])} (no outgoing connections)"
-                    break
             return
         
         process['current_node_id'] = next_node['id']
@@ -321,8 +317,6 @@ def schedule_next_node_processing(process_id):
                         break
                 process_records['last_updated'] = int(time.time())
                 file_handler.save_data(process_file, process_records)
-        
-        message = f"Moved to node: {next_node.get('name', next_node['id'])}"
         
         threading.Timer(2.0, schedule_next_node_processing, [process_id]).start()
     
@@ -395,12 +389,11 @@ def process_prompt(request, response, user_id):
         file_handler.save_data(structure_file, structure)
     
     try:
-        context = f"Processing user request for structure: {structure.get('name', 'Unknown')}\n"
-        context += f"Structure description: {structure.get('description', 'No description')}\n\n"
+        context = f"Structure: {structure.get('name', 'Unknown')}\n"
         
         nodes = extract_nodes(structure)
         if nodes:
-            context += "Structure contains the following nodes:\n"
+            context += "Nodes:\n"
             for node in nodes:
                 context += f"- {node.get('name', 'Unnamed node')} ({node.get('type', 'Unknown type')})\n"
         

@@ -58,6 +58,29 @@ function mainProcess() {
 // 2. Frontend: create the executeNode() function.
 // 3. Backend: create the 'executeNode' action.
 
+function executeNode() {
+    if (!appState.currentNode) {
+        console.error('No current node to execute.');
+        return null;
+    }
+    
+    // Execute node logic based on node type
+    const nodeType = appState.currentNode.type || 'unknown';
+    console.log(`Executing node of type: ${nodeType}`);
+    
+    // This is a placeholder implementation
+    // Add specific logic for different node types here
+    
+    const executionResult = {
+        nodeId: appState.currentNode.id,
+        nodeType: nodeType,
+        executed: true,
+        timestamp: new Date().toISOString()
+    };
+    
+    return createJobEntry('Node executed', executionResult);
+}
+
 function chooseNextNode() {
     // If current node connections are empty, end the process
     if (!appState.currentNode || !appState.currentNode.connections) {
@@ -97,16 +120,6 @@ function chooseNextNode() {
         nextNodeID: appState.nextNodeID,
         availableConnections: goingToConnections
     });
-}
-
-function endMainProcess(message) {
-    console.log('-----> Main process ended: ' + message);
-    console.log('AppState', appState);
-    appState.isProcessing = false;
-}
-
-function job(f) {
-    appState.jobs.push(f);
 }
 
 function findConnections(node = appState.currentNode) {
@@ -209,46 +222,13 @@ function showEmptyStateMessage(message) {
     }
 }
 
-function chooseNextNode() {
-    if (!appState.currentNode || !appState.currentNode.connections) {
-        console.error('No current node or connections available.');
-        return null;
-    }
-    
-    const goingToConnections = appState.currentNode.connections.goingTo;
-    if (!goingToConnections || goingToConnections.length === 0) {
-        console.log('No outgoing connections found. Process complete.');
-        return null;
-    }
-    
-    // For now, just pick the first connection
-    // This could be enhanced with logic for conditional paths, random selection, etc.
-    appState.nextNodeID = goingToConnections[0];
-    return createJobEntry('Next node selected', { 
-        nextNodeID: appState.nextNodeID,
-        availableConnections: goingToConnections
-    });
+function endMainProcess(message) {
+    console.log('-----> Main process ended: ' + message);
+    console.log('AppState', appState);
+    appState.isProcessing = false;
 }
 
-function executeNode() {
-    if (!appState.currentNode) {
-        console.error('No current node to execute.');
-        return null;
-    }
-    
-    // Execute node logic based on node type
-    const nodeType = appState.currentNode.type || 'unknown';
-    console.log(`Executing node of type: ${nodeType}`);
-    
-    // This is a placeholder implementation
-    // Add specific logic for different node types here
-    
-    const executionResult = {
-        nodeId: appState.currentNode.id,
-        nodeType: nodeType,
-        executed: true,
-        timestamp: new Date().toISOString()
-    };
-    
-    return createJobEntry('Node executed', executionResult);
+function job(f) {
+    appState.jobs.push(f);
+    return f;
 }

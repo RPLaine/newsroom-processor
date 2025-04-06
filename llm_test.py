@@ -46,7 +46,7 @@ def send_request(args):
     Returns:
         The server response
     """
-    url = 'http://localhost:5000'
+    url = 'https://www.northbeach.fi/dolphin'
     
     payload = {
         'prompt': args.prompt,

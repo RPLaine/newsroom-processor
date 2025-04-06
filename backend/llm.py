@@ -1,4 +1,5 @@
-import aiohttp
+import asyncio
+import requests
 
 async def generate_llm_response(prompt, max_length=500, temperature=1.0, top_k=50, top_p=0.9, repetition_penalty=1.0):
     payload = {
@@ -11,13 +12,14 @@ async def generate_llm_response(prompt, max_length=500, temperature=1.0, top_k=5
     }
     url = "https://www.northbeach.fi/dolphin"
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            url, 
-            json=payload, 
-            headers={"Content-Type": "application/json"}
-        ) as response:
-            value = await response.text()
+    response = await asyncio.to_thread(
+        requests.post,
+        url,
+        json=payload,
+        headers={"Content-Type": "application/json"}
+    )
+    
+    value = response.text
 
     if "<|im_start|>assistant" in value:
         answer = value.split("<|im_start|>assistant", 1)[-1]

@@ -3,7 +3,7 @@ import appState from '../../components/state.js';
 import { registerButtonHandler, initCollapsibleSections } from '../ui.js';
 import * as handlerStyling from './utils/handler-styling.js'
 
-function mainProcess() {
+async function mainProcess() {
     // Start processing state
     console.log('-----> Process main function called');
     appState.isProcessing = true;
@@ -32,21 +32,28 @@ function mainProcess() {
             return;
         }
         job(result);
+        await delay(3000);
     }
 
     // Process node functions until one returns null
-    let result;
+    let result = true;
+    const processingSteps = [
+        findConnections,
+        chooseNextNode,
+        findNode,
+        executeNode
+    ];
+    
     do {
-        const jobFunctions = [
-            findConnections(),
-            chooseNextNode(),
-            findNode(),
-            executeNode()
-        ];
-        
-        for (result of jobFunctions) {
+        for (const step of processingSteps) {
+            if (isAsync(step)) {
+                result = await step();
+            } else {
+                result = step();
+            }
             if (result === null) break;
             job(result);
+            await delay(3000);
         }
     } while (result !== null);
 
@@ -81,7 +88,7 @@ function executeNode() {
     return createJobEntry('Node executed', executionResult);
 }
 
-function chooseNextNode() {
+async function chooseNextNode() {
     // If current node connections are empty, end the process
     if (!appState.currentNode || !appState.currentNode.connections) {
         console.error('No current node or connections available.');
@@ -97,25 +104,40 @@ function chooseNextNode() {
         appState.nextNodeID = goingToConnections[0];
     } else {
         // If there are multiple connections, use sendRequest to ask for the next node
-        // requestBody should contain current node prompt and prompts for each connected node
-        // for the AI to understand the context and make a decision
         const requestBody = {
-            action: 'chooseNextNode',
+            action: 'choose_next_node',
             currentNode: appState.currentNode,
-            connections: goingToConnections.map(id => appState.currentStructure.structure.nodes.find(n => n.id === id))
+            connections: goingToConnections.map(id => {
+                const node = appState.currentStructure.structure.nodes.find(n => n.id === id);
+                if (!node) {
+                    console.warn(`Node with ID ${id} not found in structure`);
+                }
+                return node;
+            }).filter(node => node !== undefined)
         };
         console.log('Request body for choosing next node:', requestBody);
-        sendRequest(requestBody).then(response => {
+        
+        try {
+            const response = await sendRequest(requestBody);
+            console.log('Response from chooseNextNode API:', response);
+            
             if (response && response.nextNodeID) {
                 appState.nextNodeID = response.nextNodeID;
                 console.log('Next node selected:', appState.nextNodeID);
             } else {
-                console.error('Failed to select next node. No response or invalid response received.');
+                // Fallback to first connection if no valid response
+                console.warn('Backend did not return a valid nextNodeID. Falling back to first connection.');
+                appState.nextNodeID = goingToConnections[0];
+                console.log('Fallback node selected:', appState.nextNodeID);
             }
-        }).catch(error => {
+        } catch (error) {
             console.error('Error while choosing next node:', error);
-        });
+            // Fallback to first connection on error
+            appState.nextNodeID = goingToConnections[0];
+            console.log('Error occurred, falling back to first connection:', appState.nextNodeID);
+        }
     }
+    
     return createJobEntry('Next node selected', {
         nextNodeID: appState.nextNodeID,
         availableConnections: goingToConnections
@@ -131,7 +153,7 @@ function findConnections(node = appState.currentNode) {
     return createJobEntry('Connections found', connections);
 }
 
-function findNode(nodeTypeOrId = appState.nextNodeID) {
+function findNode(nodeTypeOrId = appState.currentNode.id) {
     if (!nodeTypeOrId) {
         console.error('Node type or ID is not provided.');
         return null;
@@ -231,4 +253,12 @@ function endMainProcess(message) {
 function job(f) {
     appState.jobs.push(f);
     return f;
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isAsync(fn) {
+    return fn.constructor.name === 'AsyncFunction';
 }

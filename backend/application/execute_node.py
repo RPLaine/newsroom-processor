@@ -88,7 +88,8 @@ def handle_execute_node(response: dict) -> dict:
             "node_id": node.get('id', ''),
             "node_name": node_name,
             "created_at": int(time.time()),
-            "size": len(file_content)
+            "size": len(file_content),
+            "content": file_content
         }
         
         registry["files"].append(file_info)
@@ -160,7 +161,23 @@ def get_output_files(user_id, structure_id):
     registry_path = os.path.join(output_dir, "file_registry.json")
     
     if os.path.exists(registry_path):
-        return file_handler.load_data(registry_path, {"files": []}).get("files", [])
+        # Load the file registry
+        files = file_handler.load_data(registry_path, {"files": []}).get("files", [])
+        
+        # Ensure each file has its content loaded if it exists in the registry but not in memory
+        for file_info in files:
+            # If file doesn't have content but has a path, load content from file
+            if (not file_info.get("content") or file_info.get("content") == "") and file_info.get("path"):
+                file_path = file_info.get("path")
+                try:
+                    if os.path.exists(file_path):
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            file_info["content"] = f.read()
+                except Exception as e:
+                    print(f"Error loading content for file {file_path}: {str(e)}")
+                    file_info["content"] = f"Error loading content: {str(e)}"
+        
+        return files
     
     return []
 

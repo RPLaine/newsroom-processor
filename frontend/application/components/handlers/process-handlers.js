@@ -36,7 +36,7 @@ async function mainProcess() {
         }
         
         // Wait 2 seconds before showing the next job result
-        await delay(2000);
+        await delay(1000);
         
         // Show the job result
         job(jobResult);
@@ -134,7 +134,27 @@ async function executeNode() {
             if (!appState.generatedFiles) {
                 appState.generatedFiles = [];
             }
-            appState.generatedFiles.push(response.data.file_info);
+            
+            // Store file info and also request the file content immediately
+            const fileInfo = response.data.file_info;
+            
+            // Add file content request
+            try {
+                const contentResponse = await sendRequest({
+                    action: 'load_file',
+                    filepath: fileInfo.path
+                });
+                
+                if (contentResponse.status === 'success' && contentResponse.data) {
+                    // Add content to the file info object
+                    fileInfo.content = contentResponse.data.content;
+                }
+            } catch (error) {
+                console.error('Error loading file content:', error);
+                fileInfo.content = 'Error loading content: ' + error.message;
+            }
+            
+            appState.generatedFiles.push(fileInfo);
         }
         
         const executionResult = {
@@ -149,8 +169,9 @@ async function executeNode() {
         return createJobEntry('Node executed', executionResult);
     } catch (error) {
         console.error('Error executing node:', error);
-        return createJobEntry('Node execution error', {
+        return createJobEntry('Error executing node', {
             nodeId: appState.currentNode.id,
+            nodeType: nodeType,
             error: error.toString(),
             timestamp: new Date().toISOString()
         });
@@ -414,29 +435,36 @@ async function viewFile(fileId) {
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <pre class="file-content"></pre>
+                <pre class="file-content">Loading content...</pre>
             </div>
         </div>
     `;
     
     document.body.appendChild(modal);
     
-    // Load file content
-    try {
-        const requestBody = {
-            action: 'load_file',
-            filepath: file.path
-        };
-        
-        const response = await sendRequest(requestBody);
-        
-        if (response.status === 'success' && response.data) {
-            modal.querySelector('.file-content').textContent = response.data.content;
-        } else {
-            modal.querySelector('.file-content').textContent = 'Error loading file content';
+    // Check if we already have the content cached
+    if (file.content) {
+        modal.querySelector('.file-content').textContent = file.content;
+    } else {
+        // Load file content from server if not cached
+        try {
+            const requestBody = {
+                action: 'load_file',
+                filepath: file.path
+            };
+            
+            const response = await sendRequest(requestBody);
+            
+            if (response.status === 'success' && response.data) {
+                // Cache the content for future use
+                file.content = response.data.content;
+                modal.querySelector('.file-content').textContent = response.data.content;
+            } else {
+                modal.querySelector('.file-content').textContent = 'Error loading file content';
+            }
+        } catch (error) {
+            modal.querySelector('.file-content').textContent = 'Error: ' + error.toString();
         }
-    } catch (error) {
-        modal.querySelector('.file-content').textContent = 'Error: ' + error.toString();
     }
     
     // Add event listener to close button

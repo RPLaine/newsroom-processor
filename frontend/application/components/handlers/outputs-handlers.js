@@ -11,11 +11,13 @@ import { showError, formatDate, registerFormHandler, registerButtonHandler, init
 export function setupOutputsTabHandlers() {
     // Load outputs when tab is clicked
     document.getElementById('outputs-tab')?.addEventListener('click', async () => {
+        console.log('Outputs tab clicked - triggering file list refresh');
         await refreshOutputsView();
     });
     
     // Register refresh button handler
     registerButtonHandler('refresh-outputs-btn', async (event, button) => {
+        console.log('Refresh Outputs button clicked - manually refreshing file list');
         await refreshOutputsView();
     });
 }
@@ -24,61 +26,114 @@ export function setupOutputsTabHandlers() {
  * Refresh the outputs view with latest data
  */
 async function refreshOutputsView() {
-    const outputsContainer = document.getElementById('outputs-container');
-    if (!outputsContainer) return;
+    console.log('Starting to refresh outputs view');
+    const outputsContainer = document.getElementById('outputs-list');
+    if (!outputsContainer) {
+        console.error('Outputs list not found in DOM');
+        return;
+    }
     
     // Clear the container
     outputsContainer.innerHTML = '';
+    console.log('Cleared outputs container');
     
     // Load files if needed
     if (!appState.currentStructure) {
+        console.warn('No structure selected for outputs view');
         outputsContainer.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab.</div>';
         return;
     }
     
     try {
+        console.log(`Fetching output files for structure: ${appState.currentStructure.id}`);
         const requestBody = {
             action: 'get_output_files',
             structure_id: appState.currentStructure.id
         };
         
         const response = await api.sendRequest(requestBody);
+        console.log('Server response for output files:', response);
         
         if (response?.status === 'success' && response?.data?.files) {
             appState.generatedFiles = response.data.files;
+            console.log(`Retrieved ${appState.generatedFiles.length} output files from server`);
+        } else {
+            console.warn('No files found in server response or response failed');
         }
         
         // Check if we have files to display
         if (!appState.generatedFiles || appState.generatedFiles.length === 0) {
+            console.log('No output files to display');
             outputsContainer.innerHTML = '<div class="empty-state">No output files generated. Run a process to generate files.</div>';
             return;
         }
         
         // Create the outputs view
+        console.log('Generating HTML for output files display');
         const outputsHTML = createOutputsView(appState.generatedFiles);
         outputsContainer.innerHTML = outputsHTML;
+        console.log('Outputs HTML inserted into DOM');
         
         // Initialize collapsible sections
         initCollapsibleSections();
+        console.log('Initialized collapsible sections for outputs');
         
         // Add event listeners to the buttons
-        document.querySelectorAll('.view-file-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const fileId = e.target.dataset.fileId;
-                await viewFile(fileId);
-            });
-        });
-        
-        document.querySelectorAll('.delete-file-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const fileId = e.target.dataset.fileId;
-                await deleteFile(fileId);
-            });
-        });
+        setupFileActionHandlers();
+        console.log('Set up all file action handlers (view/delete/toggle)');
     } catch (error) {
         console.error('Error loading output files:', error);
         outputsContainer.innerHTML = `<div class="empty-state">Error loading files: ${error.message}</div>`;
     }
+}
+
+/**
+ * Set up action handlers for file cards
+ */
+function setupFileActionHandlers() {
+    // Add event listeners to the buttons
+    document.querySelectorAll('.view-file-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const fileId = e.target.dataset.fileId;
+            console.log(`View file button clicked for file ID: ${fileId}`);
+            await viewFile(fileId);
+        });
+    });
+    
+    document.querySelectorAll('.delete-file-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const fileId = e.target.dataset.fileId;
+            console.log(`Delete file button clicked for file ID: ${fileId}`);
+            await deleteFile(fileId);
+        });
+    });
+    
+    // Add event listeners for the toggle preview buttons
+    document.querySelectorAll('.toggle-preview-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const fileId = e.target.dataset.fileId;
+            console.log(`Toggle preview button clicked for file ID: ${fileId}`);
+            const cardElement = document.querySelector(`.structure-card[data-file-id="${fileId}"]`);
+            if (!cardElement) return;
+            
+            const previewElement = cardElement.querySelector('.file-preview');
+            const fullContentElement = cardElement.querySelector('.file-full-content');
+            
+            if (previewElement.style.display === 'none') {
+                // Show preview, hide full content
+                previewElement.style.display = 'block';
+                fullContentElement.style.display = 'none';
+                button.textContent = 'Show More';
+                console.log(`Switched to preview mode for file ID: ${fileId}`);
+            } else {
+                // Show full content, hide preview
+                previewElement.style.display = 'none';
+                fullContentElement.style.display = 'block';
+                button.textContent = 'Show Less';
+                console.log(`Switched to full content mode for file ID: ${fileId}`);
+            }
+        });
+    });
 }
 
 /**
@@ -123,6 +178,26 @@ function createOutputsView(files) {
         typeFiles.forEach(file => {
             const timestamp = new Date(file.created_at * 1000).toLocaleString();
             
+            // Prepare content preview if available
+            let contentPreview = '';
+            if (file.content) {
+                // Limit preview to first 300 characters
+                const previewText = file.content.length > 300 
+                    ? file.content.substring(0, 300) + '...' 
+                    : file.content;
+                
+                contentPreview = `
+                    <div class="file-preview-container">
+                        <div class="file-preview-header">
+                            <h4>Content Preview</h4>
+                            <button class="btn toggle-preview-btn" data-file-id="${file.id}">Show More</button>
+                        </div>
+                        <pre class="file-preview">${escapeHtml(previewText)}</pre>
+                        <pre class="file-full-content" style="display:none;">${escapeHtml(file.content)}</pre>
+                    </div>
+                `;
+            }
+            
             html += `
                 <div class="structure-card" data-file-id="${file.id}">
                     <div class="structure-content">
@@ -132,6 +207,7 @@ function createOutputsView(files) {
                             <div>Size: ${formatFileSize(file.size)}</div>
                             <div>Node: ${file.node_name || 'Unknown'}</div>
                         </div>
+                        ${contentPreview}
                     </div>
                     <div class="structure-actions">
                         <button class="btn view-file-btn primary" data-file-id="${file.id}">View</button>
@@ -167,6 +243,21 @@ function formatFileSize(bytes) {
 }
 
 /**
+ * Escape HTML characters in a string
+ * 
+ * @param {string} unsafe - Unsafe string
+ * @returns {string} Escaped string
+ */
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+/**
  * View file content
  * 
  * @param {string} fileId - File ID
@@ -194,22 +285,29 @@ async function viewFile(fileId) {
     
     document.body.appendChild(modal);
     
-    // Load file content
-    try {
-        const requestBody = {
-            action: 'load_file',
-            filepath: file.path
-        };
-        
-        const response = await api.sendRequest(requestBody);
-        
-        if (response.status === 'success' && response.data) {
-            modal.querySelector('.file-content').textContent = response.data.content;
-        } else {
-            modal.querySelector('.file-content').textContent = 'Error loading file content';
+    // Check if we already have the content cached
+    if (file.content) {
+        modal.querySelector('.file-content').textContent = file.content;
+    } else {
+        // Load file content from server if not cached
+        try {
+            const requestBody = {
+                action: 'load_file',
+                filepath: file.path
+            };
+            
+            const response = await api.sendRequest(requestBody);
+            
+            if (response.status === 'success' && response.data) {
+                // Cache the content for future use
+                file.content = response.data.content;
+                modal.querySelector('.file-content').textContent = response.data.content;
+            } else {
+                modal.querySelector('.file-content').textContent = 'Error loading file content';
+            }
+        } catch (error) {
+            modal.querySelector('.file-content').textContent = 'Error: ' + error.toString();
         }
-    } catch (error) {
-        modal.querySelector('.file-content').textContent = 'Error: ' + error.toString();
     }
     
     // Add event listener to close button

@@ -1,12 +1,20 @@
 import { sendRequest } from '../api.js';
 import appState from '../../components/state.js';
 import { registerButtonHandler, initCollapsibleSections } from '../ui.js';
-import * as handlerStyling from './utils/handler-styling.js'
+import * as handlerStyling from './utils/handler-styling.js';
+
+// Store a special flag to handle finish nodes
+const WORKFLOW_STATES = {
+  RUNNING: 'running',
+  FINISHED: 'finished',
+  ERROR: 'error'
+};
 
 async function mainProcess() {
     // Start processing state
     console.log('-----> Process main function called');
     appState.isProcessing = true;
+    appState.workflowState = WORKFLOW_STATES.RUNNING;
     console.log('AppState JSON', appState);
 
     // Clear the workflow container
@@ -27,12 +35,12 @@ async function mainProcess() {
     ];
     
     for (const result of initialJobFunctions) {
-        if (result === null) {
-            endMainProcess('Failed at initial functions.');
+        if (result === null || appState.workflowState === WORKFLOW_STATES.FINISHED) {
+            endMainProcess('Workflow completed or terminated early.');
             return;
         }
         job(result);
-        await delay(3000);
+        await delay(2000);
     }
 
     // Process node functions until one returns null
@@ -46,24 +54,24 @@ async function mainProcess() {
     
     do {
         for (const step of processingSteps) {
+            if (appState.workflowState === WORKFLOW_STATES.FINISHED) {
+                break; // Exit the loop immediately if finished
+            }
+            
             if (isAsync(step)) {
                 result = await step();
             } else {
                 result = step();
             }
+            
             if (result === null) break;
             job(result);
-            await delay(3000);
+            await delay(2000);
         }
-    } while (result !== null);
+    } while (result !== null && appState.workflowState === WORKFLOW_STATES.RUNNING);
 
     endMainProcess('Completed successfully.');
 }
-
-// TODO:
-// 1. Backend: create the 'chooseNextNode' action.
-// 2. Frontend: create the executeNode() function.
-// 3. Backend: create the 'executeNode' action.
 
 function executeNode() {
     if (!appState.currentNode) {
@@ -162,6 +170,10 @@ function findNode(nodeTypeOrId = appState.currentNode.id) {
         console.error('Node not found.');
         return null;
     }
+            timestamp: new Date().toISOString()
+        });
+    }
+    
     return createJobEntry('Find node', appState.currentNode);
 }
 

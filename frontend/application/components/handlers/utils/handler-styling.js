@@ -34,6 +34,18 @@ export function collapsibleSection(heading, content) {
     // get the workflow container element
     const workflowContainer = document.getElementById('workflow-container');
 
+    // First, collapse all existing sections
+    const existingSections = workflowContainer.querySelectorAll('.collapsible-section');
+    existingSections.forEach(section => {
+        const contentElement = section.querySelector('.collapsible-content');
+        const toggleIcon = section.querySelector('.toggle-icon');
+        
+        if (contentElement && !contentElement.classList.contains('collapsed')) {
+            contentElement.classList.add('collapsed');
+            if (toggleIcon) toggleIcon.innerHTML = '▶';
+        }
+    });
+
     // create a collapsible section with the standard class name
     const sectionCollapsible = document.createElement('div');
     sectionCollapsible.className = 'collapsible-section';
@@ -43,14 +55,14 @@ export function collapsibleSection(heading, content) {
     headingElement.className = 'collapsible-heading';
     headingElement.innerHTML = heading;
 
-    // create the toggle icon
+    // create the toggle icon - expanded for the new section
     const toggleIcon = document.createElement('span');
     toggleIcon.className = 'toggle-icon';
-    toggleIcon.innerHTML = '▶';
+    toggleIcon.innerHTML = '▼';  // Down arrow for expanded state
 
-    // create the content
+    // create the content - not collapsed for the new section
     const contentElement = document.createElement('div');
-    contentElement.className = 'collapsible-content collapsed';
+    contentElement.className = 'collapsible-content'; // No 'collapsed' class
     contentElement.innerHTML = content;
 
     // add the toggle icon to the heading
@@ -62,6 +74,9 @@ export function collapsibleSection(heading, content) {
 
     // append the section collapsible to the workflow container
     workflowContainer.appendChild(sectionCollapsible);
+    
+    // Scroll to the newly added section
+    sectionCollapsible.scrollIntoView({ behavior: 'smooth', block: 'end' });
     
     return sectionCollapsible;
 }

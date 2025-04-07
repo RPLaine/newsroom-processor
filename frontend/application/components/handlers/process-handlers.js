@@ -15,6 +15,7 @@ async function mainProcess() {
     console.log('-----> Process main function called');
     appState.isProcessing = true;
     appState.workflowState = WORKFLOW_STATES.RUNNING;
+    appState.generatedFiles = [];
     console.log('AppState JSON', appState);
 
     // Clear the workflow container
@@ -85,10 +86,16 @@ async function mainProcess() {
         }
     } while (result !== null && appState.workflowState === WORKFLOW_STATES.RUNNING);
 
+    // Load output files after process completion
+    await loadOutputFiles();
+    
+    // Switch to the outputs tab
+    switchToOutputsTab();
+    
     endMainProcess('Completed successfully.');
 }
 
-function executeNode() {
+async function executeNode() {
     if (!appState.currentNode) {
         console.error('No current node to execute.');
         return null;
@@ -101,6 +108,7 @@ function executeNode() {
     // Check if this is a finish node - if so, return null to end the process
     if (nodeType.toLowerCase() === 'finish') {
         console.log('Finish node detected. Ending workflow process.');
+        appState.workflowState = WORKFLOW_STATES.FINISHED;
         return createJobEntry('Finish node reached', {
             nodeId: appState.currentNode.id,
             message: 'Workflow completed successfully',
@@ -108,17 +116,76 @@ function executeNode() {
         });
     }
     
-    // This is a placeholder implementation
-    // Add specific logic for different node types here
+    // Call backend to execute node and generate file
+    try {
+        const requestBody = {
+            action: 'execute_node',
+            structure_id: appState.currentStructure.id,
+            current_node: appState.currentNode
+        };
+        
+        console.log('Request body for executing node:', requestBody);
+        
+        const response = await sendRequest(requestBody);
+        console.log('Response from execute_node:', response);
+        
+        // If file was generated, add to our files list
+        if (response?.data?.file_generated && response?.data?.file_info) {
+            if (!appState.generatedFiles) {
+                appState.generatedFiles = [];
+            }
+            appState.generatedFiles.push(response.data.file_info);
+        }
+        
+        const executionResult = {
+            nodeId: appState.currentNode.id,
+            nodeType: nodeType,
+            executed: true,
+            fileGenerated: response?.data?.file_generated || false,
+            fileInfo: response?.data?.file_info || null,
+            timestamp: new Date().toISOString()
+        };
+        
+        return createJobEntry('Node executed', executionResult);
+    } catch (error) {
+        console.error('Error executing node:', error);
+        return createJobEntry('Node execution error', {
+            nodeId: appState.currentNode.id,
+            error: error.toString(),
+            timestamp: new Date().toISOString()
+        });
+    }
+}
+
+async function loadOutputFiles() {
+    if (!appState.currentStructure) {
+        console.error('No structure selected.');
+        return;
+    }
     
-    const executionResult = {
-        nodeId: appState.currentNode.id,
-        nodeType: nodeType,
-        executed: true,
-        timestamp: new Date().toISOString()
-    };
-    
-    return createJobEntry('Node executed', executionResult);
+    try {
+        const requestBody = {
+            action: 'get_output_files',
+            structure_id: appState.currentStructure.id
+        };
+        
+        const response = await sendRequest(requestBody);
+        console.log('Output files response:', response);
+        
+        if (response?.data?.files) {
+            appState.generatedFiles = response.data.files;
+        }
+    } catch (error) {
+        console.error('Error loading output files:', error);
+    }
+}
+
+function switchToOutputsTab() {
+    // Find and click the outputs tab
+    const outputsTab = document.getElementById('outputs-tab');
+    if (outputsTab) {
+        outputsTab.click();
+    }
 }
 
 async function chooseNextNode() {
@@ -249,6 +316,181 @@ export function setupProcessTabHandlers() {
 
         mainProcess();
     });
+}
+
+export function setupOutputsTab() {
+    document.getElementById('outputs-tab')?.addEventListener('click', async () => {
+        await refreshOutputsView();
+    });
+}
+
+async function refreshOutputsView() {
+    const outputsContainer = document.getElementById('outputs-container');
+    if (!outputsContainer) return;
+    
+    // Clear the container
+    outputsContainer.innerHTML = '';
+    
+    // Load files if needed
+    if (!appState.generatedFiles || appState.generatedFiles.length === 0) {
+        await loadOutputFiles();
+    }
+    
+    // Check if we have files to display
+    if (!appState.generatedFiles || appState.generatedFiles.length === 0) {
+        outputsContainer.innerHTML = '<div class="empty-state">No output files generated. Run a process to generate files.</div>';
+        return;
+    }
+    
+    // Create the files list
+    const filesList = document.createElement('div');
+    filesList.className = 'files-list';
+    
+    // Add header
+    const header = document.createElement('div');
+    header.className = 'files-header';
+    header.innerHTML = `
+        <h3>Generated Files (${appState.generatedFiles.length})</h3>
+        <p>These files were generated during the node workflow execution.</p>
+    `;
+    filesList.appendChild(header);
+    
+    // Add each file as a list item
+    appState.generatedFiles.forEach(file => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        // Format the timestamp
+        const timestamp = new Date(file.created_at * 1000).toLocaleString();
+        
+        fileItem.innerHTML = `
+            <div class="file-info">
+                <div class="file-name">${file.filename}</div>
+                <div class="file-meta">
+                    <span>Created: ${timestamp}</span>
+                    <span>Size: ${formatFileSize(file.size)}</span>
+                </div>
+            </div>
+            <div class="file-actions">
+                <button class="view-file-btn" data-file-id="${file.id}">View</button>
+                <button class="delete-file-btn" data-file-id="${file.id}">Delete</button>
+            </div>
+        `;
+        
+        filesList.appendChild(fileItem);
+    });
+    
+    outputsContainer.appendChild(filesList);
+    
+    // Add event listeners to the buttons
+    document.querySelectorAll('.view-file-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const fileId = e.target.dataset.fileId;
+            await viewFile(fileId);
+        });
+    });
+    
+    document.querySelectorAll('.delete-file-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const fileId = e.target.dataset.fileId;
+            await deleteFile(fileId);
+        });
+    });
+}
+
+async function viewFile(fileId) {
+    if (!appState.generatedFiles) return;
+    
+    const file = appState.generatedFiles.find(f => f.id === fileId);
+    if (!file) return;
+    
+    // Create modal for viewing file
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>${file.filename}</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre class="file-content"></pre>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Load file content
+    try {
+        const requestBody = {
+            action: 'load_file',
+            filepath: file.path
+        };
+        
+        const response = await sendRequest(requestBody);
+        
+        if (response.status === 'success' && response.data) {
+            modal.querySelector('.file-content').textContent = response.data.content;
+        } else {
+            modal.querySelector('.file-content').textContent = 'Error loading file content';
+        }
+    } catch (error) {
+        modal.querySelector('.file-content').textContent = 'Error: ' + error.toString();
+    }
+    
+    // Add event listener to close button
+    modal.querySelector('.close-modal').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    // Close modal when clicking outside of it
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+async function deleteFile(fileId) {
+    if (!appState.currentStructure || !fileId) return;
+    
+    if (!confirm('Are you sure you want to delete this file?')) {
+        return;
+    }
+    
+    try {
+        const requestBody = {
+            action: 'delete_output_file',
+            structure_id: appState.currentStructure.id,
+            file_id: fileId
+        };
+        
+        const response = await sendRequest(requestBody);
+        
+        if (response.status === 'success') {
+            // Remove file from state
+            appState.generatedFiles = appState.generatedFiles.filter(f => f.id !== fileId);
+            
+            // Refresh the view
+            await refreshOutputsView();
+        } else {
+            alert('Error deleting file: ' + response.message);
+        }
+    } catch (error) {
+        console.error('Error deleting file:', error);
+        alert('Error deleting file: ' + error.toString());
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) {
+        return bytes + ' B';
+    } else if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + ' KB';
+    } else {
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
 }
 
 function refreshWorkflowView(jobs) {

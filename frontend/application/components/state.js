@@ -5,7 +5,9 @@ const appState = {
     activeTab: 'structures',
     isProcessing: false,
     jobs: [],
-    nodeTypes: ['start', 'process']
+    nodeTypes: ['start', 'process'],
+    workflowState: null,
+    generatedFiles: []
 };
 
 export default appState;

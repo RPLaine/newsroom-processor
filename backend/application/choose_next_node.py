@@ -7,22 +7,10 @@ def handle_choose_next_node(response: dict) -> dict:
     current_node = request.get('current_node')
     connections = request.get('connections')
 
-    print('REQUEST:')
-    print(json.dumps(request, indent=2))
-
-    print('CURRENT NODE:')
-    print(json.dumps(current_node, indent=2))
-
-    print('CONNECTIONS:')
-    print(json.dumps(connections, indent=2))
-
-    # simpler dict for current node: node
     node = {}
     node['header'] = current_node.get('configuration', {}).get('header', '')
     node['prompt'] = current_node.get('configuration', {}).get('prompt', '')
-    print(json.dumps(node, indent=2))
 
-    # simpler dict for connections: con
     cons = []
     i = 0
     while i < len(connections):
@@ -33,7 +21,6 @@ def handle_choose_next_node(response: dict) -> dict:
         cons.append(con)
         print()
         i += 1
-    print(json.dumps(cons, indent=2))
     
     prompt = '''
 <|im_system|>
@@ -59,13 +46,9 @@ Task: Return only one message that includes a valid JSON object with the next_no
     '''
 
     llm_response = llm.generate_llm_response(prompt)
-    print('LLM RESPONSE:')
-    print(llm_response.text)
 
     refined_response = refinement.refine_response(llm_response)
-    print('REFINED LLM RESPONSE:')
-    print(refined_response)
-
+    
     return refined_response
 
 if __name__ == '__main__':

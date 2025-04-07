@@ -3,126 +3,260 @@
  */
 import * as api from '../api.js';
 import appState from '../../components/state.js';
-import { showError, formatDate, registerFormHandler, registerButtonHandler } from '../../components/ui.js';
+import { showError, formatDate, registerFormHandler, registerButtonHandler, initCollapsibleSections } from '../../components/ui.js';
 
 /**
  * Setup event handlers for Outputs tab
  */
 export function setupOutputsTabHandlers() {
     // Load outputs when tab is clicked
-    document.getElementById('outputs-tab')?.addEventListener('click', () => {
-        if (appState.currentJob) {
-            updateOutputsList(appState.currentJob.outputs);
-        }
+    document.getElementById('outputs-tab')?.addEventListener('click', async () => {
+        await refreshOutputsView();
     });
     
     // Register refresh button handler
     registerButtonHandler('refresh-outputs-btn', async (event, button) => {
-        if (!appState.currentJob) {
-            showError('Please select a job first');
-            return;
-        }
-        
-        try {
-            // Fetch latest job data
-            const response = await api.getJob(appState.currentJob.id);
-            
-            if (response.status === 'success' && response.data) {
-                // Update current job
-                appState.currentJob = response.data.job;
-                
-                // Update outputs list
-                updateOutputsList(appState.currentJob.outputs);
-                
-                console.log('Files refreshed');
-            } else {
-                throw new Error(response.message || 'Refresh failed');
-            }
-        } catch (error) {
-            showError('Error refreshing files', error);
-        }
-    });
-    
-    // Register button handlers for view and edit buttons
-    registerButtonHandler('view-output-btn', (event, button) => {
-        const outputItem = button.closest('.output-item');
-        if (!outputItem || !outputItem.dataset.item) return;
-        
-        viewOutput(JSON.parse(outputItem.dataset.item));
-    });
-    
-    registerButtonHandler('edit-output-btn', (event, button) => {
-        const outputItem = button.closest('.output-item');
-        if (!outputItem || !outputItem.dataset.item) return;
-        
-        editOutput(JSON.parse(outputItem.dataset.item));
+        await refreshOutputsView();
     });
 }
 
 /**
- * Update outputs list in UI
- * 
- * @param {Array} outputs - Outputs data
+ * Refresh the outputs view with latest data
  */
-export function updateOutputsList(outputs) {
-    const outputsList = document.getElementById('outputs-list');
-    if (!outputsList) return;
+async function refreshOutputsView() {
+    const outputsContainer = document.getElementById('outputs-container');
+    if (!outputsContainer) return;
     
-    if (!outputs || outputs.length === 0) {
-        outputsList.innerHTML = '<p class="empty-state">No files available. Files will appear here after processing your structure.</p>';
+    // Clear the container
+    outputsContainer.innerHTML = '';
+    
+    // Load files if needed
+    if (!appState.currentStructure) {
+        outputsContainer.innerHTML = '<div class="empty-state">No structure selected. Please select a structure from the Structures tab.</div>';
         return;
     }
     
-    outputsList.innerHTML = '';
+    try {
+        const requestBody = {
+            action: 'get_output_files',
+            structure_id: appState.currentStructure.id
+        };
+        
+        const response = await api.sendRequest(requestBody);
+        
+        if (response?.status === 'success' && response?.data?.files) {
+            appState.generatedFiles = response.data.files;
+        }
+        
+        // Check if we have files to display
+        if (!appState.generatedFiles || appState.generatedFiles.length === 0) {
+            outputsContainer.innerHTML = '<div class="empty-state">No output files generated. Run a process to generate files.</div>';
+            return;
+        }
+        
+        // Create the outputs view
+        const outputsHTML = createOutputsView(appState.generatedFiles);
+        outputsContainer.innerHTML = outputsHTML;
+        
+        // Initialize collapsible sections
+        initCollapsibleSections();
+        
+        // Add event listeners to the buttons
+        document.querySelectorAll('.view-file-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const fileId = e.target.dataset.fileId;
+                await viewFile(fileId);
+            });
+        });
+        
+        document.querySelectorAll('.delete-file-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const fileId = e.target.dataset.fileId;
+                await deleteFile(fileId);
+            });
+        });
+    } catch (error) {
+        console.error('Error loading output files:', error);
+        outputsContainer.innerHTML = `<div class="empty-state">Error loading files: ${error.message}</div>`;
+    }
+}
+
+/**
+ * Create the HTML for the outputs view
+ * 
+ * @param {Array} files - Array of file objects
+ * @returns {string} HTML for the outputs view
+ */
+function createOutputsView(files) {
+    // Group files by extension
+    const filesByType = {};
     
-    outputs.forEach(output => {
-        const outputElement = document.createElement('div');
-        outputElement.className = 'output-item';
-        
-        // Format date
-        const date = output.timestamp ? formatDate(new Date(output.timestamp * 1000)) : 'Unknown';
-        
-        // Truncate preview
-        const contentPreview = output.content?.length > 200 
-            ? output.content.substring(0, 200) + '...' 
-            : output.content;
-            
-        outputElement.innerHTML = `
-            <h3>${output.file_name || 'Untitled'}</h3>
-            <div class="output-preview">
-                <pre>${contentPreview || 'No content'}</pre>
+    files.forEach(file => {
+        const extension = file.filename.split('.').pop().toLowerCase();
+        if (!filesByType[extension]) {
+            filesByType[extension] = [];
+        }
+        filesByType[extension].push(file);
+    });
+    
+    let html = `
+        <div class="structure-header">
+            <h3>Generated Files (${files.length})</h3>
+            <div class="structure-meta">
+                <span class="structure-meta-item">Structure: ${appState.currentStructure.name || 'Unnamed'}</span>
+                <button id="refresh-outputs-btn" class="btn primary">Refresh</button>
             </div>
-            <div class="output-meta">
-                <span>Created: ${date}</span>
-                <button class="btn view-output-btn">View</button>
-                <button class="btn edit-output-btn">Edit</button>
-            </div>
+        </div>
+    `;
+    
+    // Add a section for each file type
+    for (const [extension, typeFiles] of Object.entries(filesByType)) {
+        html += `
+            <div class="collapsible-section">
+                <h4 class="collapsible-heading">
+                    ${extension.toUpperCase()} Files (${typeFiles.length}) <span class="toggle-icon">▼</span>
+                </h4>
+                <div class="collapsible-content">
         `;
         
-        // Store output data in dataset for later retrieval
-        outputElement.dataset.item = JSON.stringify(output);
+        // Add each file as a card
+        typeFiles.forEach(file => {
+            const timestamp = new Date(file.created_at * 1000).toLocaleString();
+            
+            html += `
+                <div class="structure-card" data-file-id="${file.id}">
+                    <div class="structure-content">
+                        <h3>${file.filename}</h3>
+                        <div class="structure-data-content">
+                            <div>Created: ${timestamp}</div>
+                            <div>Size: ${formatFileSize(file.size)}</div>
+                            <div>Node: ${file.node_name || 'Unknown'}</div>
+                        </div>
+                    </div>
+                    <div class="structure-actions">
+                        <button class="btn view-file-btn primary" data-file-id="${file.id}">View</button>
+                        <button class="btn delete-file-btn" data-file-id="${file.id}">Delete</button>
+                    </div>
+                </div>
+            `;
+        });
         
-        outputsList.appendChild(outputElement);
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    return html;
+}
+
+/**
+ * Format file size in human-readable format
+ * 
+ * @param {number} bytes - File size in bytes
+ * @returns {string} Formatted file size
+ */
+function formatFileSize(bytes) {
+    if (bytes < 1024) {
+        return bytes + ' B';
+    } else if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + ' KB';
+    } else {
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+}
+
+/**
+ * View file content
+ * 
+ * @param {string} fileId - File ID
+ */
+async function viewFile(fileId) {
+    if (!appState.generatedFiles) return;
+    
+    const file = appState.generatedFiles.find(f => f.id === fileId);
+    if (!file) return;
+    
+    // Create modal for viewing file
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>${file.filename}</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre class="file-content">Loading content...</pre>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Load file content
+    try {
+        const requestBody = {
+            action: 'load_file',
+            filepath: file.path
+        };
+        
+        const response = await api.sendRequest(requestBody);
+        
+        if (response.status === 'success' && response.data) {
+            modal.querySelector('.file-content').textContent = response.data.content;
+        } else {
+            modal.querySelector('.file-content').textContent = 'Error loading file content';
+        }
+    } catch (error) {
+        modal.querySelector('.file-content').textContent = 'Error: ' + error.toString();
+    }
+    
+    // Add event listener to close button
+    modal.querySelector('.close-modal').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    // Close modal when clicking outside of it
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
     });
 }
 
 /**
- * View output in form
+ * Delete a file
  * 
- * @param {Object} output - Output data
+ * @param {string} fileId - File ID
  */
-function viewOutput(output) {
-    // Create modal or use existing view to display the output
-    // Since we removed the create output form, we need to handle viewing differently
-    alert(`${output.file_name}\n\n${output.content}`);
-}
-
-/**
- * Edit output in form
- * 
- * @param {Object} output - Output data
- */
-function editOutput(output) {
-    // For now, just view the output
-    viewOutput(output);
+async function deleteFile(fileId) {
+    if (!appState.currentStructure || !fileId) return;
+    
+    if (!confirm('Are you sure you want to delete this file?')) {
+        return;
+    }
+    
+    try {
+        const requestBody = {
+            action: 'delete_output_file',
+            structure_id: appState.currentStructure.id,
+            file_id: fileId
+        };
+        
+        const response = await api.sendRequest(requestBody);
+        
+        if (response.status === 'success') {
+            // Remove file from state
+            appState.generatedFiles = appState.generatedFiles.filter(f => f.id !== fileId);
+            
+            // Refresh the view
+            await refreshOutputsView();
+        } else {
+            alert('Error deleting file: ' + response.message);
+        }
+    } catch (error) {
+        console.error('Error deleting file:', error);
+        alert('Error deleting file: ' + error.toString());
+    }
 }

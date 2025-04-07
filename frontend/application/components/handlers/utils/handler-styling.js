@@ -55,14 +55,14 @@ export function collapsibleSection(heading, content) {
     headingElement.className = 'collapsible-heading';
     headingElement.innerHTML = heading;
 
-    // create the toggle icon - expanded for the new section
+    // create the toggle icon - start with collapsed icon
     const toggleIcon = document.createElement('span');
     toggleIcon.className = 'toggle-icon';
-    toggleIcon.innerHTML = '▼';  // Down arrow for expanded state
+    toggleIcon.innerHTML = '▶';  // Right arrow for collapsed state initially
 
-    // create the content - not collapsed for the new section
+    // create the content - start collapsed
     const contentElement = document.createElement('div');
-    contentElement.className = 'collapsible-content'; // No 'collapsed' class
+    contentElement.className = 'collapsible-content collapsed'; // Add 'collapsed' class initially
     contentElement.innerHTML = content;
 
     // add the toggle icon to the heading
@@ -77,6 +77,13 @@ export function collapsibleSection(heading, content) {
     
     // Scroll to the newly added section
     sectionCollapsible.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    
+    // Trigger animation by removing the collapsed class after a short delay
+    // This allows the browser to render the initial collapsed state first
+    setTimeout(() => {
+        contentElement.classList.remove('collapsed');
+        toggleIcon.innerHTML = '▼'; // Update to expanded icon
+    }, 50);
     
     return sectionCollapsible;
 }

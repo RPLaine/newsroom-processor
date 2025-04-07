@@ -54,7 +54,6 @@ def create_request_handler(server, config):
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
             data = json.loads(post_data.decode('utf-8'))
-            print(json.dumps(data, indent=4))
             return data
         
         def send_cors_headers(self):

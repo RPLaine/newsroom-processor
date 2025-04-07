@@ -2,22 +2,22 @@ import backend.application.johto_handler as johto_handler
 import backend.application.process_handler as process_handler
 import backend.application.choose_next_node as choose_next_node
 
-def handle_application_actions(response: dict) -> dict:
-    if 'action' not in response['request']:
-        response['status'] = 'error'
-        response['message'] = 'No action specified'
-        return response
+def handle_application_actions(request: dict) -> dict:
+    if 'action' not in request['request']:
+        request['status'] = 'error'
+        request['message'] = 'No action specified'
+        return request
     
-    action = response['request']['action']
-    user_id = response.get('userid', None)
+    action = request['request']['action']
+    user_id = request.get('userid', None)
     
     if not user_id:
-        response['status'] = 'error'
-        response['message'] = 'Not authenticated'
-        return response
+        request['status'] = 'error'
+        request['message'] = 'Not authenticated'
+        return request
     
     if action == 'load_johto_data':
-        return johto_handler.handle_load_johto_data(response)
+        return johto_handler.handle_load_johto_data(request)
     
     # if action == 'start_process':
     #     return process_handler.start_process(response)
@@ -32,8 +32,8 @@ def handle_application_actions(response: dict) -> dict:
     #     return process_handler.handle_process_request(response['request'])
 
     if action == 'choose_next_node':
-        return choose_next_node.handle_choose_next_node(response)
+        return choose_next_node.handle_choose_next_node(request)
     
-    response['status'] = 'error'
-    response['message'] = f'Unknown application action: {action}'
-    return response
+    request['status'] = 'error'
+    request['message'] = f'Unknown application action: {action}'
+    return request

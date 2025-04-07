@@ -89,52 +89,37 @@ function executeNode() {
 }
 
 async function chooseNextNode() {
-    // If current node connections are empty, end the process
-    if (!appState.currentNode || !appState.currentNode.connections) {
-        console.error('No current node or connections available.');
-        return null;
-    }
-    // Check if there are any outgoing connections
-    const goingToConnections = appState.currentNode.connections.goingTo;
-    if (!goingToConnections || goingToConnections.length === 0) {
-        console.log('No outgoing connections found. Process complete.');
-        return null;
-    } else if (goingToConnections.length == 1) {
-        // If there's only one connection, select it
+    const goingToConnections = appState.currentNode?.connections?.goingTo || [];
+    if (!goingToConnections.length) return null;
+    
+    if (goingToConnections.length === 1) {
         appState.nextNodeID = goingToConnections[0];
     } else {
-        // If there are multiple connections, use sendRequest to ask for the next node
         const requestBody = {
             action: 'choose_next_node',
-            currentNode: appState.currentNode,
-            connections: goingToConnections.map(id => {
-                const node = appState.currentStructure.structure.nodes.find(n => n.id === id);
-                if (!node) {
-                    console.warn(`Node with ID ${id} not found in structure`);
-                }
-                return node;
-            }).filter(node => node !== undefined)
+            current_node: appState.currentNode,
+            connections: goingToConnections.map(id => 
+                appState.currentStructure.structure.nodes.find(n => n.id === id)
+            ).filter(Boolean)
         };
+
         console.log('Request body for choosing next node:', requestBody);
         
         try {
             const response = await sendRequest(requestBody);
-            console.log('Response from chooseNextNode API:', response);
-            
-            if (response && response.nextNodeID) {
+            console.log('Response from backend:', response);
+            // Check for both camelCase and snake_case properties
+            if (response?.nextNodeID) {
                 appState.nextNodeID = response.nextNodeID;
-                console.log('Next node selected:', appState.nextNodeID);
+            } else if (response?.next_node_id) {
+                appState.nextNodeID = response.next_node_id;
             } else {
-                // Fallback to first connection if no valid response
-                console.warn('Backend did not return a valid nextNodeID. Falling back to first connection.');
-                appState.nextNodeID = goingToConnections[0];
-                console.log('Fallback node selected:', appState.nextNodeID);
+                console.warn('Backend did not return a valid nextNodeID. Breaking process loop.');
+                return null; // Break the processing loop
             }
         } catch (error) {
             console.error('Error while choosing next node:', error);
-            // Fallback to first connection on error
-            appState.nextNodeID = goingToConnections[0];
-            console.log('Error occurred, falling back to first connection:', appState.nextNodeID);
+            return null; // Break the processing loop on error
         }
     }
     

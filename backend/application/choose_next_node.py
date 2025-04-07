@@ -1,4 +1,5 @@
 import backend.llm as llm
+import backend.application.refinement as refinement
 import json
 
 def handle_choose_next_node(response: dict) -> dict:
@@ -52,30 +53,20 @@ Provide the next node id in the following format:
     "next_node_id": <next_node_id>
 }
 
-Task: Return only a valid JSON object with the next_node_id.
+Task: Return only one message that includes a valid JSON object with the next_node_id.
 <|im_end|>
 <|im_assistant|>
     '''
 
     llm_response = llm.generate_llm_response(prompt)
-
-    print('UNREFINED LLM RESPONSE:')
+    print('LLM RESPONSE:')
     print(llm_response.text)
 
-    # Refine value
-    value = llm_response.text.rsplit('<|im_assistant|>', 1)[-1].strip()
-    value = value.rsplit('}', 1)[0] + '}' 
-
+    refined_response = refinement.refine_response(llm_response)
     print('REFINED LLM RESPONSE:')
-    print(value)
+    print(refined_response)
 
-    # try json
-    try:
-        value = json.loads(value)
-    except json.JSONDecodeError:
-        pass
-
-    return value
+    return refined_response
 
 if __name__ == '__main__':
     test_response = {
@@ -114,4 +105,4 @@ if __name__ == '__main__':
     }
     
     result = handle_choose_next_node(test_response)
-    print(result)
+    print('RESULT:', result)

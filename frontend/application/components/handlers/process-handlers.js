@@ -38,9 +38,9 @@ async function mainProcess() {
     // Process node functions until one returns null
     let result = true;
     const processingSteps = [
-        findConnections,
+        () => findConnections(appState.currentNode),
         chooseNextNode,
-        findNode,
+        () => findNode(appState.nextNodeID),
         executeNode
     ];
     
@@ -74,6 +74,16 @@ function executeNode() {
     // Execute node logic based on node type
     const nodeType = appState.currentNode.type || 'unknown';
     console.log(`Executing node of type: ${nodeType}`);
+    
+    // Check if this is a finish node - if so, return null to end the process
+    if (nodeType.toLowerCase() === 'finish') {
+        console.log('Finish node detected. Ending workflow process.');
+        return createJobEntry('Finish node reached', {
+            nodeId: appState.currentNode.id,
+            message: 'Workflow completed successfully',
+            timestamp: new Date().toISOString()
+        });
+    }
     
     // This is a placeholder implementation
     // Add specific logic for different node types here

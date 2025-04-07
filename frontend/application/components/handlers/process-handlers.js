@@ -28,19 +28,33 @@ async function mainProcess() {
     appState.currentNode = null;
     console.log('Jobs after clearing', appState.jobs);
 
-    // Jobs - initial setup
-    const initialJobFunctions = [
-        startProcess(),
-        findNode('start')
-    ];
-    
-    for (const result of initialJobFunctions) {
-        if (result === null || appState.workflowState === WORKFLOW_STATES.FINISHED) {
-            endMainProcess('Workflow completed or terminated early.');
-            return;
+    // Create a helper function to process jobs with consistent delays
+    async function processJobWithDelay(jobResult) {
+        if (jobResult === null || appState.workflowState === WORKFLOW_STATES.FINISHED) {
+            return false; // Signal to stop processing
         }
-        job(result);
+        
+        // Wait 2 seconds before showing the next job result
         await delay(2000);
+        
+        // Show the job result
+        job(jobResult);
+        
+        return true; // Signal to continue processing
+    }
+
+    // Process the starting job
+    const startJobResult = startProcess();
+    if (!await processJobWithDelay(startJobResult)) {
+        endMainProcess('Workflow completed or terminated early.');
+        return;
+    }
+
+    // Process the find start node job
+    const findStartNodeResult = findNode('start');
+    if (!await processJobWithDelay(findStartNodeResult)) {
+        endMainProcess('Workflow completed or terminated early.');
+        return;
     }
 
     // Process node functions until one returns null
@@ -64,9 +78,10 @@ async function mainProcess() {
                 result = step();
             }
             
-            if (result === null) break;
-            job(result);
-            await delay(2000);
+            if (!await processJobWithDelay(result)) {
+                result = null;
+                break;
+            }
         }
     } while (result !== null && appState.workflowState === WORKFLOW_STATES.RUNNING);
 

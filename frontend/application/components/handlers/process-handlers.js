@@ -170,6 +170,15 @@ function findNode(nodeTypeOrId = appState.currentNode.id) {
         console.error('Node not found.');
         return null;
     }
+    
+    // Check if this is a finish node - if so, return null to end the process
+    const nodeType = appState.currentNode.type?.toLowerCase() || '';
+    if (nodeType === 'finish') {
+        console.log('Finish node detected in findNode. Ending workflow process.');
+        appState.workflowState = WORKFLOW_STATES.FINISHED;
+        return createJobEntry('Finish node reached', {
+            nodeId: appState.currentNode.id,
+            message: 'Workflow completed successfully',
             timestamp: new Date().toISOString()
         });
     }

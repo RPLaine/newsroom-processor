@@ -186,6 +186,7 @@ function selectStructure(structure) {
     
     resetProcessTab();
     
-    switchTab('inputs');
+    // Switch to 'process' tab instead of 'inputs'
+    switchTab('process');
     updateStructureInfo();
 }

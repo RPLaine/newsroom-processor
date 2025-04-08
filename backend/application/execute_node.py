@@ -205,6 +205,77 @@ def delete_output_file(user_id, structure_id, file_id):
     
     return False
 
+def delete_all_output_files(user_id, structure_id):
+    """
+    Move all output files for a structure to an "old" directory
+    
+    Args:
+        user_id: ID of the current user
+        structure_id: ID of the structure
+        
+    Returns:
+        Boolean indicating success or failure
+    """
+    output_dir = os.path.join("data", "users", user_id, structure_id)
+    registry_path = os.path.join(output_dir, "file_registry.json")
+    
+    if not os.path.exists(registry_path):
+        return False
+    
+    # Create "old" directory if it doesn't exist
+    old_dir = os.path.join(output_dir, "old")
+    file_handler.ensure_directory(old_dir)
+    
+    # Load the file registry
+    registry = file_handler.load_data(registry_path, {"files": []})
+    files = registry.get("files", [])
+    
+    # Store original file paths and their new destination paths
+    moved_files = []
+    
+    try:
+        # Move each file to the old directory
+        for file_info in files:
+            file_path = file_info.get("path")
+            
+            if file_path and os.path.exists(file_path):
+                filename = os.path.basename(file_path)
+                new_path = os.path.join(old_dir, filename)
+                
+                # If a file with the same name exists in the old directory,
+                # add a timestamp to make the filename unique
+                if os.path.exists(new_path):
+                    name, ext = os.path.splitext(filename)
+                    new_path = os.path.join(old_dir, f"{name}_{int(time.time())}{ext}")
+                
+                # Move the file (os.rename is used for moving files)
+                os.rename(file_path, new_path)
+                
+                # Store file movement information
+                moved_files.append({
+                    "original_path": file_path,
+                    "new_path": new_path,
+                    "file_id": file_info.get("id")
+                })
+        
+        # Clear the file registry
+        registry["files"] = []
+        file_handler.save_data(registry_path, registry)
+        
+        return True
+    except Exception as e:
+        print(f"Error moving files to old directory: {str(e)}")
+        
+        # If there was an error, attempt to move files back to their original locations
+        for file_move in moved_files:
+            try:
+                if os.path.exists(file_move["new_path"]):
+                    os.rename(file_move["new_path"], file_move["original_path"])
+            except Exception as restore_err:
+                print(f"Error restoring file {file_move['original_path']}: {str(restore_err)}")
+        
+        return False
+
 if __name__ == '__main__':
     # Test Case: Article Generation
     print("=== ARTICLE GENERATION TEST ===")

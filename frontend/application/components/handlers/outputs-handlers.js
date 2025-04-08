@@ -20,6 +20,12 @@ export function setupOutputsTabHandlers() {
         console.log('Refresh Outputs button clicked - manually refreshing file list');
         await refreshOutputsView();
     });
+    
+    // Register delete all outputs button handler
+    registerButtonHandler('delete-all-outputs-btn', async (event, button) => {
+        console.log('Delete output files button clicked - moving all files to old/ directory');
+        await deleteAllOutputFiles();
+    });
 }
 
 /**
@@ -160,6 +166,7 @@ function createOutputsView(files) {
             <div class="structure-meta">
                 <span class="structure-meta-item">Structure: ${appState.currentStructure.name || 'Unnamed'}</span>
                 <button id="refresh-outputs-btn" class="btn primary">Refresh</button>
+                <button id="delete-all-outputs-btn" class="btn danger">Delete All</button>
             </div>
         </div>
     `;
@@ -356,5 +363,38 @@ async function deleteFile(fileId) {
     } catch (error) {
         console.error('Error deleting file:', error);
         alert('Error deleting file: ' + error.toString());
+    }
+}
+
+/**
+ * Delete all output files
+ */
+async function deleteAllOutputFiles() {
+    if (!appState.currentStructure) return;
+    
+    if (!confirm('Are you sure you want to delete all output files?')) {
+        return;
+    }
+    
+    try {
+        const requestBody = {
+            action: 'delete_all_output_files',
+            structure_id: appState.currentStructure.id
+        };
+        
+        const response = await api.sendRequest(requestBody);
+        
+        if (response.status === 'success') {
+            // Clear files from state
+            appState.generatedFiles = [];
+            
+            // Refresh the view
+            await refreshOutputsView();
+        } else {
+            alert('Error deleting all files: ' + response.message);
+        }
+    } catch (error) {
+        console.error('Error deleting all files:', error);
+        alert('Error deleting all files: ' + error.toString());
     }
 }

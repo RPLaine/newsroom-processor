@@ -64,6 +64,25 @@ def handle_application_actions(request: dict) -> dict:
             
         return request
     
+    if action == 'delete_all_output_files':
+        structure_id = request['request'].get('structure_id')
+        
+        if not structure_id:
+            request['status'] = 'error'
+            request['message'] = 'Missing structure_id parameter'
+            return request
+            
+        success = execute_node.delete_all_output_files(user_id, structure_id)
+        
+        if success:
+            request['status'] = 'success'
+            request['message'] = 'All output files moved to old/ directory'
+        else:
+            request['status'] = 'error'
+            request['message'] = 'Failed to move output files'
+            
+        return request
+    
     request['status'] = 'error'
     request['message'] = f'Unknown application action: {action}'
     return request

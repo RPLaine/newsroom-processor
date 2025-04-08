@@ -9,10 +9,21 @@ export function setupInputsTabHandlers() {
     
     // Register button handler for node selection
     registerButtonHandler('select-node-btn', (event, button) => {
+        event.stopPropagation(); // Prevent triggering the card click
         const structureCard = button.closest('.structure-card');
         if (!structureCard || !structureCard.dataset.node) return;
         
         selectNode(JSON.parse(structureCard.dataset.node));
+    });
+    
+    // Add a document listener for node card clicks
+    document.addEventListener('click', (event) => {
+        const structureCard = event.target.closest('.structure-card[data-node]');
+        if (!structureCard || event.target.closest('button')) return; // Skip if clicking on a button
+        
+        if (structureCard.dataset.node) {
+            selectNode(JSON.parse(structureCard.dataset.node));
+        }
     });
     
     // Register form handler for web search form

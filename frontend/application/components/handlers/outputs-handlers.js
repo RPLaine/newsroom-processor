@@ -32,10 +32,21 @@ export function setupOutputsTabHandlers() {
     
     // Register button handler for file selection
     registerButtonHandler('select-file-btn', (event, button) => {
+        event.stopPropagation(); // Prevent triggering the card click
         const structureCard = button.closest('.structure-card');
         if (!structureCard || !structureCard.dataset.file) return;
         
         selectFile(JSON.parse(structureCard.dataset.file));
+    });
+    
+    // Add a document listener for file card clicks
+    document.addEventListener('click', (event) => {
+        const structureCard = event.target.closest('.structure-card[data-file]');
+        if (!structureCard || event.target.closest('button')) return; // Skip if clicking on a button
+        
+        if (structureCard.dataset.file) {
+            selectFile(JSON.parse(structureCard.dataset.file));
+        }
     });
 }
 

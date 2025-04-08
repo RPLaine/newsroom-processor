@@ -35,11 +35,23 @@ export function setupStructuresTabHandlers() {
         }
     });
     
+    // Handler for the select button
     registerButtonHandler('select-structure-btn', (event, button) => {
+        event.stopPropagation(); // Prevent triggering the card click
         const structureCard = button.closest('.structure-card');
         if (!structureCard || !structureCard.dataset.item) return;
         
         selectStructure(JSON.parse(structureCard.dataset.item));
+    });
+    
+    // Add a document listener for structure card clicks
+    document.addEventListener('click', (event) => {
+        const structureCard = event.target.closest('.structure-card[data-item]');
+        if (!structureCard || event.target.closest('button')) return; // Skip if clicking on a button
+        
+        if (structureCard.dataset.item) {
+            selectStructure(JSON.parse(structureCard.dataset.item));
+        }
     });
     
     registerButtonHandler('refresh-structures-btn', async () => {

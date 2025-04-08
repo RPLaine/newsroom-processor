@@ -179,8 +179,7 @@ function createOutputsView(files) {
         // Add each file as a card
         typeFiles.forEach(file => {
             const timestamp = new Date(file.created_at * 1000).toLocaleString();
-            
-            html += `
+              html += `
                 <div class="structure-card" data-file-id="${file.id}" data-file='${JSON.stringify(file)}'>
                     <div class="structure-content">
                         <h3>${file.filename}</h3>
@@ -189,9 +188,6 @@ function createOutputsView(files) {
                             <div>Size: ${formatFileSize(file.size)}</div>
                             <div>Node: ${file.node_name || 'Unknown'}</div>
                         </div>
-                    </div>
-                    <div class="structure-actions">
-                        <button class="btn select-file-btn primary" data-button-type="select-file-btn">Select</button>
                     </div>
                 </div>
             `;

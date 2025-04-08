@@ -300,8 +300,7 @@ export function updateStructureInfo() {
                 const nodeName = node.configuration?.header || node.title || node.name || nodeId;
                 const nodeType = node.type || 'Unknown';
                 const displayId = node.id || nodeId;
-                
-                structureDetailsHTML += `
+                  structureDetailsHTML += `
                     <div class="structure-card" data-node='${JSON.stringify(node)}'>
                         <div class="structure-content">
                             <h3>${nodeName}</h3>
@@ -309,9 +308,6 @@ export function updateStructureInfo() {
                                 <div>Type: ${nodeType}</div>
                                 <div>ID: ${displayId}</div>
                             </div>
-                        </div>
-                        <div class="structure-actions">
-                            <button class="btn select-node-btn primary" data-button-type="select-node-btn">Select</button>
                         </div>
                     </div>
                 `;

@@ -166,8 +166,7 @@ function updateStructuresList(structures) {
                     connectionCount = Object.keys(structure.connections).length;
                 }
             }
-            
-            const structureName = structure.name || fileName.replace('.json', '');
+              const structureName = structure.name || fileName.replace('.json', '');
             
             structureElement.innerHTML = `
                 <div class="structure-content">
@@ -176,9 +175,6 @@ function updateStructuresList(structures) {
                         <span class="structure-meta-item">Nodes: ${nodeCount}</span>
                         <span class="structure-meta-item">Connections: ${connectionCount}</span>
                     </div>
-                </div>
-                <div class="structure-actions">
-                    <button class="btn select-structure-btn primary" data-button-type="select-structure-btn">Select</button>
                 </div>
             `;
             

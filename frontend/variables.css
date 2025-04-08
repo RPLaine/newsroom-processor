@@ -15,10 +15,11 @@
     --color-brand-primary-dark: #2e7d32;
     --color-brand-secondary: #66bb6a;
     --color-brand-accent: #81c784;
-    
     --color-success: #4CAF50;
     --color-warning: #FFC107;
-    --color-error: #f44336;
+    --color-danger: #d32f2f;
+    --color-danger-light: #f44336;
+    --color-error: #f44336; /* Keeping for backward compatibility */
     --color-info: #2196F3;
     
     --border-radius-sm: 4px;

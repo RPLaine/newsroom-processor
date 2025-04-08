@@ -55,12 +55,19 @@
 }
 
 .btn.danger {
-    background-color: var(--color-error);
+    background-color: var(--color-danger); /* Dark red base color */
     color: white;
 }
 
 .btn.danger:hover {
-    background-color: #d32f2f;
+    background-color: var(--color-danger-light); /* Lighter red on hover */
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn.danger:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Button states */

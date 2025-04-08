@@ -164,20 +164,26 @@ function createTabContent() {
         </div>
     `;
     contentContainer.appendChild(processContent);
-    
-    const outputsContent = document.createElement('div');
+      const outputsContent = document.createElement('div');
     outputsContent.id = 'outputs-content';
     outputsContent.className = `tab-content ${appState.activeTab === 'outputs' ? 'active' : ''}`;
     outputsContent.innerHTML = `
         <div class="section full-width">
             <div class="button-group">
-                <button id="refresh-outputs-btn" class="btn">Refresh</button>
+                <button id="refresh-outputs-btn" class="btn" data-button-type="refresh-outputs-btn">Refresh</button>
+                <button id="delete-all-outputs-btn" class="btn danger" data-button-type="delete-all-outputs-btn">Delete All</button>
             </div>
         </div>
-        <div class="section full-width">
-            <h2>Files</h2>
+        <div class="section full-width" id="file-list-section">
+            <h2>Generated Files</h2>
             <div id="outputs-list" class="outputs-list">
                 <p class="empty-state">No files available. Files will appear here after processing your structure.</p>
+            </div>
+        </div>
+        <div class="section full-width" id="file-detail-section">
+            <h2>Selected File</h2>
+            <div id="selected-file-info">
+                <p class="empty-state">No file selected. Please select a file from the list above.</p>
             </div>
         </div>
     `;
